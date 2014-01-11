@@ -77,6 +77,31 @@ CERTIFICATE;
     
     public function testFunctionGetLocalIdByUid()
     {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('getLocalIdByUid');
+      
+      // Build User
+      $adb = $this->getMock('PearDatabase');
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = true;
+      $sso_user->connection = $adb;
+      $expected_id = 1234;
+      
+      // Stub pquery
+      $adb->expects($this->once())
+               ->method('pquery')
+               ->with($this->equalTo("SELECT id from vtiger_users where mno_uid=?"), $this->equalTo(array($sso_user->uid)))
+               ->will($this->returnValue('resultset'));
+      
+      // Stub query results
+      $adb->expects($this->once())
+               ->method('query_result')
+               ->will($this->returnValue($expected_id));
+      
+      // Test return value
+      $this->assertEquals($expected_id,$protected_method->invokeArgs($sso_user,array()));
     }
     
     public function testFunctionGetLocalIdByEmail()
@@ -89,6 +114,7 @@ CERTIFICATE;
     
     public function testFunctionSyncLocalDetails()
     {
+      
     }
     
     public function testFunctionCreateLocalUser()
@@ -101,7 +127,6 @@ CERTIFICATE;
       $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
       $sso_user->local_id = null;
       $sso_user->app_owner = true;
-      $sso_user->organizations = array('org-xyz' => array('name' => 'MyOrga', 'role' => 'Member'));
       
       // Set expected_id
       $expected_id = 1234;
@@ -110,7 +135,7 @@ CERTIFICATE;
       $sso_user->_user = $this->getMock('Users');
       $sso_user->_user->expects($this->once())
                ->method('save')
-               ->with('Users')
+               ->with($this->equalTo('Users'))
                ->will($this->returnValue($expected_id));
       
       

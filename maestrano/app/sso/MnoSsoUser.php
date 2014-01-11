@@ -99,16 +99,19 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  // protected function getLocalIdByUid()
-  // {
-  //   $result = $this->connection->query("SELECT ID FROM user WHERE mno_uid = {$this->connection->quote($this->uid)} LIMIT 1")->fetch();
-  //   
-  //   if ($result && $result['ID']) {
-  //     return $result['ID'];
-  //   }
-  //   
-  //   return null;
-  // }
+  protected function getLocalIdByUid()
+  {    
+    // Fetch record
+    $query = "SELECT id from vtiger_users where mno_uid=?";
+    $result = $this->connection->pquery($query, array($this->uid));
+    
+    // Return id value
+    if ($result) {
+      return $this->connection->query_result($result,0,'id');
+    }
+    
+    return null;
+  }
   
   /**
    * Get the ID of a local user via email lookup
