@@ -13,9 +13,8 @@ require MAESTRANO_ROOT . '/app/init/_config_loader.php'; //set $mno_settings var
 //-----------------------------------------------
 // Require your app specific files here
 //-----------------------------------------------
-//define('MY_APP_DIR', realpath(MAESTRANO_ROOT . '/../'));
-//require MY_APP_DIR . '/include/some_class_file.php';
-//require MY_APP_DIR . '/config/some_database_config_file.php';
+define('APP_DIR', '../../../');
+require APP_DIR . 'modules/Users/Users.php ';
 
 //-----------------------------------------------
 // Perform your custom preparation code
