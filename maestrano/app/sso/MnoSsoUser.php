@@ -12,6 +12,11 @@ class MnoSsoUser extends MnoSsoBaseUser
    */
   public $connection = null;
   
+  /**
+   * Vtiger User object
+   * @var PDO
+   */
+  public $_user = null;
   
   /**
    * Extend constructor to inialize app specific objects
@@ -25,8 +30,13 @@ class MnoSsoUser extends MnoSsoBaseUser
     // Call Parent
     parent::__construct($saml_response,$session);
     
+    // Define global log
+    global $log;
+    $log = LoggerManager::getLogger('user');
+    
     // Assign new attributes
     $this->connection = $db_connection;
+    $this->_user = new Users();
   }
   
   
@@ -146,4 +156,66 @@ class MnoSsoUser extends MnoSsoBaseUser
   //   
   //   return false;
   // }
+  
+  /**
+   * Build a vtiger user for creation
+   *
+   * @return Users the user object
+   */
+   protected function buildLocalUser()
+   {
+     $fields = &$this->_user->column_fields;
+     $fields["user_name"] = $this->email;
+     $fields["email1"] = $this->email;
+     $fields["is_admin"] = "on"; # to be defined
+     $fields["user_password"] = "123456789";
+     $fields["confirm_password"] = "123456789";
+     $fields["first_name"] = $this->name;
+     $fields["last_name"] = $this->surname;
+     $fields["roleid"] = "H5"; # to be defined
+     $fields["status"] = "Active";
+     $fields["activity_view"] = "Today";
+     $fields["lead_view"] = "Today";
+     $fields["hour_format"] = "";
+     $fields["end_hour"] = "";
+     $fields["start_hour"] = "";
+     $fields["title"] = "";
+     $fields["phone_work"] = "";
+     $fields["department"] = "";
+     $fields["phone_mobile"] = "";
+     $fields["reports_to_id"] = "";
+     $fields["phone_other"] = "";
+     $fields["email2"] = "";
+     $fields["phone_fax"] = "";
+     $fields["secondaryemail"] = "";
+     $fields["phone_home"] = "";
+     $fields["date_format"] = "dd-mm-yyyy";
+     $fields["signature"] = "";
+     $fields["description"] = "";
+     $fields["address_street"] = "";
+     $fields["address_city"] = "";
+     $fields["address_state"] = "";
+     $fields["address_postalcode"] = "";
+     $fields["address_country"] = "";
+     $fields["accesskey"] = "";
+     $fields["time_zone"] = "UTC";
+     $fields["currency_id"] = "1";
+     $fields["currency_grouping_pattern"] = "123,456,789";
+     $fields["currency_decimal_separator"] = "";
+     $fields["currency_grouping_separator"] = "";
+     $fields["currency_symbol_placement"] = "$1.0";
+     $fields["imagename"] = "";
+     $fields["internal_mailer"] = "on";
+     $fields["theme"] = "softed";
+     $fields["language"] = "en_us";
+     $fields["reminder_interval"] = "None";
+     $fields["asterisk_extension"] = "";
+     $fields["use_asterisk"] = "on";
+     $fields["ccurrency_name"] = "";
+     $fields["currency_code"] = "";
+     $fields["currency_symbol"] = "";
+     $fields["conv_rate"] = "";
+     
+     return $this->_user;
+   }
 }

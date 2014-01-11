@@ -102,4 +102,75 @@ CERTIFICATE;
     public function testFunctionSignIn()
     {
     }
+    
+    public function testFunctionBuildLocalUser()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('buildLocalUser');
+      
+      // Create global db variable $adb
+      global $adb;
+      $adb = $this->getMock('PearDatabase');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;    
+      
+      // Run method
+      $protected_method->invokeArgs($sso_user,array());
+      
+      // Test that user fields have been populated correctly
+      $f = $sso_user->_user->column_fields;
+      $this->assertEquals($sso_user->email, $f["user_name"]);
+      $this->assertEquals($sso_user->email, $f["email1"]);
+      $this->assertEquals("on", $f["is_admin"]); # to be defined
+      $this->assertEquals("123456789", $f["user_password"]);
+      $this->assertEquals("123456789", $f["confirm_password"]);
+      $this->assertEquals($sso_user->name, $f["first_name"]);
+      $this->assertEquals($sso_user->surname, $f["last_name"]);
+      $this->assertEquals("H5", $f["roleid"]); # to be defined
+      $this->assertEquals("Active", $f["status"]);
+      $this->assertEquals("Today", $f["activity_view"]);
+      $this->assertEquals("Today", $f["lead_view"]);
+      $this->assertEquals("", $f["hour_format"]);
+      $this->assertEquals("", $f["end_hour"]);
+      $this->assertEquals("", $f["start_hour"]);
+      $this->assertEquals("", $f["title"]);
+      $this->assertEquals("", $f["phone_work"]);
+      $this->assertEquals("", $f["department"]);
+      $this->assertEquals("", $f["phone_mobile"]);
+      $this->assertEquals("", $f["reports_to_id"]);
+      $this->assertEquals("", $f["phone_other"]);
+      $this->assertEquals("", $f["email2"]);
+      $this->assertEquals("", $f["phone_fax"]);
+      $this->assertEquals("", $f["secondaryemail"]);
+      $this->assertEquals("", $f["phone_home"]);
+      $this->assertEquals("dd-mm-yyyy", $f["date_format"]);
+      $this->assertEquals("", $f["signature"]);
+      $this->assertEquals("", $f["description"]);
+      $this->assertEquals("", $f["address_street"]);
+      $this->assertEquals("", $f["address_city"]);
+      $this->assertEquals("", $f["address_state"]);
+      $this->assertEquals("", $f["address_postalcode"]);
+      $this->assertEquals("", $f["address_country"]);
+      $this->assertEquals("", $f["accesskey"]);
+      $this->assertEquals("UTC", $f["time_zone"]);
+      $this->assertEquals("1", $f["currency_id"]);
+      $this->assertEquals("123,456,789", $f["currency_grouping_pattern"]);
+      $this->assertEquals("", $f["currency_decimal_separator"]);
+      $this->assertEquals("", $f["currency_grouping_separator"]);
+      $this->assertEquals("$1.0", $f["currency_symbol_placement"]);
+      $this->assertEquals("", $f["imagename"]);
+      $this->assertEquals("on", $f["internal_mailer"]);
+      $this->assertEquals("softed", $f["theme"]);
+      $this->assertEquals("en_us", $f["language"]);
+      $this->assertEquals("None", $f["reminder_interval"]);
+      $this->assertEquals("", $f["asterisk_extension"]);
+      $this->assertEquals("on", $f["use_asterisk"]);
+      $this->assertEquals("", $f["ccurrency_name"]);
+      $this->assertEquals("", $f["currency_code"]);
+      $this->assertEquals("", $f["currency_symbol"]);
+      $this->assertEquals("", $f["conv_rate"]);
+    }
 }
