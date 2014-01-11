@@ -115,7 +115,8 @@ CERTIFICATE;
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
       $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
-      $sso_user->local_id = null;    
+      $sso_user->local_id = null;
+      $sso_user->app_owner = true; 
       
       // Run method
       $protected_method->invokeArgs($sso_user,array());
@@ -124,7 +125,7 @@ CERTIFICATE;
       $f = $sso_user->_user->column_fields;
       $this->assertEquals($sso_user->email, $f["user_name"]);
       $this->assertEquals($sso_user->email, $f["email1"]);
-      $this->assertEquals("on", $f["is_admin"]); # to be defined
+      $this->assertEquals("on", $f["is_admin"]);
       $this->assertEquals("123456789", $f["user_password"]);
       $this->assertEquals("123456789", $f["confirm_password"]);
       $this->assertEquals($sso_user->name, $f["first_name"]);

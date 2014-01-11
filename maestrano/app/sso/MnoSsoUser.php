@@ -193,7 +193,7 @@ class MnoSsoUser extends MnoSsoBaseUser
      $fields = &$this->_user->column_fields;
      $fields["user_name"] = $this->email;
      $fields["email1"] = $this->email;
-     $fields["is_admin"] = "on"; # to be defined
+     $fields["is_admin"] = $this->isLocalUserAdmin() ? 'on' : 'off';
      $fields["user_password"] = "123456789";
      $fields["confirm_password"] = "123456789";
      $fields["first_name"] = $this->name;
