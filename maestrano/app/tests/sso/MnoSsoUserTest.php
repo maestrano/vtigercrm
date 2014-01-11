@@ -23,6 +23,10 @@ class MnoSsoUserTest extends PHPUnit_Framework_TestCase
       // Create SESSION
       $_SESSION = array();
       
+      // Create global db variable $adb
+      global $adb;
+      $adb = $this->getMock('PearDatabase');
+      
       $settings = new OneLogin_Saml_Settings;
       $settings->idpSingleSignOnUrl = 'http://localhost:3000/api/v1/auth/saml';
 
@@ -87,17 +91,35 @@ CERTIFICATE;
     {
     }
     
-    public function testFunctionCreateLocalUserWhenAppOwner()
+    public function testFunctionCreateLocalUser()
     {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('createLocalUser');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = true;
+      $sso_user->organizations = array('org-xyz' => array('name' => 'MyOrga', 'role' => 'Member'));
+      
+      // Set expected_id
+      $expected_id = 1234;
+      
+      // Create a user stub
+      $sso_user->_user = $this->getMock('Users');
+      $sso_user->_user->expects($this->once())
+               ->method('save')
+               ->with('Users')
+               ->will($this->returnValue($expected_id));
+      
+      
+      // Test method returns the right id and used buildLocalUser
+      $sso_user->connection = $pdo_stub;
+      $this->assertEquals($expected_id,$protected_method->invokeArgs($sso_user,array()));
+      $this->assertEquals($sso_user->email,$sso_user->_user->column_fields['user_name']);
     }
     
-    public function testFunctionCreateLocalUserWhenOrgaAdmin()
-    {
-    }
-    
-    public function testFunctionCreateLocalUserWhenNormal()
-    {
-    }
     
     public function testFunctionSignIn()
     {
@@ -107,10 +129,6 @@ CERTIFICATE;
     {
       // Specify which protected method get tested
       $protected_method = self::getMethod('buildLocalUser');
-      
-      // Create global db variable $adb
-      global $adb;
-      $adb = $this->getMock('PearDatabase');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -180,10 +198,6 @@ CERTIFICATE;
       // Specify which protected method get tested
       $protected_method = self::getMethod('isLocalUserAdmin');
       
-      // Create global db variable $adb
-      global $adb;
-      $adb = $this->getMock('PearDatabase');
-      
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
       $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
@@ -197,10 +211,6 @@ CERTIFICATE;
     {
       // Specify which protected method get tested
       $protected_method = self::getMethod('isLocalUserAdmin');
-      
-      // Create global db variable $adb
-      global $adb;
-      $adb = $this->getMock('PearDatabase');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');

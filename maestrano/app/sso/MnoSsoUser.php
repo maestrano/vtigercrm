@@ -79,20 +79,20 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return the ID of the user created, null otherwise
    */
-  // protected function createLocalUser()
-  // {
-  //   $lid = null;
-  //   
-  //   if ($this->accessScope() == 'private') {
-  //     // First set $conn variable (used internally by collabtive methods)
-  //     $conn = $this->connection;
-  //     
-  //     // Create user
-  //     $lid = $this->connection->query("CREATE BLA.....");
-  //   }
-  //   
-  //   return $lid;
-  // }
+  protected function createLocalUser()
+  {
+    $lid = null;
+    
+    if ($this->accessScope() == 'private') {
+      // Build local user
+      $this->buildLocalUser();
+      
+      // Save user
+      $lid = $this->_user->save('Users');
+    }
+    
+    return $lid;
+  }
   
   /**
    * Get the ID of a local user via Maestrano UID lookup
