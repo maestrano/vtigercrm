@@ -13,9 +13,12 @@ require PHP_SAML_DIR . 'XmlSec.php';
 define('MNO_PHP_SSO_DIR', './../../lib/mno-php/src/sso/');
 require MNO_PHP_SSO_DIR . 'MnoSsoBaseUser.php';
 
-// Dependencies: your app files
-#define('MY_APP_DIR', './../../../include/');
-#require MY_APP_DIR . 'some_app_file.php';
+// Dependencies: app files
+define('APP_DIR', './../../../');
+$current_dir = getcwd();
+chdir(APP_DIR);
+require 'modules/Users/Users.php';
+chdir($current_dir);
 
 // Tested class: 
 define('TEST_INT_SSO_DIR', './../sso/');
@@ -23,3 +26,6 @@ require TEST_INT_SSO_DIR . 'MnoSsoUser.php';
 
 // Set timezone
 date_default_timezone_set('UTC');
+
+// Go to app directory
+chdir(APP_DIR);
