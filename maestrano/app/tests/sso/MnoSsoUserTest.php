@@ -130,7 +130,7 @@ CERTIFICATE;
       $this->assertEquals("123456789", $f["confirm_password"]);
       $this->assertEquals($sso_user->name, $f["first_name"]);
       $this->assertEquals($sso_user->surname, $f["last_name"]);
-      $this->assertEquals("H5", $f["roleid"]); # to be defined
+      $this->assertEquals("H2", $f["roleid"]); # H2 role cannot be deleted
       $this->assertEquals("Active", $f["status"]);
       $this->assertEquals("Today", $f["activity_view"]);
       $this->assertEquals("Today", $f["lead_view"]);

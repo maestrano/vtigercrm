@@ -198,7 +198,7 @@ class MnoSsoUser extends MnoSsoBaseUser
      $fields["confirm_password"] = "123456789";
      $fields["first_name"] = $this->name;
      $fields["last_name"] = $this->surname;
-     $fields["roleid"] = "H5"; # to be defined
+     $fields["roleid"] = "H2"; # H2 role cannot be deleted
      $fields["status"] = "Active";
      $fields["activity_view"] = "Today";
      $fields["lead_view"] = "Today";
