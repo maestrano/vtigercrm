@@ -158,6 +158,32 @@ class MnoSsoUser extends MnoSsoBaseUser
   // }
   
   /**
+   * Return whether the user should be admin or
+   * not.
+   * User is considered admin if app_owner or if
+   * admin of the orga owning this app
+   *
+   * @return boolean true if admin, false otherwise
+   */
+  protected function isLocalUserAdmin() {
+    $ret_value = false;
+    
+    if ($this->app_owner) {
+      $ret_value = true; // Admin
+    } else {
+      foreach ($this->organizations as $organization) {
+        if ($organization['role'] == 'Admin' || $organization['role'] == 'Super Admin') {
+          $ret_value = true;
+        } else {
+          $ret_value = false;
+        }
+      }
+    }
+    
+    return $ret_value;
+  }
+  
+  /**
    * Build a vtiger user for creation
    *
    * @return Users the user object

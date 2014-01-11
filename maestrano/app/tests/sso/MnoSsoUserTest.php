@@ -173,4 +173,60 @@ CERTIFICATE;
       $this->assertEquals("", $f["currency_symbol"]);
       $this->assertEquals("", $f["conv_rate"]);
     }
+    
+    public function testFunctionIsLocalUserAdminWhenAppOwner()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('isLocalUserAdmin');
+      
+      // Create global db variable $adb
+      global $adb;
+      $adb = $this->getMock('PearDatabase');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->app_owner = true;    
+      
+      // Run method
+      $this->assertEquals(true, $protected_method->invokeArgs($sso_user,array()));
+    }
+    
+    public function testFunctionIsLocalUserAdminWhenOrgaAdmin()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('isLocalUserAdmin');
+      
+      // Create global db variable $adb
+      global $adb;
+      $adb = $this->getMock('PearDatabase');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->app_owner = false;
+      $sso_user->organizations = array('org-xyz' => array('name' => 'MyOrga', 'role' => 'Admin'));
+      
+      // Run method
+      $this->assertEquals(true, $protected_method->invokeArgs($sso_user,array()));
+    }
+    
+    public function testFunctionIsLocalUserAdminWhenNoAdmin()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('isLocalUserAdmin');
+      
+      // Create global db variable $adb
+      global $adb;
+      $adb = $this->getMock('PearDatabase');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->app_owner = false;
+      $sso_user->organizations = array('org-xyz' => array('name' => 'MyOrga', 'role' => 'Member'));
+      
+      // Run method
+      $this->assertEquals(false, $protected_method->invokeArgs($sso_user,array()));
+    }
 }
