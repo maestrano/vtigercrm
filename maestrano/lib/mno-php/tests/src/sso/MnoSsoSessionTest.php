@@ -115,8 +115,9 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
                   ->will($this->returnValue($remote_content));
                   
       // Test return value and recheck attribute
+      $expected_date = new DateTime('2014-01-09T03:36:15Z');
       $this->assertEquals(true,$mno_session->isValid());
-      $this->assertEquals(new DateTime('2014-01-09T03:36:15Z'), $session['mno_session_recheck']);
+      $this->assertEquals($expected_date->format(DateTime::ISO8601), $session['mno_session_recheck']);
     }
     
     public function testFunctionIsValidWhenSessionInvalid()

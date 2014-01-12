@@ -125,7 +125,7 @@ class MnoSsoSession
       public function isValid() {
         if ($this->remoteCheckRequired()) {
           if ($this->performRemoteCheck()) {
-            $this->session['mno_session_recheck'] = $this->recheck;
+            $this->session['mno_session_recheck'] = $this->recheck->format(DateTime::ISO8601);
             return true;
           } else {
             return false;
