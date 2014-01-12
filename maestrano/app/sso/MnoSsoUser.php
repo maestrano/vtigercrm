@@ -13,6 +13,12 @@ class MnoSsoUser extends MnoSsoBaseUser
   public $connection = null;
   
   /**
+   * Application Unique Key
+   * @var PDO
+   */
+  public $app_unique_key = '';
+  
+  /**
    * Vtiger User object
    * @var PDO
    */
@@ -25,7 +31,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response, &$session = array(), $db_connection = null)
+  public function __construct(OneLogin_Saml_Response $saml_response, &$session = array(), $opts = array())
   {
     // Call Parent
     parent::__construct($saml_response,$session);
@@ -35,7 +41,8 @@ class MnoSsoUser extends MnoSsoBaseUser
     $log = LoggerManager::getLogger('user');
     
     // Assign new attributes
-    $this->connection = $db_connection;
+    $this->connection = $opts['db_connection'];
+    $this->app_unique_key = $opts['app_unique_key'];
     $this->_user = new Users();
   }
   
@@ -47,29 +54,18 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return boolean whether the user was successfully set in session or not
    */
-  // protected function setInSession()
-  // {
-  //   // First set $conn variable (used internally by collabtive methods)
-  //   $conn = $this->connection;
-  //   
-  //   $sel1 = $conn->query("SELECT ID,name,lastlogin FROM user WHERE ID = $this->local_id");
-  //   $chk = $sel1->fetch();
-  //   if ($chk["ID"] != "") {
-  //       $now = time();
-  //       
-  //       // Set session
-  //       $this->session['userid'] = $chk['ID'];
-  //       $this->session['username'] = stripslashes($chk['name']);
-  //       $this->session['lastlogin'] = $now;
-  //       
-  //       // Update last login timestamp
-  //       $upd1 = $conn->query("UPDATE user SET lastlogin = '$now' WHERE ID = $this->local_id");
-  //       
-  //       return true;
-  //   } else {
-  //       return false;
-  //   }
-  // }
+  protected function setInSession()
+  {
+    if ($this->local_id) {
+        // Set session
+        $this->session['authenticated_user_id'] = $this->local_id;
+        $this->session['app_unique_key'] = $this->app_unique_key;
+        
+        return true;
+    } else {
+        return false;
+    }
+  }
   
   
   /**

@@ -209,8 +209,29 @@ CERTIFICATE;
     }
     
     
-    public function testFunctionSignIn()
+    public function testFunctionSetInSession()
     {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('setInSession');
+      
+      // Define application unique key
+      $app_unique_key = '69312508c9b39405f59279f966701ced';
+      
+      // Build User
+      $session = array();
+      $opts = array();
+      $opts['app_unique_key'] = $app_unique_key;
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion), $session, $opts);
+      $sso_user->local_id = 1234;
+      $sso_user->app_owner = true;
+      
+      // Set user in session
+      $protected_method->invokeArgs($sso_user,array());
+      
+      // Check session values
+      $this->assertEquals($sso_user->local_id, $session["authenticated_user_id"]);
+      $this->assertEquals($app_unique_key, $session["app_unique_key"]);
     }
     
     public function testFunctionBuildLocalUser()
