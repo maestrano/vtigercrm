@@ -138,15 +138,17 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return boolean whether the user was synced or not
    */
-   // protected function syncLocalDetails()
-   // {
-   //   if($this->local_id) {
-   //     $upd = $this->connection->query("UPDATE user SET name = {$this->connection->quote($this->name . ' ' . $this->surname)}, email = {$this->connection->quote($this->email)} WHERE ID = $this->local_id");
-   //     return $upd;
-   //   }
-   //   
-   //   return false;
-   // }
+   protected function syncLocalDetails()
+   {
+     if($this->local_id) {
+       // Update record
+       $query = "UPDATE vtiger_users SET email1=?, first_name=?, last_name=? where id=?";
+       $upd = $this->connection->pquery($query, array($this->email, $this->name, $this->surname, $this->id));
+       return $upd;
+     }
+
+     return false;
+   }
   
   /**
    * Set the Maestrano UID on a local user via id lookup
