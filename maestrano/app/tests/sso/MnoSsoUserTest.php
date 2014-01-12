@@ -135,6 +135,25 @@ CERTIFICATE;
     
     public function testFunctionSetLocalUid()
     {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('setLocalUid');
+      
+      // Build User
+      $adb = $this->getMock('PearDatabase');
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = 1234;
+      $sso_user->app_owner = true;
+      $sso_user->connection = $adb;
+      
+      // Stub pquery
+      $adb->expects($this->once())
+               ->method('pquery')
+               ->with($this->equalTo("UPDATE vtiger_users SET mno_uid=? where id=?"), $this->equalTo(array($sso_user->uid,$sso_user->id)))
+               ->will($this->returnValue('resultset'));
+      
+      // Test return value
+      $this->assertEquals('resultset',$protected_method->invokeArgs($sso_user,array()));
     }
     
     public function testFunctionSyncLocalDetails()

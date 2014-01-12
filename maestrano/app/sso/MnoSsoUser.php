@@ -153,15 +153,17 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  // protected function setLocalUid()
-  // {
-  //   if($this->local_id) {
-  //     $upd = $this->connection->query("UPDATE user SET mno_uid = {$this->connection->quote($this->uid)} WHERE ID = $this->local_id");
-  //     return $upd;
-  //   }
-  //   
-  //   return false;
-  // }
+  protected function setLocalUid()
+  {
+    if($this->local_id) {
+      // Update record
+      $query = "UPDATE vtiger_users SET mno_uid=? where id=?";
+      $upd = $this->connection->pquery($query, array($this->uid, $this->id));
+      return $upd;
+    }
+    
+    return false;
+  }
   
   /**
    * Return whether the user should be admin or
