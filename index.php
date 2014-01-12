@@ -116,6 +116,20 @@ if (is_file('config_override.php'))
 	require_once('config_override.php');
 }
 
+// Hook:Maestrano
+// Load Maestrano session
+if ($maestrano_enabled) {
+  require 'maestrano/app/init/session.php';
+  
+  // Require authentication straight away if intranet
+  // mode enabled
+  if ($mno_settings && $mno_settings->sso_enabled && $mno_settings->sso_intranet_mode && $mno_session) {
+    if (!$mno_session->isValid()) {
+      header("Location: " . $mno_settings->sso_init_url);
+    }
+  }
+}
+
 /**
  * Check for vtiger installed version and codebase
  */
@@ -266,6 +280,14 @@ if (isset($_SESSION["authenticated_user_id"]) && $module == 'Users' && $action =
 } 
 
 if($use_current_login){
+  // Hook:Maestrano
+  // Check Maestrano session is still valid
+  if ($mno_settings && $mno_settings->sso_enabled && $mno_session) {
+    if (!$mno_session->isValid()) {
+      header("Location: " . $mno_settings->sso_init_url);
+    }
+  }
+  
 	//getting the internal_mailer flag
 	if(!isset($_SESSION['internal_mailer'])){
 		$qry_res = $adb->pquery("select internal_mailer from vtiger_users where id=?", array($_SESSION["authenticated_user_id"]));
@@ -275,6 +297,11 @@ if($use_current_login){
 }else if(isset($action) && isset($module) && $action=="Authenticate" && $module=="Users"){
 	$log->debug("We are authenticating user now");
 }else{
+  // Hook:Maestrano
+  if ($mno_settings && $mno_settings->sso_enabled) {
+    header("Location: " . $mno_settings->sso_init_url);
+  }
+  
 	if($_REQUEST['action'] != 'Logout' && $_REQUEST['action'] != 'Login'){
 		$_SESSION['lastpage'] = $_SERVER['QUERY_STRING']; 
 	}
