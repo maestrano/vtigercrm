@@ -260,7 +260,7 @@ class MnoSsoBaseUser
     if ($this->setInSession()) {
       $this->session['mno_uid'] = $this->uid;
       $this->session['mno_session'] = $this->sso_session;
-      $this->session['mno_session_recheck'] = $this->sso_session_recheck;
+      $this->session['mno_session_recheck'] = $this->sso_session_recheck->format(DateTime::ISO8601);
     }
   }
   

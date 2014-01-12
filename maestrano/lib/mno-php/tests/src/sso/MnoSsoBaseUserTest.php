@@ -274,7 +274,7 @@ CERTIFICATE;
       $this->assertEquals(1, $sso_user->_called_setInSession);
       $this->assertEquals($sso_user->uid, $session['mno_uid']);
       $this->assertEquals($sso_user->sso_session, $session['mno_session']);
-      $this->assertEquals($sso_user->sso_session_recheck, $session['mno_session_recheck']);
+      $this->assertEquals($sso_user->sso_session_recheck->format(DateTime::ISO8601), $session['mno_session_recheck']);
     }
     
     public function testDummyImplementationForSyncLocalDetails()

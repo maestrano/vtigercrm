@@ -16,7 +16,8 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     public function testObjectInstantiation()
     {
       // Build object
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => time());
+      $date = new DateTime();
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $date->format(DateTime::ISO8601));
       $mno_session = new MnoSsoSession($this->_mno_settings, $session);
       
       // Test attributes
@@ -24,13 +25,14 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
       $this->assertEquals($session, $mno_session->session);
       $this->assertEquals($session['mno_uid'], $mno_session->uid);
       $this->assertEquals($session['mno_session'], $mno_session->token);
-      $this->assertEquals($session['mno_session_recheck'], $mno_session->recheck);
+      $this->assertEquals(new DateTime($session['mno_session_recheck']), $mno_session->recheck);
     }
     
     public function testFunctionRemoteCheckRequiredWhenRequired()
     {
       // Build object
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $date = new DateTime();
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $date->format(DateTime::ISO8601));
       $mno_session = new MnoSsoSession($this->_mno_settings, $session);
       
       // Test return value
@@ -42,7 +44,7 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
       // Build object
       $future_date = new DateTime();
       $future_date->add(new DateInterval('P1D'));
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $future_date);
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $future_date->format(DateTime::ISO8601));
       $mno_session = new MnoSsoSession($this->_mno_settings, $session);
       
       // Test return value
@@ -52,7 +54,8 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     public function testFunctionSessionCheckUrl()
     {
       // Build object via mocking (need stubbing for fetchUrl)
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $date = new DateTime();
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $date->format(DateTime::ISO8601));
       $mno_session = new MnoSsoSession($this->_mno_settings, $session);
       
       
@@ -64,7 +67,8 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     public function testFunctionPerformRemoteCheckWhenValid() 
     {
       // Build object via mocking (need stubbing for fetchUrl)
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $date = new DateTime();
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $date->format(DateTime::ISO8601));
       $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
       
       // Stub remote content
@@ -81,7 +85,8 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     public function testFunctionPerformRemoteCheckWhenInvalid() 
     {
       // Build object via mocking (need stubbing for fetchUrl)
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $date = new DateTime();
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $date->format(DateTime::ISO8601));
       $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
       
       // Stub remote content
@@ -99,7 +104,8 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     public function testFunctionIsValidWhenSessionValid()
     {
       // Build object via mocking (need stubbing for fetchUrl)
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $date = new DateTime();
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $date->format(DateTime::ISO8601));
       $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
       
       // Stub remote content
@@ -116,7 +122,8 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     public function testFunctionIsValidWhenSessionInvalid()
     {
       // Build object via mocking (need stubbing for fetchUrl)
-      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $date = new DateTime();
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => $date->format(DateTime::ISO8601));
       $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
       
       // Stub remote content

@@ -52,7 +52,7 @@ class MnoSsoSession
       $this->session = & $session;
       $this->uid = $session['mno_uid'];
       $this->token = $session['mno_session'];
-      $this->recheck = $session['mno_session_recheck'];
+      $this->recheck = new DateTime($session['mno_session_recheck']);
   }
   
   /**
