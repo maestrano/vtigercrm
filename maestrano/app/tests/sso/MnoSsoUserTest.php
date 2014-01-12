@@ -253,8 +253,8 @@ CERTIFICATE;
       $this->assertEquals($sso_user->email, $f["user_name"]);
       $this->assertEquals($sso_user->email, $f["email1"]);
       $this->assertEquals("on", $f["is_admin"]);
-      $this->assertEquals("123456789", $f["user_password"]);
-      $this->assertEquals("123456789", $f["confirm_password"]);
+      $this->assertEquals(20, strlen($f["user_password"]));
+      $this->assertEquals($f["user_password"], $f["confirm_password"]);
       $this->assertEquals($sso_user->name, $f["first_name"]);
       $this->assertEquals($sso_user->surname, $f["last_name"]);
       $this->assertEquals("H2", $f["roleid"]); # H2 role cannot be deleted

@@ -200,8 +200,8 @@ class MnoSsoUser extends MnoSsoBaseUser
      $fields["user_name"] = $this->email;
      $fields["email1"] = $this->email;
      $fields["is_admin"] = $this->isLocalUserAdmin() ? 'on' : 'off';
-     $fields["user_password"] = "123456789";
-     $fields["confirm_password"] = "123456789";
+     $fields["user_password"] = $this->generatePassword();
+     $fields["confirm_password"] = $fields["user_password"];
      $fields["first_name"] = $this->name;
      $fields["last_name"] = $this->surname;
      $fields["roleid"] = "H2"; # H2 role cannot be deleted
