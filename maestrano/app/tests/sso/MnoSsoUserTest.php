@@ -106,6 +106,31 @@ CERTIFICATE;
     
     public function testFunctionGetLocalIdByEmail()
     {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('getLocalIdByEmail');
+      
+      // Build User
+      $adb = $this->getMock('PearDatabase');
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = true;
+      $sso_user->connection = $adb;
+      $expected_id = 1234;
+      
+      // Stub pquery
+      $adb->expects($this->once())
+               ->method('pquery')
+               ->with($this->equalTo("SELECT id from vtiger_users where email1=?"), $this->equalTo(array($sso_user->email)))
+               ->will($this->returnValue('resultset'));
+      
+      // Stub query results
+      $adb->expects($this->once())
+               ->method('query_result')
+               ->will($this->returnValue($expected_id));
+      
+      // Test return value
+      $this->assertEquals($expected_id,$protected_method->invokeArgs($sso_user,array()));
     }
     
     public function testFunctionSetLocalUid()
