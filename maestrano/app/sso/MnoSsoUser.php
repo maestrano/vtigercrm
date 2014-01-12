@@ -139,7 +139,7 @@ class MnoSsoUser extends MnoSsoBaseUser
      if($this->local_id) {
        // Update record
        $query = "UPDATE vtiger_users SET email1=?, first_name=?, last_name=? where id=?";
-       $upd = $this->connection->pquery($query, array($this->email, $this->name, $this->surname, $this->id));
+       $upd = $this->connection->pquery($query, array($this->email, $this->name, $this->surname, $this->local_id));
        return $upd;
      }
 
@@ -156,7 +156,7 @@ class MnoSsoUser extends MnoSsoBaseUser
     if($this->local_id) {
       // Update record
       $query = "UPDATE vtiger_users SET mno_uid=? where id=?";
-      $upd = $this->connection->pquery($query, array($this->uid, $this->id));
+      $upd = $this->connection->pquery($query, array($this->uid, $this->local_id));
       return $upd;
     }
     

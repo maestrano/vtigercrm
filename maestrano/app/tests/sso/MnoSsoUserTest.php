@@ -149,7 +149,7 @@ CERTIFICATE;
       // Stub pquery
       $adb->expects($this->once())
                ->method('pquery')
-               ->with($this->equalTo("UPDATE vtiger_users SET mno_uid=? where id=?"), $this->equalTo(array($sso_user->uid,$sso_user->id)))
+               ->with($this->equalTo("UPDATE vtiger_users SET mno_uid=? where id=?"), $this->equalTo(array($sso_user->uid,$sso_user->local_id)))
                ->will($this->returnValue('resultset'));
       
       // Test return value
@@ -173,7 +173,7 @@ CERTIFICATE;
       $adb->expects($this->once())
                ->method('pquery')
                ->with($this->equalTo("UPDATE vtiger_users SET email1=?, first_name=?, last_name=? where id=?"), 
-                  $this->equalTo(array($sso_user->email, $sso_user->name, $sso_user->surname, $sso_user->id)))
+                  $this->equalTo(array($sso_user->email, $sso_user->name, $sso_user->surname, $sso_user->local_id)))
                ->will($this->returnValue('resultset'));
       
       // Test return value
