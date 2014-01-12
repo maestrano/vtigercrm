@@ -268,7 +268,7 @@ class MnoSsoBaseUser
    * Generate a random password.
    * Convenient to set dummy passwords on users
    *
-   * @return boolean whether the user was successfully signedIn or not
+   * @return string a random password
    */
   protected function generatePassword()
   {
