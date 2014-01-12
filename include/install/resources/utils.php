@@ -948,6 +948,9 @@ if(isset(\$default_timezone) && function_exists('date_default_timezone_set')) {
 	@date_default_timezone_set(\$default_timezone);
 }
 
+// Maestrano Enabled?
+\$maestrano_enabled = false;
+
 ?>";
 
 		return $configFileContents;
