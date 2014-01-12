@@ -257,6 +257,19 @@ CERTIFICATE;
       $this->assertEquals(0, $sso_user->_called_setLocalUid);
     }
     
+    public function testFunctionGeneratePassword()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('generatePassword');
+      
+      // Build user
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      
+      // Test return value
+      $this->assertEquals(20, strlen($protected_method->invokeArgs($sso_user,array())));
+    }
+    
     public function testFunctionSignIn()
     {
       // Build Session

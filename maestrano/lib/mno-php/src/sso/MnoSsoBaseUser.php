@@ -265,6 +265,23 @@ class MnoSsoBaseUser
   }
   
   /**
+   * Generate a random password.
+   * Convenient to set dummy passwords on users
+   *
+   * @return boolean whether the user was successfully signedIn or not
+   */
+  protected function generatePassword()
+  {
+    $length = 20;
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $randomString;
+  }
+  
+  /**
    * Set user in session. Called by signIn method.
    * This method should be overriden in MnoSsoUser to
    * reflect the app specific way of putting an authenticated
