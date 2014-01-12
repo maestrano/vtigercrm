@@ -16,8 +16,7 @@ require MAESTRANO_ROOT . '/app/init/_config_loader.php'; //set $mno_settings var
 //-----------------------------------------------
 // Require your app specific files here
 //-----------------------------------------------
-//define('APP_DIR', '../../../');
-define('APP_DIR', '/Users/Arnaud/Sites/apps-dev/app-vtigercrm');
+define('APP_DIR', '../../../');
 chdir(APP_DIR);
 require 'modules/Users/Users.php';
 
