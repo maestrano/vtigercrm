@@ -49,8 +49,9 @@ session_destroy();
 define("IN_LOGIN", true);
 
 // Hook:Maestrano
-if ($mno_settings && $mno_settings->sso_enabled) {
-  header("Location: " . $mno_settings->sso_access_logout_url);
+$maestrano = MaestranoService::getInstance();
+if ($maestrano->isSsoEnabled()) {
+  header("Location: " . $maestrano->getSsoLogoutUrl());
 } else {
   header("Location: index.php?action=Login&module=Users");
 }
