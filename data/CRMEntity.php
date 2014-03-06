@@ -27,6 +27,9 @@ require_once('include/utils/utils.php');
 require_once('include/utils/UserInfoUtil.php');
 require_once("include/Zend/Json.php");
 
+error_log("at top of CRMEntity class");
+//require_once('maestrano/app/init/soa.php');
+
 class CRMEntity {
 
 	var $ownedby;
@@ -61,8 +64,9 @@ class CRMEntity {
 	function saveentity($module, $fileid = '') {
 		global $current_user, $adb; //$adb added by raju for mass mailing
 		$insertion_mode = $this->mode;
-
+		
 		$columnFields = $this->column_fields;
+		
 		$anyValue = false;
 		foreach ($columnFields as $value) {
 			if(!empty($value)) {
@@ -70,26 +74,29 @@ class CRMEntity {
 				break;
 			}
 		}
+		
 		if(!$anyValue) {
 			die("<center>" .getTranslatedString('LBL_MANDATORY_FIELD_MISSING')."</center>");
 		}
 
 		$this->db->println("TRANS saveentity starts $module");
 		$this->db->startTransaction();
-
+		error_log("========= just before insert into CRM-Entity");
 
 		foreach ($this->tab_name as $table_name) {
-
 			if ($table_name == "vtiger_crmentity") {
+				error_log("========= saving into CRM-Entity");
 				$this->insertIntoCrmEntity($module, $fileid);
 			} else {
+				error_log("========= saving into table: " . $table_name);
 				$this->insertIntoEntityTable($table_name, $module, $fileid);
 			}
 		}
-
+		error_log("========= just after save loop");
 		//Calling the Module specific save code
 		$this->save_module($module);
-
+		
+		
 		$this->db->completeTransaction();
 		$this->db->println("TRANS saveentity ends");
 
@@ -285,18 +292,24 @@ class CRMEntity {
 		// It is empty for modules like Invoice/Quotes/SO/PO which do not have Assigned to field
 		if ($ownerid === '')
 			$ownerid = 0;
-
+			
 		if ($module == 'Events') {
 			$module = 'Calendar';
 		}
 		if ($this->mode == 'edit') {
 			$description_val = from_html($this->column_fields['description'], ($insertion_mode == 'edit') ? true : false);
-
-			require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			
+			if (isset($current_user->id)) {
+			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			} else {
+			  $is_admin = true;
+			}
+			
 			$tabid = getTabid($module);
+			
 			if ($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] == 0) {
 				$sql = "update vtiger_crmentity set smownerid=?,modifiedby=?,description=?, modifiedtime=? where crmid=?";
-				$params = array($ownerid, $current_user->id, $description_val, $adb->formatDate($date_var, true), $this->id);
+				$params = array($ownerid, $current_user->id, $description_val, $adb->formatDate($date_var, true), $this->id);			
 			} else {
 				$profileList = getCurrentUserProfileList();
 				$perm_qry = "SELECT columnname FROM vtiger_field INNER JOIN vtiger_profile2field ON vtiger_profile2field.fieldid = vtiger_field.fieldid INNER JOIN vtiger_def_org_field ON vtiger_def_org_field.fieldid = vtiger_field.fieldid WHERE vtiger_field.tabid = ? AND vtiger_profile2field.visible = 0 AND vtiger_profile2field.readonly = 0 AND vtiger_profile2field.profileid IN (" . generateQuestionMarks($profileList) . ") AND vtiger_def_org_field.visible = 0 and vtiger_field.tablename='vtiger_crmentity' and vtiger_field.displaytype in (1,3) and vtiger_field.presence in (0,2);";
@@ -391,7 +404,14 @@ class CRMEntity {
 		if ($insertion_mode == 'edit') {
 			$update = array();
 			$update_params = array();
-			require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			
+			if (isset($current_user->id)) {
+			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			} else {
+			  $is_admin = true;
+			}
+			
+			error_log("==== In InsertIntoTable | Current User Id: " . $current_user->id);
 			if ($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] == 0) {
 				$sql = "select * from vtiger_field where tabid in (" . generateQuestionMarks($tabid) . ") and tablename=? and displaytype in (1,3) and presence in (0,2) group by columnname";
 				$params = array($tabid, $table_name);
@@ -781,29 +801,42 @@ class CRMEntity {
 	 * @param $module -- module:: Type varchar
 	 */
 	function save($module_name, $fileid = '') {
+		// REMOVE ME
+		error_log("CRMEntity save",0);
+		// END REMOVE ME
+	
 		global $log;
 		$log->debug("module name is " . $module_name);
 
 		//Event triggering code
 		require_once("include/events/include.inc");
 		global $adb;
-
+		
 		$em = new VTEventsManager($adb);
 		// Initialize Event trigger cache
 		$em->initTriggerCache();
 		$entityData = VTEntityData::fromCRMEntity($this);
-
+		
 		$em->triggerEvent("vtiger.entity.beforesave.modifiable", $entityData);
 		$em->triggerEvent("vtiger.entity.beforesave", $entityData);
 		$em->triggerEvent("vtiger.entity.beforesave.final", $entityData);
+		
+		
+		
 		//Event triggering code ends
 		//GS Save entity being called with the modulename as parameter
 		$this->saveentity($module_name, $fileid);
-
-		//Event triggering code
-		$em->triggerEvent("vtiger.entity.aftersave", $entityData);
-		$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
-		//Event triggering code ends
+		
+		error_log("/////////////////////////////////got here" . $module_name);
+		
+		    //Event triggering code
+		    $em->triggerEvent("vtiger.entity.aftersave", $entityData);
+		    $em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
+		    //Event triggering code ends
+		
+		// REMOVE ME
+		error_log("end CRMEntity save", 0);
+		// END REMOVE ME
 	}
 
 	function process_list_query($query, $row_offset, $limit = -1, $max_per_page = -1) {
@@ -910,6 +943,7 @@ class CRMEntity {
 		$date_var = date("Y-m-d H:i:s");
 		$query = "UPDATE vtiger_crmentity set deleted=1,modifiedtime=?,modifiedby=? where crmid=?";
 		$this->db->pquery($query, array($this->db->formatDate($date_var, true), $current_user->id, $id), true, "Error marking record deleted: ");
+                error_log("marked deleted");
 	}
 
 	function retrieve_by_string_fields($fields_array, $encode = true) {
