@@ -56,10 +56,23 @@ class MnoSsoUser extends MnoSsoBaseUser
    */
   protected function setInSession()
   {
+    
     if ($this->local_id) {
+        // Get user language
+        $lang = 'en_us';
+        $query = "SELECT language from vtiger_users where id=?";
+        $result = $this->connection->pquery($query, array($this->local_id));
+        if ($result) {
+          $tmp_lang = $this->connection->query_result($result,0,'id');
+          if ($tmp_lang && $tmp_lang != '') {
+            $lang = $tmp_lang;
+          }
+        }
+        
         // Set session
         $this->session['authenticated_user_id'] = $this->local_id;
         $this->session['app_unique_key'] = $this->app_unique_key;
+        $this->session['authenticated_user_language'] = $lang;
         
         return true;
     } else {
