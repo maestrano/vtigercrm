@@ -96,8 +96,9 @@ class MnoSsoUser extends MnoSsoBaseUser
       // Build local user
       $this->buildLocalUser();
       
-      // Save user
-      $lid = $this->_user->save('Users');
+      // Save user and get id
+      $this->_user->save('Users');
+      $lid = $this->_user->id;
     }
     
     return $lid;
