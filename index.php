@@ -118,7 +118,7 @@ if (is_file('config_override.php'))
 
 // Hook:Maestrano
 // Load Maestrano
-require 'maestrano/app/init/base.php';
+require_once 'maestrano/app/init/base.php';
 
 $maestrano = MaestranoService::getInstance();
 // Require authentication straight away if intranet

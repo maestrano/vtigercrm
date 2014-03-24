@@ -2,6 +2,12 @@
 // Get Maestrano SSO Host
 $mno_sso_host = 'http://localhost:3000';
 
+// Maestrano SOA Host
+$mno_soa_host = 'http://192.168.15.23:8084';
+
+// Maestrano REST API version
+$mno_soa_version = 'v1';
+
 // Endpoint to reach for SSO Identification
 $mno_settings->sso_url = $mno_sso_host . '/api/v1/auth/saml';
 
@@ -16,6 +22,9 @@ $mno_settings->sso_access_logout_url = $mno_sso_host . '/app_logout';
 
 // Intranet Mode - If enabled then ALL pages require authentication
 $mno_settings->sso_intranet_mode = false;
+
+// SOA integration URL
+$mno_settings->soa_url = $mno_soa_host . '/'. $mno_soa_version .'/';
 
 // Maestrano X509 Certificate
 $mno_settings->sso_x509_certificate = <<<CERTIFICATE

@@ -3,6 +3,9 @@
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
 $full_host = $protocol . $_SERVER['HTTP_HOST'];
 
+// Id of the application
+$mno_settings->app_id = '211';
+
 // Name of your application
 $mno_settings->app_name = 'vtigercrm';
 
@@ -14,3 +17,6 @@ $mno_settings->sso_init_url = $full_host . '/maestrano/auth/saml/index.php';
 
 // SSO processing url
 $mno_settings->sso_return_url = $full_host . '/maestrano/auth/saml/consume.php';
+
+// Enable Maestrano SSO for this app
+$mno_settings->soa_enabled = true;

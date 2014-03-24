@@ -31,8 +31,12 @@ require_once('modules/Emails/Emails.php');
 require_once('include/utils/utils.php');
 require_once('user_privileges/default_module_view.php');
 
+require_once('maestrano/app/init/soa.php');
+
 // Account is used to store vtiger_account information.
 class Accounts extends CRMEntity {
+	var $debug = false;
+
 	var $log;
 	var $db;
 	var $table_name = "vtiger_account";
@@ -1253,6 +1257,40 @@ class Accounts extends CRMEntity {
 			$params = array($id, $return_module, $return_id, $id, $return_module, $return_id);
 			$this->db->pquery($sql, $params);
 		}
+	}
+
+	function save($module_name,$fileid='',$push_to_maestrano=true) {
+            // call super
+            $result = parent::save($module_name,$fileid);
+
+            try {
+                if ($push_to_maestrano) {
+                    // Get Maestrano Service
+                    $maestrano = MaestranoService::getInstance();
+
+                    if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+                        $mno_org=new MnoSoaOrganization(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+                        $mno_org->send($this);
+                    }
+                }
+            } catch (Exception $ex) {
+                // skip
+            }
+
+            return $result;
+	}
+
+	function mark_deleted($id) {
+                parent::mark_deleted($id);
+                
+                // Get Maestrano Service
+                $maestrano = MaestranoService::getInstance();
+                
+                // DISABLED DELETE NOTIFICATIONS
+                if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+                  $mno_org=new MnoSoaOrganization($this->db);
+                  $mno_org->sendDeleteNotification($id);
+                }
 	}
 
 	function save_related_module($module, $crmid, $with_module, $with_crmids) {

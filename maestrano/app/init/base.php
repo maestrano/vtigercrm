@@ -9,6 +9,7 @@ if (!defined('MAESTRANO_ROOT')) {
 //-----------------------------------------------
 // Load Libraries & Settings
 //-----------------------------------------------
-require MAESTRANO_ROOT . '/app/init/_lib_loader.php';
-require MAESTRANO_ROOT . '/app/init/_config_loader.php'; //configure MaestranoService
+require_once MAESTRANO_ROOT . '/app/init/_lib_loader.php';
+require_once MAESTRANO_ROOT . '/app/init/_config_loader.php'; //configure MaestranoService
+
   

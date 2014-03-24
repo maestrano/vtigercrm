@@ -292,7 +292,12 @@ class CRMEntity {
 		if ($this->mode == 'edit') {
 			$description_val = from_html($this->column_fields['description'], ($insertion_mode == 'edit') ? true : false);
 
-			require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			if (isset($current_user->id)) {
+			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			} else {
+			  $is_admin = true;
+			}
+
 			$tabid = getTabid($module);
 			if ($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] == 0) {
 				$sql = "update vtiger_crmentity set smownerid=?,modifiedby=?,description=?, modifiedtime=? where crmid=?";
@@ -391,7 +396,12 @@ class CRMEntity {
 		if ($insertion_mode == 'edit') {
 			$update = array();
 			$update_params = array();
-			require('user_privileges/user_privileges_' . $current_user->id . '.php');
+
+			if (isset($current_user->id)) {
+			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			} else {
+			  $is_admin = true;
+			}
 			if ($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] == 0) {
 				$sql = "select * from vtiger_field where tabid in (" . generateQuestionMarks($tabid) . ") and tablename=? and displaytype in (1,3) and presence in (0,2) group by columnname";
 				$params = array($tabid, $table_name);

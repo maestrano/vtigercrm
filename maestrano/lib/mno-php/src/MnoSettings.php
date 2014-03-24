@@ -7,12 +7,17 @@
  */
 class MnoSettings
 {
-    
+    /**
+     * The id of the application.
+     * @var string
+     */
+    public $app_id = '';
+
     /**
      * The name of the application.
      * @var string
      */
-    public $app_name = 'myapp';
+    public $app_name = '';
     
     /**
      * Is SSO enabled for this application
@@ -77,6 +82,18 @@ class MnoSettings
      * @var string
      */
     public $sso_session_check_url = '';
+
+    /**
+     * Maestrano integration enabled for this application
+     * @var boolean
+     */
+    public $soa_enabled = false;
+    
+    /**
+     * Maestrano integration url
+     * @var string
+     */
+    public $soa_url = '';
     
     /**
      * Return a settings object for php-saml
