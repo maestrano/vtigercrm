@@ -1262,7 +1262,7 @@ class Accounts extends CRMEntity {
 	function save($module_name,$fileid='',$push_to_maestrano=true) {
             // call super
             $result = parent::save($module_name,$fileid);
-
+            
             try {
                 if ($push_to_maestrano) {
                     // Get Maestrano Service
@@ -1288,7 +1288,7 @@ class Accounts extends CRMEntity {
                 
                 // DISABLED DELETE NOTIFICATIONS
                 if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-                  $mno_org=new MnoSoaOrganization($this->db);
+                  $mno_org=new MnoSoaOrganization($this->db, new MnoSoaBaseLogger());
                   $mno_org->sendDeleteNotification($id);
                 }
 	}

@@ -1,5 +1,5 @@
 <?php
-// Get Maestrano SSO Host
+// Maestrano SSO Host
 $mno_sso_host = 'http://localhost:3000';
 
 // Maestrano SOA Host

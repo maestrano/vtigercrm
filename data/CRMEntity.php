@@ -790,7 +790,7 @@ class CRMEntity {
 	/** Function to saves the values in all the tables mentioned in the class variable $tab_name for the specified module
 	 * @param $module -- module:: Type varchar
 	 */
-	function save($module_name, $fileid = '') {
+	function save($module_name, $fileid = '') {	
 		global $log;
 		$log->debug("module name is " . $module_name);
 
@@ -811,8 +811,8 @@ class CRMEntity {
 		$this->saveentity($module_name, $fileid);
 
 		//Event triggering code
-		$em->triggerEvent("vtiger.entity.aftersave", $entityData);
-		$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
+		//$em->triggerEvent("vtiger.entity.aftersave", $entityData);
+		//$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
 		//Event triggering code ends
 	}
 

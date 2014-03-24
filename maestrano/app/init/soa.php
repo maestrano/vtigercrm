@@ -23,3 +23,7 @@ require_once APP_DIR . '/modules/Contacts/Contacts.php';
 // automatically be passed to the MnoSsoUser object
 // for construction
 
+$opts = array();
+
+// Set database connection
+$opts['db_connection'] = PearDatabase::getInstance();

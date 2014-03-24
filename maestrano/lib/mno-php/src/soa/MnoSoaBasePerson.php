@@ -40,71 +40,71 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
     *           STATUS_DELETED_ID -> Deleted identifier
     */
     protected function pullId() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushName() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullName() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushBirthDate() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullBirthDate() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushGender() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullGender() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushAddresses() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullAddresses() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushEmails() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullEmails() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushTelephones() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullTelephones() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushWebsites() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullWebsites() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushEntity() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pullEntity() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function pushRole() {
@@ -116,7 +116,7 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
     }
     
     protected function saveLocalEntity($push_to_maestrano, $status) {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
+		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
     protected function getLocalEntityIdentifier() {
@@ -129,25 +129,25 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
     * @return Organization the organization json object
     */
     protected function build() {
-	$this->_log->debug(__FUNCTION__ . " start build function");
-	$this->pushId();
-	$this->_log->debug(__FUNCTION__ . " after Id");
-	$this->pushName();
-	$this->_log->debug(__FUNCTION__ . " after Name");
-	$this->pushBirthDate();
-	$this->_log->debug(__FUNCTION__ . " after Birth Date");
-	$this->pushGender();
-	$this->_log->debug(__FUNCTION__ . " after Annual Revenue");
-	$this->pushAddresses();
-	$this->_log->debug(__FUNCTION__ . " after Addresses");
-	$this->pushEmails();
-	$this->_log->debug(__FUNCTION__ . " after Emails");
-	$this->pushTelephones();
-	$this->_log->debug(__FUNCTION__ . " after Telephones");
-	$this->pushWebsites();
-	$this->_log->debug(__FUNCTION__ . " after Websites");
-	$this->pushEntity();
-	$this->_log->debug(__FUNCTION__ . " after Entity");
+		$this->_log->debug(__FUNCTION__ . " start build function");
+		$this->pushId();
+		$this->_log->debug(__FUNCTION__ . " after Id");
+		$this->pushName();
+		$this->_log->debug(__FUNCTION__ . " after Name");
+		$this->pushBirthDate();
+		$this->_log->debug(__FUNCTION__ . " after Birth Date");
+		$this->pushGender();
+		$this->_log->debug(__FUNCTION__ . " after Annual Revenue");
+		$this->pushAddresses();
+		$this->_log->debug(__FUNCTION__ . " after Addresses");
+		$this->pushEmails();
+		$this->_log->debug(__FUNCTION__ . " after Emails");
+		$this->pushTelephones();
+		$this->_log->debug(__FUNCTION__ . " after Telephones");
+		$this->pushWebsites();
+		$this->_log->debug(__FUNCTION__ . " after Websites");
+		$this->pushEntity();
+		$this->_log->debug(__FUNCTION__ . " after Entity");
         $this->pushRole();
         $this->_log->debug(__FUNCTION__ . " after Role");
         
@@ -161,16 +161,16 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
         if ($this->_entity != null) { $msg['person']->entity = $this->_entity; }
         if ($this->_role != null) { $msg['person']->role = $this->_role; }
 	
-	$this->_log->debug(__FUNCTION__ . " after creating message array");
-	$result = json_encode($msg['person']);
+		$this->_log->debug(__FUNCTION__ . " after creating message array");
+		$result = json_encode($msg['person']);
 	
-	$this->_log->debug(__FUNCTION__ . " result = " . $result);
+		$this->_log->debug(__FUNCTION__ . " result = " . $result);
 	
-	return json_encode($msg['person']);
+		return json_encode($msg['person']);
     }
     
     protected function persist($mno_entity) {
-        $this->_log->debug(__FUNCTION__ . " mno_entity = " . json_encode($mno_entity));
+        $this->_log->debug(__CLASS__ . " " . __FUNCTION__ . " mno_entity = " . json_encode($mno_entity));
         
         if (!empty($mno_entity->person)) {
             $mno_entity = $mno_entity->person;
@@ -224,10 +224,15 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
 
                 $this->saveLocalEntity(false, $status);
             }
-            if ($is_new_id) {
-                $this->addIdMapEntry($this->_local_entity->id, $this->_id);
+            
+            $local_entity_id = $this->getLocalEntityIdentifier();
+            $mno_entity_id = $this->_id;
+            
+            if ($is_new_id && !empty($local_entity_id) && !empty($mno_entity_id)) {
+                $this->addIdMapEntry($local_entity_id, $mno_entity_id);
             }
         }
+        $this->_log->debug(__FUNCTION__ . " end persist");
     }
 }
 

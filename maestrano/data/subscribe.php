@@ -13,8 +13,7 @@ $maestrano = MaestranoService::getInstance();
 
 if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
     $log = new MnoSoaBaseLogger();
-    $log->debug("Subscribe received a notification");
-    
+
     $notification = json_decode(file_get_contents('php://input'), false);
     $notification_entity = strtoupper(trim($notification->entity));
     
@@ -22,13 +21,17 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
     
     switch ($notification_entity) {
 	    case "ORGANIZATIONS":
-		$mno_org = new MnoSoaOrganization(PearDatabase::getInstance(), new MnoSoaBaseLogger());		
-		$mno_org->receiveNotification($notification);
-		break;
-            case "PERSONS":
-                $mno_person = new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());		
-		$mno_person->receiveNotification($notification);
-		break;
+                if (class_exists('MnoSoaOrganization')) {
+                    $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);		
+                    $mno_org->receiveNotification($notification);
+                }
+				break;
+        case "PERSONS":
+                if (class_exists('MnoSoaPerson')) {
+                    $mno_person = new MnoSoaPerson($opts['db_connection'], $log);		
+                    $mno_person->receiveNotification($notification);
+                }
+				break;
     }
 }
 

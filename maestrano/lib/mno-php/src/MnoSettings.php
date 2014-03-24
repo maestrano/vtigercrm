@@ -82,7 +82,7 @@ class MnoSettings
      * @var string
      */
     public $sso_session_check_url = '';
-
+    
     /**
      * Maestrano integration enabled for this application
      * @var boolean

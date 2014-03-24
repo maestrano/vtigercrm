@@ -18,17 +18,17 @@ class MnoSoaBaseDB {
         throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoDB class!');
     }
     
-    public function getMnoIdByLocalIdName($localId, $localEntityName)
+    public function getMnoIdByLocalIdName($local_id, $local_entity_name)
     {
         throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoDB class!');
     }
     
-    public function getLocalIdByMnoIdName($mnoId, $mnoEntityName)
+    public function getLocalIdByMnoIdName($mno_id, $mno_entity_name)
     {
         throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoDB class!');
     }
     
-    public function deleteIdMapEntry($localId, $localEntityName)
+    public function deleteIdMapEntry($local_id, $local_entity_name)
     {
         throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoDB class!');
     }

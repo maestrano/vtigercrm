@@ -75,12 +75,15 @@ class MnoSoaDB extends MnoSoaBaseDB {
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start");
 	$local_entity = null;
         
+        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " mnoId=" . $mnoId . " mnoEntityName=" . $mnoEntityName);
+        
 	// Fetch record
 	$query = "SELECT app_entity_id, app_entity_name, deleted_flag from mno_id_map where mno_entity_guid=? and mno_entity_name=?";
 	$result = $this->_db->pquery($query, array($mnoId, strtoupper($mnoEntityName)));
         
 	// Return id value
 	if ($this->_db->num_rows($result) > 0) {
+            $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " rows found");
             $app_entity_id = trim($this->_db->query_result($result,0,"app_entity_id"));
             $app_entity_name = trim($this->_db->query_result($result,0,"app_entity_name"));
             $deleted_flag = trim($this->_db->query_result($result,0,"deleted_flag"));
@@ -92,6 +95,7 @@ class MnoSoaDB extends MnoSoaBaseDB {
                     "_deleted_flag" => $deleted_flag
                 );
             }
+            $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " local_entity=" . json_encode($local_entity));
 	}
 	
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . "returning mno_entity = ".json_encode($local_entity));

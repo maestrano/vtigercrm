@@ -43,7 +43,7 @@ class MnoSoaOrganization extends MnoSoaBaseOrganization
                 return constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
             } else {
 		$this->_local_entity = new Accounts();
-                $this->getName();
+                $this->pullName();
 		return constant('MnoSoaBaseEntity::STATUS_NEW_ID');
 	    }
 	}
@@ -203,7 +203,9 @@ class MnoSoaOrganization extends MnoSoaBaseOrganization
     }
     
     protected function saveLocalEntity($push_to_maestrano) {
+        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start ");
 	$this->_local_entity->save("Accounts", '', $push_to_maestrano);
+        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
     }
     
     protected function getLocalEntityIdentifier() {
