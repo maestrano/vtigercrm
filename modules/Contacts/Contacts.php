@@ -1424,6 +1424,19 @@ function get_contactsforol($user_name)
 
 	  return $result;
 	}
+        
+        function mark_deleted($id) {
+                parent::mark_deleted($id);
+                
+                // Get Maestrano Service
+                $maestrano = MaestranoService::getInstance();
+                
+                // DISABLED DELETE NOTIFICATIONS
+                if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+                    $mno_org=new MnoSoaPerson($this->db, new MnoSoaBaseLogger());
+                    $mno_org->sendDeleteNotification($id);
+                }
+	}
 
 	function save_related_module($module, $crmid, $with_module, $with_crmids) {
 		$adb = PearDatabase::getInstance();
