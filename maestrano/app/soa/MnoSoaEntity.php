@@ -20,11 +20,11 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
 				$mno_org->receive($organization);
             }
         }
-        if (!empty($msg->persons) && class_exists('MnoSoaPersonContact')) {
+        if (!empty($msg->persons) && class_exists('MnoSoaPerson')) {
             $this->_log->debug(__FUNCTION__ . " has persons");
             foreach ($msg->persons as $person) {
                 $this->_log->debug(__FUNCTION__ .  " person id = " . $person->id);
-                $mno_person = new MnoSoaPersonContact($this->_db, $this->_log);
+                $mno_person = new MnoSoaPerson($this->_db, $this->_log);
                 $mno_person->receive($person);
             }
         }
