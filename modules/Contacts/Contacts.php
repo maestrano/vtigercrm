@@ -30,13 +30,13 @@ require_once('modules/Emails/Emails.php');
 require_once('modules/HelpDesk/HelpDesk.php');
 require_once('user_privileges/default_module_view.php');
 
-require_once('maestrano/app/init/soa.php');
+require_once('maestrano/app/init/base.php');
 
 // Contact is used to store customer information.
 class Contacts extends CRMEntity {
 	var $log;
 	var $db;
-    var $debug = true;
+    var $debug = false;
 
 	var $table_name = "vtiger_contactdetails";
 	var $table_index= 'contactid';

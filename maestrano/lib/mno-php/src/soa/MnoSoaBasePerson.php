@@ -119,7 +119,7 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
 		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
-    protected function getLocalEntityIdentifier() {
+    public function getLocalEntityIdentifier() {
         throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoPerson class!');
     }
     
@@ -224,10 +224,10 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
 
                 $this->saveLocalEntity(false, $status);
             }
-            
+
             $local_entity_id = $this->getLocalEntityIdentifier();
             $mno_entity_id = $this->_id;
-            
+
             if ($is_new_id && !empty($local_entity_id) && !empty($mno_entity_id)) {
                 $this->addIdMapEntry($local_entity_id, $mno_entity_id);
             }

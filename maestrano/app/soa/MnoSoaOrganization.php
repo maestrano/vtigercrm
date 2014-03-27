@@ -12,14 +12,11 @@ class MnoSoaOrganization extends MnoSoaBaseOrganization
 	$id = $this->getLocalEntityIdentifier();
 	
 	if (!empty($id)) {
-	    error_log("id is not empty, id = " . $id);
 	    $mno_id = $this->getMnoIdByLocalId($id);
 	    
 	    if ($this->isValidIdentifier($mno_id)) {
-                error_log("mno id***********************************" . $mno_id->_id);
 		$this->_id = $mno_id->_id;
 	    }
-            error_log("after if statement");
 	}
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end");
     }
@@ -30,7 +27,6 @@ class MnoSoaOrganization extends MnoSoaBaseOrganization
 	    $local_id = $this->getLocalIdByMnoId($this->_id);
 	    
 	    if ($this->isValidIdentifier($local_id)) {
-                error_log("local id***********************************" . $local_id->_id);
                 $this->_local_entity = CRMEntity::getInstance("Accounts");
 		$this->_local_entity->retrieve_entity_info($local_id->_id,"Accounts");
 		vtlib_setup_modulevars("Accounts", $this->_local_entity);
@@ -193,9 +189,7 @@ class MnoSoaOrganization extends MnoSoaBaseOrganization
     }
     
     protected function pushEntity() {
-        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start ");
-        $this->_entity->customer = true;
-        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
+        // DO NOTHING
     }
     
     protected function pullEntity() {
@@ -208,7 +202,7 @@ class MnoSoaOrganization extends MnoSoaBaseOrganization
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
     }
     
-    protected function getLocalEntityIdentifier() {
+    public function getLocalEntityIdentifier() {
         return $this->_local_entity->id;
     }
 }

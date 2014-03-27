@@ -129,7 +129,7 @@ class MnoSoaBaseOrganization extends MnoSoaBaseEntity
 	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
     }
     
-    protected function getLocalEntityIdentifier() {
+    public function getLocalEntityIdentifier() {
         throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
     }
     

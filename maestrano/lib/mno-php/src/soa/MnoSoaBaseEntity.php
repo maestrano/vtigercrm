@@ -56,7 +56,7 @@ class MnoSoaBaseEntity
 		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Entity class!');
     }
     
-    protected function getLocalEntityIdentifier() {
+    public function getLocalEntityIdentifier() {
         throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Entity class!');
     }
         
@@ -87,7 +87,6 @@ class MnoSoaBaseEntity
     
     public function receive($mno_entity) {
         $this->persist($mno_entity);
-        $this->_log->debug(__FUNCTION__ .  " end ");
     }
     
     public function receiveNotification($notification) {
@@ -163,11 +162,11 @@ class MnoSoaBaseEntity
       $this->_log->debug(__FUNCTION__ . " status = ". $status);
       
       if ( $status != 200 ) {
-	    	$this->_log->debug(__FUNCTION__ . " Error: call to URL $url failed with status $status, response $response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl), 0);
+		    $this->_log->debug(__FUNCTION__ . " Error: call to URL $url failed with status $status, response $response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl), 0);
             curl_close($curl);
             return null;
       }
-      
+
       curl_close($curl);
 
       $response = json_decode($response, false);

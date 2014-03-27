@@ -1,7 +1,5 @@
 <?php
 
-error_log("start loading mnosoaperson");
-
 /**
  * Mno Organization Class
  */
@@ -14,7 +12,6 @@ class MnoSoaPerson extends MnoSoaBasePerson
 	$id = $this->getLocalEntityIdentifier();
 	
 	if (!empty($id)) {
-	    error_log("id is not empty, id = " . $id);
 	    $mno_id = $this->getMnoIdByLocalId($id);
 
 	    if ($this->isValidIdentifier($mno_id)) {
@@ -175,9 +172,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
     }
     
     protected function pushEntity() {
-	$this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start ");
-        $this->_entity->customer = true;
-        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
+	// DO NOTHING
     }
     
     protected function pullEntity() {
@@ -189,33 +184,32 @@ class MnoSoaPerson extends MnoSoaBasePerson
         
         if (!empty($local_id)) {
             $mno_id = $this->getMnoIdByLocalIdName($local_id, 'accounts');
-        } else {
-            $this->_role = null;
-            return;
-        }
         
-        if ($this->isValidIdentifier($mno_id)) {
-            $this->_log->debug(__FUNCTION__ . " mno_id = " . json_encode($mno_id));
-            $this->_role->organization->id = $mno_id->_id;
-            $this->_role->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['title']);
-        } else if ($this->isDeletedIdentifier($mno_id)) {
-            // do not update
-            return;
-        } else {
-            $org_contact = CRMEntity::getInstance("Accounts");
-            $org_contact->retrieve_entity_info($local_id,"Accounts");
-            vtlib_setup_modulevars("Accounts", $this->_local_entity);
-            $org_contact->id = $local_id;
-            
-            $organization = new MnoSoaOrganization($this->_db, $this->_log);		
-            $organization->send($org_contact);
+			if ($this->isValidIdentifier($mno_id)) {
+		        $this->_log->debug(__FUNCTION__ . " mno_id = " . json_encode($mno_id));
+		        $this->_role->organization->id = $mno_id->_id;
+		        $this->_role->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['title']);
+		    } else if ($this->isDeletedIdentifier($mno_id)) {
+		        // do not update
+		        return;
+		    } else {
+		        $org_contact = CRMEntity::getInstance("Accounts");
+		        $org_contact->retrieve_entity_info($local_id,"Accounts");
+		        vtlib_setup_modulevars("Accounts", $this->_local_entity);
+		        $org_contact->id = $local_id;
+		        
+		        $organization = new MnoSoaOrganization($this->_db, $this->_log);		
+		        $organization->send($org_contact);
 
-            $mno_id = $this->getMnoIdByLocalId($local_id);
+		        $mno_id = $this->getMnoIdByLocalId($local_id);
 
-            if ($this->isValidIdentifier($mno_id)) {
-                $this->_role->organization->id = $mno_id->_id;
-                $this->_role->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['title']);
-            }
+		        if ($this->isValidIdentifier($mno_id)) {
+		            $this->_role->organization->id = $mno_id->_id;
+		            $this->_role->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['title']);
+		        }
+			}
+		} else {
+            $this->_role = (object) array();
         }
     }
     
@@ -238,7 +232,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
                 $notification->id = $this->_role->organization->id;
                 $organization = new MnoSoaOrganization($this->_db, $this->_log);		
                 $organization->receiveNotification($notification);
-                $this->_local_entity->column_fields['account_id'] = $this->pull_set_or_delete_value($organization->_local_entity->id);
+                $this->_local_entity->column_fields['account_id'] = $this->pull_set_or_delete_value($organization->getLocalEntityIdentifier());
                 $this->_local_entity->column_fields['title'] = $this->pull_set_or_delete_value($this->_role->title);
             }            
         }
@@ -274,7 +268,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
         }
     }
     
-    protected function getLocalEntityIdentifier() {
+    public function getLocalEntityIdentifier() {
         return $this->_local_entity->id;
     }
 }
