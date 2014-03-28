@@ -199,14 +199,16 @@ class MnoSoaPerson extends MnoSoaBasePerson
 		        $org_contact->id = $local_id;
 		        
 		        $organization = new MnoSoaOrganization($this->_db, $this->_log);		
-		        $organization->send($org_contact);
+		        $status = $organization->send($org_contact);
 
-		        $mno_id = $this->getMnoIdByLocalId($local_id);
+				if ($status) {
+				    $mno_id = $this->getMnoIdByLocalId($local_id);
 
-		        if ($this->isValidIdentifier($mno_id)) {
-		            $this->_role->organization->id = $mno_id->_id;
-		            $this->_role->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['title']);
-		        }
+				    if ($this->isValidIdentifier($mno_id)) {
+				        $this->_role->organization->id = $mno_id->_id;
+				        $this->_role->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['title']);
+				    }
+				}
 			}
 		} else {
             $this->_role = (object) array();
@@ -231,9 +233,11 @@ class MnoSoaPerson extends MnoSoaBasePerson
                 $notification->entity = "organizations";
                 $notification->id = $this->_role->organization->id;
                 $organization = new MnoSoaOrganization($this->_db, $this->_log);		
-                $organization->receiveNotification($notification);
-                $this->_local_entity->column_fields['account_id'] = $this->pull_set_or_delete_value($organization->getLocalEntityIdentifier());
-                $this->_local_entity->column_fields['title'] = $this->pull_set_or_delete_value($this->_role->title);
+                $status = $organization->receiveNotification($notification);
+				if ($status) {
+					$this->_local_entity->column_fields['account_id'] = $this->pull_set_or_delete_value($organization->getLocalEntityIdentifier());
+                	$this->_local_entity->column_fields['title'] = $this->pull_set_or_delete_value($this->_role->title);
+				}
             }            
         }
     }

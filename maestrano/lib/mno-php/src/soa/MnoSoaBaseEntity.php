@@ -61,28 +61,34 @@ class MnoSoaBaseEntity
     }
         
     public function send($local_entity) {
-		$this->_log->debug(__FUNCTION__ . " start");
+	$this->_log->debug(__FUNCTION__ . " start");
         
-		$this->_local_entity = $local_entity;
-		$message = $this->build();
+	$this->_local_entity = $local_entity;
+	$message = $this->build();
         $mno_had_no_id = empty($this->_id);
         
-		if ($mno_had_no_id) {
+	if ($mno_had_no_id) {
             $this->_log->debug(__FUNCTION__ . " $this->_id = ".$this->_id);
             $response = $this->callMaestrano($this->_create_http_operation, $this->_create_rest_entity_name, $message);
         } else {
             $response = $this->callMaestrano($this->_update_http_operation, $this->_update_rest_entity_name . '/' . $this->_id, $message);
         }
+        
+        if (empty($response)) {
+            return false;
+        }
 	
         $local_entity_id = $this->getLocalEntityIdentifier();
         $local_entity_now_has_id = !empty($local_entity_id);
         
-		$mno_response_id = $response->id;
+	$mno_response_id = $response->id;
         $mno_response_has_id = !empty($mno_response_id);
 	
         if ($mno_had_no_id && $local_entity_now_has_id && $mno_response_has_id) {
-	    	$this->addIdMapEntry($local_entity_id,$mno_response_id);
-		}
+	    $this->addIdMapEntry($local_entity_id,$mno_response_id);
+	}
+        
+        return true;
     }
     
     public function receive($mno_entity) {
@@ -90,10 +96,12 @@ class MnoSoaBaseEntity
     }
     
     public function receiveNotification($notification) {
-		$mno_entity = $this->callMaestrano($this->_receive_http_operation, $this->_receive_rest_entity_name . '/' . $notification->id);
-        if (!empty($mno_entity)) {
-            $this->receive($mno_entity);
-        }
+	$mno_entity = $this->callMaestrano($this->_receive_http_operation, $this->_receive_rest_entity_name . '/' . $notification->id);
+        
+        if (empty($mno_entity)) { return false; }
+        
+        $this->receive($mno_entity);
+        return true;
     }
     
     public function sendDeleteNotification($local_id) {
@@ -104,12 +112,17 @@ class MnoSoaBaseEntity
             $this->_log->debug(__FUNCTION__ . " corresponding mno_id = " . $mno_id->_id);
             
             if ($this->_enable_delete_notifications) {
-                $this->callMaestrano($this->_delete_http_operation, $this->_delete_rest_entity_name . '/' . $mno_id->_id);
+                $response = $this->callMaestrano($this->_delete_http_operation, $this->_delete_rest_entity_name . '/' . $mno_id->_id);
+                if (empty($response)) { 
+                    return false; 
+                }
             }
             
             $this->deleteIdMapEntry($local_id);
             $this->_log->debug(__FUNCTION__ .  " after deleting ID entry");
         }
+        
+        return true;
     }
     
     public function getUpdates($timestamp) {
@@ -137,6 +150,7 @@ class MnoSoaBaseEntity
       curl_setopt($curl, CURLOPT_TIMEOUT, '60');
       
       $this->_log->debug(__FUNCTION__ . " before switch");
+      
       switch ($operation) {
 	  case "POST":
 	      curl_setopt($curl, CURLOPT_POST, true);
@@ -162,7 +176,7 @@ class MnoSoaBaseEntity
       $this->_log->debug(__FUNCTION__ . " status = ". $status);
       
       if ( $status != 200 ) {
-		    $this->_log->debug(__FUNCTION__ . " Error: call to URL $url failed with status $status, response $response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl), 0);
+            $this->_log->debug(__FUNCTION__ . " Error: call to URL $url failed with status $status, response $response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl), 0);
             curl_close($curl);
             return null;
       }
