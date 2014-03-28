@@ -202,7 +202,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
 		        $status = $organization->send($org_contact);
 
 				if ($status) {
-				    $mno_id = $this->getMnoIdByLocalId($local_id);
+				    $mno_id = $this->getMnoIdByLocalIdName($local_id, "accounts");
 
 				    if ($this->isValidIdentifier($mno_id)) {
 				        $this->_role->organization->id = $mno_id->_id;
