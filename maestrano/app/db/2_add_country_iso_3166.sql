@@ -267,7 +267,7 @@ INSERT INTO `vtiger_bill_country` (`bill_country`, `presence`, `picklist_valueid
 ('Zambia', 1, 528, 241, 240),
 ('Zimbabwe', 1, 529, 242, 241);
 
-UPDATE `vtiger_ship_country` SET `picklist_valueid`=`picklist_valueid`-287+(SELECT id
+UPDATE `vtiger_bill_country` SET `picklist_valueid`=`picklist_valueid`-287+(SELECT id
     FROM vtiger_picklistvalues_seq);
 
 UPDATE `vtiger_picklistvalues_seq` SET `id`=`id`+242;
