@@ -292,7 +292,12 @@ class CRMEntity {
 		if ($this->mode == 'edit') {
 			$description_val = from_html($this->column_fields['description'], ($insertion_mode == 'edit') ? true : false);
 
-			require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			if (isset($current_user->id)) {
+			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			} else {
+			  $is_admin = true;
+			}
+
 			$tabid = getTabid($module);
 			if ($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] == 0) {
 				$sql = "update vtiger_crmentity set smownerid=?,modifiedby=?,description=?, modifiedtime=? where crmid=?";
@@ -391,7 +396,12 @@ class CRMEntity {
 		if ($insertion_mode == 'edit') {
 			$update = array();
 			$update_params = array();
-			require('user_privileges/user_privileges_' . $current_user->id . '.php');
+
+			if (isset($current_user->id)) {
+			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
+			} else {
+			  $is_admin = true;
+			}
 			if ($is_admin == true || $profileGlobalPermission[1] == 0 || $profileGlobalPermission[2] == 0) {
 				$sql = "select * from vtiger_field where tabid in (" . generateQuestionMarks($tabid) . ") and tablename=? and displaytype in (1,3) and presence in (0,2) group by columnname";
 				$params = array($tabid, $table_name);
@@ -780,7 +790,7 @@ class CRMEntity {
 	/** Function to saves the values in all the tables mentioned in the class variable $tab_name for the specified module
 	 * @param $module -- module:: Type varchar
 	 */
-	function save($module_name, $fileid = '') {
+	function save($module_name, $fileid = '') {	
 		global $log;
 		$log->debug("module name is " . $module_name);
 
@@ -801,8 +811,8 @@ class CRMEntity {
 		$this->saveentity($module_name, $fileid);
 
 		//Event triggering code
-		$em->triggerEvent("vtiger.entity.aftersave", $entityData);
-		$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
+		//$em->triggerEvent("vtiger.entity.aftersave", $entityData);
+		//$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
 		//Event triggering code ends
 	}
 

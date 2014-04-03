@@ -28,7 +28,7 @@ require_once('include/database/PearDatabase.php');
 require_once('user_privileges/enable_backup.php');
 require_once 'modules/VtigerBackup/VtigerBackup.php';
 
-global $adb, $enable_backup,$current_user;
+global $adb, $enable_backup,$current_user,$mno_settings;
 
 if(is_admin($current_user) == true && PerformancePrefs::getBoolean('LOGOUT_BACKUP', true)) {
 	$backup = new VtigerBackup();
@@ -48,6 +48,11 @@ session_destroy();
 
 define("IN_LOGIN", true);
 
-// go to the login screen.
-header("Location: index.php?action=Login&module=Users");
+// Hook:Maestrano
+$maestrano = MaestranoService::getInstance();
+if ($maestrano->isSsoEnabled()) {
+  header("Location: " . $maestrano->getSsoLogoutUrl());
+} else {
+  header("Location: index.php?action=Login&module=Users");
+}
 ?>

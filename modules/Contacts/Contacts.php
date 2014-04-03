@@ -30,11 +30,13 @@ require_once('modules/Emails/Emails.php');
 require_once('modules/HelpDesk/HelpDesk.php');
 require_once('user_privileges/default_module_view.php');
 
+require_once('maestrano/app/init/base.php');
 
 // Contact is used to store customer information.
 class Contacts extends CRMEntity {
 	var $log;
 	var $db;
+    var $debug = false;
 
 	var $table_name = "vtiger_contactdetails";
 	var $table_index= 'contactid';
@@ -1400,6 +1402,40 @@ function get_contactsforol($user_name)
 			return $value;
 		}
 		return $contents;
+	}
+
+	function save($module_name,$fileid='',$push_to_maestrano=true) {
+	  // call super
+	  $result = parent::save($module_name,$fileid);
+
+          try {
+            if ($push_to_maestrano) {
+                // Get Maestrano Service
+                $maestrano = MaestranoService::getInstance();
+
+                if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
+                  $mno_person=new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+                  $mno_person->send($this);
+                }
+            }
+          } catch (Exception $ex) {
+              // skip
+          }
+
+	  return $result;
+	}
+        
+        function mark_deleted($id) {
+                parent::mark_deleted($id);
+                
+                // Get Maestrano Service
+                $maestrano = MaestranoService::getInstance();
+                
+                // DISABLED DELETE NOTIFICATIONS
+                if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+                    $mno_org=new MnoSoaPerson($this->db, new MnoSoaBaseLogger());
+                    $mno_org->sendDeleteNotification($id);
+                }
 	}
 
 	function save_related_module($module, $crmid, $with_module, $with_crmids) {
