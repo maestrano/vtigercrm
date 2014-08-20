@@ -62,6 +62,10 @@
    	<script type="text/javascript">
 		jQuery.noConflict();
 	</script>
+  <script src="//cdn.maestrano.com/apps/mno_libs/mno-loader.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    window.mnoLoader.init('vtiger','1');
+  </script>
     <!-- asterisk Integration -->
 {if $USE_ASTERISK eq 'true'}
 	<script type="text/javascript" src="include/js/asterisk.js"></script>
