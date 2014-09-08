@@ -1,8 +1,2 @@
 *.swp
 .DS_Store
-
-# vtiger configuration files
-config.inc.php
-parent_tabdata.php
-tabdata.php
-test/vtlib/HTML/README.txt
