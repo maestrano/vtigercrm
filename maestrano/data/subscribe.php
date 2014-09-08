@@ -25,13 +25,19 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
                     $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);		
                     $mno_org->receiveNotification($notification);
                 }
-				break;
-        case "PERSONS":
-                if (class_exists('MnoSoaPerson')) {
-                    $mno_person = new MnoSoaPerson($opts['db_connection'], $log);		
-                    $mno_person->receiveNotification($notification);
-                }
-				break;
+			break;
+      case "PERSONS":
+              if (class_exists('MnoSoaPerson')) {
+                  $mno_person = new MnoSoaPerson($opts['db_connection'], $log);   
+                  $mno_person->receiveNotification($notification);
+              }
+      break;
+      case "ITEMS":
+              if (class_exists('MnoSoaItem')) {
+                  $mno_item = new MnoSoaItem($opts['db_connection'], $log);   
+                  $mno_item->receiveNotification($notification);
+              }
+      break;
     }
 }
 

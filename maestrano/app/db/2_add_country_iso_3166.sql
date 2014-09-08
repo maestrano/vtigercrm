@@ -1,9 +1,9 @@
 /* ORGANIZATION BILLING COUNTRY */
 
-UPDATE  `vtigercrm540`.`vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =32;
-UPDATE  `vtigercrm540`.`vtiger_picklist_seq` SET  `id` =  `id` + 1;
+UPDATE  `vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =32;
+UPDATE  `vtiger_picklist_seq` SET  `id` =  `id` + 1;
 
-INSERT INTO  `vtigercrm540`.`vtiger_picklist` (`picklistid` , `name`)
+INSERT INTO  `vtiger_picklist` (`picklistid` , `name`)
 SELECT id,  "bill_country" AS name
 FROM `vtiger_picklist_seq`;
 
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `vtiger_bill_country_seq` (
   `id` int(11) NOT NULL
 );
 
-INSERT INTO  `vtigercrm540`.`vtiger_bill_country_seq` (`id`) VALUES ('242');
+INSERT INTO  `vtiger_bill_country_seq` (`id`) VALUES ('242');
 
 INSERT INTO `vtiger_bill_country` (`bill_country`, `presence`, `picklist_valueid`, `bill_countryid`, `sortorderid`) VALUES
 ('--None--', 1, 288, 1, 0),
@@ -281,10 +281,10 @@ FROM vtiger_role vr, vtiger_bill_country vbc, (
 
 /* ORGANIZATION SHIPPING COUNTRY */
 
-UPDATE  `vtigercrm540`.`vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =33;
-UPDATE  `vtigercrm540`.`vtiger_picklist_seq` SET  `id` =  `id` + 1;
+UPDATE  `vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =33;
+UPDATE  `vtiger_picklist_seq` SET  `id` =  `id` + 1;
 
-INSERT INTO  `vtigercrm540`.`vtiger_picklist` (`picklistid` , `name`)
+INSERT INTO  `vtiger_picklist` (`picklistid` , `name`)
 SELECT id,  "ship_country" AS name
 FROM `vtiger_picklist_seq`;
 
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `vtiger_ship_country_seq` (
   `id` int(11) NOT NULL
 );
 
-INSERT INTO  `vtigercrm540`.`vtiger_ship_country_seq` (`id`) VALUES ('242');
+INSERT INTO  `vtiger_ship_country_seq` (`id`) VALUES ('242');
 
 INSERT INTO `vtiger_ship_country` (`ship_country`, `presence`, `picklist_valueid`, `ship_countryid`, `sortorderid`) VALUES
 ('--None--', 1, 288, 1, 0),
@@ -561,10 +561,10 @@ FROM vtiger_role vr, vtiger_ship_country vbc, (
 
 /* PERSON MAILING COUNTRY */
 
-UPDATE  `vtigercrm540`.`vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =104;
-UPDATE  `vtigercrm540`.`vtiger_picklist_seq` SET  `id` =  `id` + 1;
+UPDATE  `vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =104;
+UPDATE  `vtiger_picklist_seq` SET  `id` =  `id` + 1;
 
-INSERT INTO  `vtigercrm540`.`vtiger_picklist` (`picklistid` , `name`)
+INSERT INTO  `vtiger_picklist` (`picklistid` , `name`)
 SELECT id,  "mailingcountry" AS name
 FROM `vtiger_picklist_seq`;
 
@@ -582,7 +582,7 @@ CREATE TABLE IF NOT EXISTS `vtiger_mailingcountry_seq` (
   `id` int(11) NOT NULL
 );
 
-INSERT INTO  `vtigercrm540`.`vtiger_mailingcountry_seq` (`id`) VALUES ('242');
+INSERT INTO  `vtiger_mailingcountry_seq` (`id`) VALUES ('242');
 
 INSERT INTO `vtiger_mailingcountry` (`mailingcountry`, `presence`, `picklist_valueid`, `mailingcountryid`, `sortorderid`) VALUES
 ('--None--', 1, 288, 1, 0),
@@ -842,10 +842,10 @@ FROM vtiger_role vr, vtiger_mailingcountry vbc, (
 
 /* PERSON OTHER COUNTRY */
 
-UPDATE  `vtigercrm540`.`vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =105;
-UPDATE  `vtigercrm540`.`vtiger_picklist_seq` SET  `id` =  `id` + 1;
+UPDATE  `vtiger_field` SET  `uitype` =  '15' WHERE  `vtiger_field`.`fieldid` =105;
+UPDATE  `vtiger_picklist_seq` SET  `id` =  `id` + 1;
 
-INSERT INTO  `vtigercrm540`.`vtiger_picklist` (`picklistid` , `name`)
+INSERT INTO  `vtiger_picklist` (`picklistid` , `name`)
 SELECT id,  "othercountry" AS name
 FROM `vtiger_picklist_seq`;
 
@@ -863,7 +863,7 @@ CREATE TABLE IF NOT EXISTS `vtiger_othercountry_seq` (
   `id` int(11) NOT NULL
 );
 
-INSERT INTO  `vtigercrm540`.`vtiger_othercountry_seq` (`id`) VALUES ('242');
+INSERT INTO  `vtiger_othercountry_seq` (`id`) VALUES ('242');
 
 INSERT INTO `vtiger_othercountry` (`othercountry`, `presence`, `picklist_valueid`, `othercountryid`, `sortorderid`) VALUES
 ('--None--', 1, 288, 1, 0),

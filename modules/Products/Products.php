@@ -1254,6 +1254,40 @@ class Products extends CRMEntity {
 		}
 	}
 
+	function save($module_name,$fileid='',$push_to_maestrano=true) {
+	  // call super
+	  $result = parent::save($module_name,$fileid);
+
+          try {
+            if ($push_to_maestrano) {
+                // Get Maestrano Service
+                $maestrano = MaestranoService::getInstance();
+
+                if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
+                  $mno_item=new MnoSoaItem(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+                  $mno_item->send($this);
+                }
+            }
+          } catch (Exception $ex) {
+              // skip
+          }
+
+	  return $result;
+	}
+
+	function mark_deleted($id) {
+      parent::mark_deleted($id);
+      
+      // Get Maestrano Service
+      $maestrano = MaestranoService::getInstance();
+      
+      // DISABLED DELETE NOTIFICATIONS
+      if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+          $mno_item=new MnoSoaItem($this->db, new MnoSoaBaseLogger());
+          $mno_item->sendDeleteNotification($id);
+      }
+  }
+
 	function save_related_module($module, $crmid, $with_module, $with_crmids) {
 		$adb = PearDatabase::getInstance();
 
