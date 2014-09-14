@@ -248,23 +248,13 @@ class MnoSoaPerson extends MnoSoaBasePerson
 
   protected function saveNotes() {
     $this->_log->debug(__FUNCTION__ . " start");
-    // Add the notes as ModComments
     if (!empty($this->_notes)) {
-      $this->_log->debug(__FUNCTION__ . " person has notes associated");
-      $local_id = $this->getLocalIdByMnoId($this->_id);
-      $this->_log->debug(__FUNCTION__ . " saving notes against person " . json_encode($local_id));
-      foreach ($this->_notes as $key => $note) {
-        $mod_comment = CRMEntity::getInstance("ModComments");
-        $mod_comment->column_fields['commentcontent'] = $note->description;
-        $mod_comment->column_fields['assigned_user_id'] = 0;
-        $mod_comment->column_fields['related_to'] = $local_id->_id;
-        $mod_comment->column_fields['commentcontent'] = $note->description;
-        $mod_comment->save("ModComments", '', false);
-      }
+      $mno_person_note = new MnoSoaPersonNotes($this->_db, $this->_log, $this);
+      $mno_person_note->receive($this->_notes);
     }
     $this->_log->debug(__FUNCTION__ . " end");
   }
-  
+
   protected function mapSalutationToHonorificPrefix($in) {
     $in_form = strtoupper(trim($in));
     
