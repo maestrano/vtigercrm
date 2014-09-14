@@ -59,8 +59,6 @@ class MnoSoaPerson extends MnoSoaBasePerson
     $this->_log->debug(__FUNCTION__ . " end");
   }
   
-  
-  
   protected function pullName() {
     $this->_log->debug(__FUNCTION__ . " start");
         //$hp = $this->mapHonorificPrefixToSalutation($this->_name->honorificPrefix);
@@ -170,13 +168,50 @@ class MnoSoaPerson extends MnoSoaBasePerson
   protected function pullWebsites() {
   // DO NOTHING
   }
+
+  protected function pushNotes() {
+    global $adb;
+
+    $this->_notes = array();
+    
+    // Select notes related to this person
+    $id = $this->_local_entity->column_fields['record_id'];
+    $this->_log->debug(__FUNCTION__ . " fetching notes related to person " . json_encode($id));
+
+    $entityInstance = CRMEntity::getInstance("ModComments");
+    $queryCriteria = sprintf(" ORDER BY %s.%s DESC ", $entityInstance->table_name, $entityInstance->table_index);
+    $query = $entityInstance->getListQuery($moduleName, sprintf(" AND %s.related_to=?", $entityInstance->table_name));
+    $query .= $queryCriteria;
+    $result = $adb->pquery($query, array($id));
+    $instances = array();
+    if($adb->num_rows($result)) {
+      while($resultrow = $adb->fetch_array($result)) {
+        $this->_log->debug(__FUNCTION__ . " fetched note: " . json_encode($resultrow));
+        $comment_local_id = $resultrow['crmid'];
+        $comment_description = $resultrow['commentcontent'];
+        
+        $comment_mno_id = $this->getMnoIdByLocalIdName($comment_local_id, "mod_comments");
+        if (!$this->isValidIdentifier($comment_mno_id)) {
+          // Generate and save ID
+          $comment_mno_id = uniqid();
+          $this->_mno_soa_db_interface->addIdMapEntry($comment_local_id, "mod_comments", $comment_mno_id, "notes");
+        }
+
+        $this->_notes[$comment_mno_id] = array('description' => $resultrow['commentcontent']);
+      }
+    }
+  }
+
+  protected function pullNotes() {
+    // DO NOTHING
+  }
   
   protected function pushEntity() {
-  // DO NOTHING
+    // DO NOTHING
   }
   
   protected function pullEntity() {
-  // DO NOTHING
+    // DO NOTHING
   }
   
   protected function pushRole() {
@@ -247,7 +282,6 @@ class MnoSoaPerson extends MnoSoaBasePerson
   }
 
   protected function saveNotes() {
-    $this->_log->debug(__FUNCTION__ . " start");
     if (!empty($this->_notes)) {
       $mno_person_note = new MnoSoaPersonNotes($this->_db, $this->_log, $this);
       $mno_person_note->receive($this->_notes);

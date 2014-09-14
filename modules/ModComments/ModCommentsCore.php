@@ -375,50 +375,40 @@ class ModCommentsCore extends CRMEntity {
   // Maestrano hook when a Comment is saved in vTiger
 	function save($module_name,$fileid='',$push_to_maestrano=true) {
     global $adb;
-    
+
     $result = parent::save($module_name,$fileid);
 
-    foreach($this->column_fields as $key=>$value) {
-      MnoSoaBaseLogger::debug(__FUNCTION__ . " VTIGER COMMENT key " . $key . " => " . $value);
+    try {
+      if ($push_to_maestrano) {
+        $maestrano = MaestranoService::getInstance();
+        if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+          // Find the entity type the comment is related to
+          $related_crm_entity_id = $this->column_fields['related_to'];
+
+          $sql = "select setype from vtiger_crmentity where crmid=?";
+          $res = $adb->pquery($sql, array($related_crm_entity_id));
+
+          for($i=0;$i < $adb->num_rows($res);$i++) {
+            $setype = $adb->query_result($res,$i,'setype');
+            
+            // Comments are related to a Person
+            if($setype == "Contacts")
+            {
+              $contact = CRMEntity::getInstance("Contacts");
+              $contact->retrieve_entity_info($related_crm_entity_id, "Contacts");
+              $contact->id = $contact->column_fields['record_id'];
+
+              // Save the parent entity person
+              $mno_person = new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+              $mno_person->send($contact);
+            }
+          }
+        }
+      }
+    } catch (Exception $ex) {
+        // skip
     }
-
-    // try {
-    //   if ($push_to_maestrano) {
-    //     // Find the entity type the comment is related to
-    //     $related_crm_entity_id = $this->column_fields['related_to'];
-
-    //     $sql = "select setype from vtiger_crmentity where crmid=?";
-    //     $res = $adb->pquery($sql, array($related_crm_entity_id));
-
-    //     for($i=0;$i < $adb->num_rows($res);$i++) {
-    //       $setype = $adb->query_result($res,$i,'setype');
-          
-    //       // Save comments related to a Person
-    //       if($setype == "Contacts")
-    //       {
-    //         $crm_entity = CRMEntity::getInstance("Contacts");
-    //         $crm_entity->retrieve_entity_info($related_crm_entity_id, "Contacts");
-
-    //         foreach($crm_entity->column_fields as $key=>$value) {
-    //           MnoSoaBaseLogger::debug(__FUNCTION__ . " VTIGER CONTACT key " . $key . " => " . $value);
-    //         }
-
-    //         // Merge the Contact and Comment attributes
-    //         $this->column_fields = array_merge($this->column_fields1, $crm_entity->column_fields);
-
-    //         // Get Maestrano Service
-    //         $maestrano = MaestranoService::getInstance();
-    //         if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
-    //           $mno_person=new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());
-    //           $mno_person->send($this);
-    //         }
-    //       }
-    //     }
-    //   }
-    // } catch (Exception $ex) {
-    //     // skip
-    // }
-
+    
 	  return $result;
 	}
 
