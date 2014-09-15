@@ -207,6 +207,14 @@ class MnoSoaPerson extends MnoSoaBasePerson
   protected function pullNotes() {
     // DO NOTHING
   }
+
+  protected function pushTasks() {
+    // Implement me !
+  }
+
+  protected function pullTasks() {
+    // DO NOTHING
+  }
   
   protected function pushEntity() {
     // DO NOTHING
@@ -281,6 +289,8 @@ class MnoSoaPerson extends MnoSoaBasePerson
   
   protected function saveLocalEntity($push_to_maestrano) {
     $this->_local_entity->save("Contacts", '', $push_to_maestrano);
+    $this->saveNotes();
+    $this->saveTasks();
   }
 
   protected function saveNotes() {
@@ -288,7 +298,13 @@ class MnoSoaPerson extends MnoSoaBasePerson
       $mno_person_note = new MnoSoaPersonNotes($this->_db, $this->_log, $this);
       $mno_person_note->receive($this->_notes);
     }
-    $this->_log->debug(__FUNCTION__ . " end");
+  }
+
+  protected function saveTasks() {
+    if (!empty($this->_tasks)) {
+      $mno_person_activity = new MnoSoaPersonActivities($this->_db, $this->_log, $this);
+      $mno_person_activity->receive($this->_tasks);
+    }
   }
 
   protected function mapSalutationToHonorificPrefix($in) {
