@@ -1,9 +1,9 @@
 <?php
 // Maestrano SSO Host
-$mno_sso_host = 'http://192.168.1.14:3000';
+$mno_sso_host = 'http://192.168.15.195:3000';
 
 // Maestrano SOA Host
-$mno_soa_host = 'http://192.168.1.14:8090';
+$mno_soa_host = 'http://192.168.15.195:8090';
 
 // Maestrano REST API version
 $mno_soa_version = 'v1';

@@ -17,6 +17,12 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
     $this->_mno_person = $mno_person;
   }
 
+  protected function build() {
+    $this->_log->debug(__FUNCTION__ . " start");
+    // TODO
+    $this->_log->debug(__FUNCTION__ . " end");
+  }
+
   protected function persist($notes) {
     $this->_log->debug(__CLASS__ . " " . __FUNCTION__ . " notes = " . json_encode($notes));
 

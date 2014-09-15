@@ -373,10 +373,10 @@ class ModCommentsCore extends CRMEntity {
 	}
 
   // Maestrano hook when a Comment is saved in vTiger
-	function save($module_name,$fileid='',$push_to_maestrano=true) {
+	function save($module_name, $fileid='', $push_to_maestrano=true) {
     global $adb;
 
-    $result = parent::save($module_name,$fileid);
+    $result = parent::save($module_name, $fileid);
 
     try {
       if ($push_to_maestrano) {
@@ -389,7 +389,7 @@ class ModCommentsCore extends CRMEntity {
           $res = $adb->pquery($sql, array($related_crm_entity_id));
 
           for($i=0;$i < $adb->num_rows($res);$i++) {
-            $setype = $adb->query_result($res,$i,'setype');
+            $setype = $adb->query_result($res, $i, 'setype');
             
             // Comments are related to a Person
             if($setype == "Contacts")
@@ -406,7 +406,7 @@ class ModCommentsCore extends CRMEntity {
         }
       }
     } catch (Exception $ex) {
-        // skip
+        error_log(" Exception when pushing person notes " . $ex->getMessage() . " - trace " . $ex->getTraceAsString());
     }
     
 	  return $result;

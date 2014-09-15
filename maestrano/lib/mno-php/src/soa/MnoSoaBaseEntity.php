@@ -208,7 +208,9 @@ class MnoSoaBaseEntity
     */
     protected function getMnoIdByLocalIdName($localId, $localEntityName)
     {
+      $this->_log->debug(__FUNCTION__ . " start with localId: $localId, localEntityName: $localEntityName");
       return $this->_mno_soa_db_interface->getMnoIdByLocalIdName($localId, $localEntityName);
+      $this->_log->debug(__FUNCTION__ . " end");
     }
     
     protected function getLocalIdByMnoId($mnoId)
