@@ -372,7 +372,7 @@ class ModCommentsCore extends CRMEntity {
 		}
 	}
 
-  // Maestrano hook when a Comment is saved in vTiger
+    // Maestrano hook when a Comment is saved in vTiger
 	function save($module_name, $fileid='', $push_to_maestrano=true) {
     global $adb;
 

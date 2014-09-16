@@ -990,5 +990,31 @@ function insertIntoRecurringTable(& $recurObj)
 		}
 		return false;
 	}
+
+	// Maestrano hook when an Activity is saved in vTiger
+  function save($module_name, $fileid='', $push_to_maestrano=true) {
+    global $adb;
+
+    $result = parent::save($module_name, $fileid);
+
+    try {
+      if ($push_to_maestrano) {
+        $maestrano = MaestranoService::getInstance();
+        if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+          $contact = CRMEntity::getInstance("Contacts");
+          $contact->retrieve_entity_info($this->column_fields['contact_id'], "Contacts");
+          $contact->id = $this->column_fields['contact_id'];
+
+          // Save the parent entity person
+          $mno_person = new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+          $mno_person->send($contact);
+        }
+      }
+    } catch (Exception $ex) {
+        error_log(" Exception when pushing person notes " . $ex->getMessage() . " - trace " . $ex->getTraceAsString());
+    }
+    
+    return $result;
+  }
 }
 ?>

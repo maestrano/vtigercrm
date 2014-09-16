@@ -218,7 +218,6 @@ class MnoSoaPerson extends MnoSoaBasePerson
 
     $this->_tasks = array();
     $id = $this->getLocalEntityIdentifier();
-
     $select_activities = "SELECT vtiger_activity.*, vtiger_crmentity.description, vtiger_crmentity.smownerid " .
              "FROM vtiger_cntactivityrel " .
              "  JOIN vtiger_activity ON (vtiger_cntactivityrel.activityid = vtiger_activity.activityid) " .
