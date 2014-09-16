@@ -52,7 +52,7 @@ class MnoSoaDB extends MnoSoaBaseDB {
       $result = $this->_db->pquery($query, array($localId, strtoupper($localEntityName)));
 
 	    // Return id value
-      if ($this->_db->num_rows($result) > 0) {
+      if ($this->_db->num_rows($result)) {
         $mno_entity_guid = trim($this->_db->query_result($result,0,"mno_entity_guid"));
         $mno_entity_name = trim($this->_db->query_result($result,0,"mno_entity_name"));
         $deleted_flag = trim($this->_db->query_result($result,0,"deleted_flag"));
@@ -62,11 +62,13 @@ class MnoSoaDB extends MnoSoaBaseDB {
             "_id" => $mno_entity_guid,
             "_entity" => $mno_entity_name,
             "_deleted_flag" => $deleted_flag
-            );
+          );
+          $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . ' returning mno_entity: ' . json_encode($mno_entity));
+
+          return $mno_entity;
         }
       }
 
-      $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . "returning mno_entity = ".json_encode($mno_entity));
       return $mno_entity;
     }
     

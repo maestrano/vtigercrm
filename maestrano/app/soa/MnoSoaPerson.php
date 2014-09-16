@@ -172,6 +172,8 @@ class MnoSoaPerson extends MnoSoaBasePerson
   protected function pushNotes() {
     global $adb;
 
+    $this->_log->debug(__FUNCTION__ . " start");
+
     $this->_notes = array();
     
     // Select notes related to this person
@@ -184,7 +186,6 @@ class MnoSoaPerson extends MnoSoaBasePerson
     $query = $entityInstance->getListQuery($moduleName, sprintf(" AND %s.related_to=?", $entityInstance->table_name));
     $query .= $queryCriteria;
     $result = $adb->pquery($query, array($id));
-    $instances = array();
     if($adb->num_rows($result)) {
       while($resultrow = $adb->fetch_array($result)) {
         $this->_log->debug(__FUNCTION__ . " fetched note: " . json_encode($resultrow));
@@ -202,6 +203,8 @@ class MnoSoaPerson extends MnoSoaBasePerson
         $this->_notes[$comment_mno_id] = array("description" => $resultrow['commentcontent']);
       }
     }
+
+    $this->_log->debug(__FUNCTION__ . " end");
   }
 
   protected function pullNotes() {
@@ -209,7 +212,61 @@ class MnoSoaPerson extends MnoSoaBasePerson
   }
 
   protected function pushTasks() {
-    // Implement me !
+    global $adb;
+
+    $this->_log->debug(__FUNCTION__ . " start");
+
+    $this->_tasks = array();
+    $id = $this->getLocalEntityIdentifier();
+
+    $select_activities = "SELECT vtiger_activity.*, vtiger_crmentity.description, vtiger_crmentity.smownerid " .
+             "FROM vtiger_cntactivityrel " .
+             "  JOIN vtiger_activity ON (vtiger_cntactivityrel.activityid = vtiger_activity.activityid) " .
+             "  JOIN vtiger_crmentity ON (vtiger_cntactivityrel.activityid = vtiger_crmentity.crmid) " .
+             "WHERE vtiger_cntactivityrel.contactid = ?";
+    $activity_row = $adb->pquery($select_activities, array($id));
+    if($adb->num_rows($activity_row)) {
+      while($resultrow = $adb->fetch_array($activity_row)) {
+        $this->_log->debug(__FUNCTION__ . " fetched task: " . json_encode($resultrow));
+        
+        $task_local_id = $resultrow['activityid'];
+        $task_name = $resultrow['subject'];
+        $task_description = $resultrow['description'];
+        $task_status = $resultrow['status'];
+        $task_start_date = strtotime($resultrow['date_start']);
+        $task_due_date = strtotime($resultrow['due_date']);
+        $smownerid = $resultrow['smownerid'];
+
+        // Fetch user assigned to activity
+        $select_user = "SELECT vtiger_users.mno_uid " .
+             "FROM vtiger_users " .
+             "WHERE vtiger_users.id = ?";
+        $user_row = $adb->pquery($select_user, array($smownerid));
+        $task_assigned_to = $adb->query_result($user_row, 0, 'mno_uid');
+        
+        $mno_entity = $this->getMnoIdByLocalIdName($task_local_id, "ACTIVITY");
+        if (!$this->isValidIdentifier($mno_entity)) {
+          // Generate and save ID
+          $task_mno_id = uniqid();
+          $this->_mno_soa_db_interface->addIdMapEntry($task_local_id, "ACTIVITY", $task_mno_id, "ACTIVITY");
+        } else {
+          $task_mno_id = $mno_entity->_id;
+        }
+
+        $task = array(
+          "id" => $task_mno_id,
+          "name" => $task_name,
+          "description" => $task_description,
+          "status" => $task_status,
+          "startDate" => $task_start_date,
+          "dueDate" => $task_due_date,
+          "assignedTo" => array($task_assigned_to => "ACTIVE")
+        );
+        $this->_tasks[$task_mno_id] = $task;
+      }
+    }
+
+    $this->_log->debug(__FUNCTION__ . " end");
   }
 
   protected function pullTasks() {
