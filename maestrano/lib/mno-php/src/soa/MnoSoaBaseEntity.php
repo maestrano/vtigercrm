@@ -1,5 +1,7 @@
 <?php
 
+define('SEM_KEY', 1000);
+
 /**
  * Mno Entity Interface
  */
@@ -98,12 +100,20 @@ class MnoSoaBaseEntity
     }
     
     public function receiveNotification($notification) {
-      $mno_entity = $this->callMaestrano($this->_receive_http_operation, $this->_receive_rest_entity_name . '/' . $notification->id);
+      $semRes = sem_get(SEM_KEY, 1, 0666, 0);
+      if(sem_acquire($semRes)) {
+        $processed = true;
+        $mno_entity = $this->callMaestrano($this->_receive_http_operation, $this->_receive_rest_entity_name . '/' . $notification->id);
 
-      if (empty($mno_entity)) { return false; }
-
-      $this->receive($mno_entity);
-      return true;
+        if (empty($mno_entity)) {
+          $processed = false;
+        } else {
+          $this->receive($mno_entity);
+        }
+        
+        sem_release($semRes);
+        return $processed;
+      }
     }
     
     public function sendDeleteNotification($local_id) {
