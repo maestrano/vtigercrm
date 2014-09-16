@@ -24,15 +24,18 @@ class MnoSoaPersonActivities extends MnoSoaBaseEntity
   }
 
   protected function persist($activities) {
+    global $adb;
+
     $this->_log->debug(__CLASS__ . " " . __FUNCTION__ . " activities = " . json_encode($activities));
 
     $person_id = $this->_mno_person->getLocalEntityIdentifier();
-    $this->_log->debug(__CLASS__ . " " . __FUNCTION__ . " person = " . json_encode($this->_mno_person));
-    $this->_log->debug(__CLASS__ . " " . __FUNCTION__ . " person local id= " . json_encode($person_id));
 
-    foreach ($activities as $key => $activity) {
+    $contact = CRMEntity::getInstance("Contacts");
+    $contact->retrieve_entity_info($person_id, "Contacts");
+
+    foreach ($activities as $key => $mno_activity) {
       if (!empty($key)) {
-        $this->_log->debug(__FUNCTION__ . " persist person activity " . json_encode($activity));
+        $this->_log->debug(__FUNCTION__ . " persist person activity " . json_encode($mno_activity));
 
         $is_update = false;
         $local_id = $this->getLocalIdByMnoId($key);
@@ -41,6 +44,7 @@ class MnoSoaPersonActivities extends MnoSoaBaseEntity
         }
         $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
         
+        // vTiger activities are mapped as 'Calendar' type
         $activity = CRMEntity::getInstance("Calendar");
         if ($is_update) {
           $activity->retrieve_entity_info($local_id->_id, "Calendar");
@@ -50,19 +54,26 @@ class MnoSoaPersonActivities extends MnoSoaBaseEntity
           continue;
         }
 
-        $activity->column_fields['subject'] = $activity->name;
-        $activity->column_fields['assigned_user_id'] = 1;
-        // $activity->column_fields['date_start'] = '2014-09-15';
-        // $activity->column_fields['time_start'] = '11:50:00';
-        // $activity->column_fields['time_end'] = '12:00:00';
-        // $activity->column_fields['due_date'] = '2014-09-15';
-        $activity->column_fields['description'] = $activity->description;
-        $activity->column_fields['status'] = $activity->status;
+        // Get local user id from username
+        reset($mno_activity->assignedTo);
+        $user_mno_id = key($mno_activity->assignedTo);
+        $query = "SELECT id from vtiger_users where mno_uid=?";
+        $result = $adb->pquery($query, array($user_mno_id));
+        $user_id = $adb->query_result($result, 0, 'id');
+
+        // Set the activity attributes
+        $activity->column_fields['subject'] = $mno_activity->name;
+        $activity->column_fields['assigned_user_id'] = $user_id;
+        $activity->column_fields['date_start'] = gmdate("Y-m-d", $mno_activity->startDate);
+        $activity->column_fields['time_start'] = gmdate("H:i:s", $mno_activity->startDate);
+        $activity->column_fields['time_end'] = gmdate("H:i:s", $mno_activity->startDate);
+        $activity->column_fields['due_date'] = gmdate("Y-m-d", $mno_activity->dueDate);
+        $activity->column_fields['description'] = $mno_activity->description;
         $activity->column_fields['activitytype'] = 'Task';
         $activity->column_fields['taskpriority'] = 'High';
-        // $activity->column_fields['parent_id'] = "269";
+        $activity->column_fields['parent_id'] = $contact->column_fields['account_id'];
         $activity->column_fields['contact_id'] = $person_id;
-        $activity->column_fields['taskstatus'] = 'Not Started';
+        $activity->column_fields['taskstatus'] = $mno_activity->status;
         $activity->column_fields['sendnotification'] = 'on';
         $activity->column_fields['visibility'] = 'Private';
 
