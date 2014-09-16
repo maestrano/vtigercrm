@@ -32,7 +32,7 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
 
     foreach ($notes as $key => $note) {
       if (!empty($key)) {
-        $this->_log->debug(__FUNCTION__ . " persist person note id = " . $key);
+        $this->_log->debug(__FUNCTION__ . " persist person note id = " . $key . " => " . json_encode($note));
 
         $is_update = false;
         $local_id = $this->getLocalIdByMnoId($key);

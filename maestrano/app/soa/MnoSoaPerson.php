@@ -344,9 +344,13 @@ class MnoSoaPerson extends MnoSoaBasePerson
   }
   
   protected function saveLocalEntity($push_to_maestrano) {
+    $this->_log->debug(__FUNCTION__ . " start");
     $this->_local_entity->save("Contacts", '', $push_to_maestrano);
+    $this->_log->debug(__FUNCTION__ . " save notes");
     $this->saveNotes();
+    $this->_log->debug(__FUNCTION__ . " save tasks");
     $this->saveTasks();
+    $this->_log->debug(__FUNCTION__ . " end");
   }
 
   protected function saveNotes() {

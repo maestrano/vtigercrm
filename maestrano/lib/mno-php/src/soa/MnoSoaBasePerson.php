@@ -257,7 +257,6 @@ class MnoSoaBasePerson extends MnoSoaBaseEntity
 
         $local_entity_id = $this->getLocalEntityIdentifier();
         $mno_entity_id = $this->_id;
-
         if ($is_new_id && !empty($local_entity_id) && !empty($mno_entity_id)) {
           $this->addIdMapEntry($local_entity_id, $mno_entity_id);
         }
