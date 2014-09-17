@@ -101,19 +101,23 @@ class MnoSoaBaseEntity
     
     public function receiveNotification($notification) {
       $semRes = sem_get(SEM_KEY, 1, 0666, 0);
-      if(sem_acquire($semRes)) {
-        $processed = true;
-        $mno_entity = $this->callMaestrano($this->_receive_http_operation, $this->_receive_rest_entity_name . '/' . $notification->id);
+      try {
+        if(sem_acquire($semRes)) {
+          $processed = true;
+          $mno_entity = $this->callMaestrano($this->_receive_http_operation, $this->_receive_rest_entity_name . '/' . $notification->id);
 
-        if (empty($mno_entity)) {
-          $processed = false;
-        } else {
-          $this->receive($mno_entity);
+          if(empty($mno_entity)) {
+            $processed = false;
+          } else {
+            $this->receive($mno_entity);
+          }
         }
-        
-        sem_release($semRes);
-        return $processed;
+      } catch(Exception $e) {
+        $this->_log->warn(__FUNCTION__ .  " Error when receiving notification: " . $e->getmessage());
       }
+      
+      sem_release($semRes);
+      return $processed;
     }
     
     public function sendDeleteNotification($local_id) {
