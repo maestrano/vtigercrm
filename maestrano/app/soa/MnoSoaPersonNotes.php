@@ -28,7 +28,6 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
 
     $person_id = $this->_mno_person->getLocalEntityIdentifier();
     $this->_log->debug(__CLASS__ . " " . __FUNCTION__ . " person = " . json_encode($this->_mno_person));
-    $this->_log->debug(__CLASS__ . " " . __FUNCTION__ . " person local id= " . json_encode($person_id));
 
     foreach ($notes as $key => $note) {
       if (!empty($key)) {
@@ -41,6 +40,8 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
         }
         $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
         
+        // Save note as a Comment
+        $this->_log->debug(__FUNCTION__ . " persisting comments");
         $mod_comment = CRMEntity::getInstance("ModComments");
         if ($is_update) {
           $mod_comment->retrieve_entity_info($local_id->_id, "ModComments");
@@ -58,6 +59,29 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
 
         if(!$is_update) {
           $this->addIdMapEntry($mod_comment->id, $key);
+        }
+
+        // Try to map note to a Contact custom field
+        $this->_log->debug(__FUNCTION__ . " persisting custom fields");
+        if(!is_null($note->tag) && $note->tag!='') {
+          $this->_log->debug(__FUNCTION__ . " analysing tag $note->tag");
+          // Match the note tag against a custom field
+          $query = "SELECT fieldname from vtiger_field where tablename='vtiger_contactscf' and fieldlabel=?";
+          $result = $this->_db->pquery($query, array($note->tag));
+          if ($this->_db->num_rows($result)) {
+            $fieldname = trim($this->_db->query_result($result, 0, "fieldname"));
+            $this->_log->debug(__FUNCTION__ . " tag mapped to $fieldname");
+
+            $query = "SELECT contactid from vtiger_contactscf where contactid=?";
+            $result = $this->_db->pquery($query, array($person_id));
+            if ($this->_db->num_rows($result)) {
+              $query = "UPDATE vtiger_contactscf SET $fieldname = ? WHERE contactid = ?";  
+              $result = $this->_db->pquery($query, array($note->value, $person_id));
+            } else {
+              $query = "INSERT INTO vtiger_contactscf (contactid, $fieldname) VALUES (?,?)";  
+              $result = $this->_db->pquery($query, array($person_id, $note->value));
+            }
+          }
         }
       }
     }
