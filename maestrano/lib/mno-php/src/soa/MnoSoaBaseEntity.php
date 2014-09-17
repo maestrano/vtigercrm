@@ -100,7 +100,7 @@ class MnoSoaBaseEntity
     }
     
     public function receiveNotification($notification) {
-      $semRes = sem_get(SEM_KEY, 1, 0666, 0);
+      $semRes = sem_get(SEM_KEY, 1, 0666, 1);
       try {
         if(sem_acquire($semRes)) {
           $processed = true;
