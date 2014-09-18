@@ -1,7 +1,5 @@
 <?php
 
-define('SEM_KEY', 1000);
-
 /**
  * Mno Entity Interface
  */
@@ -100,9 +98,7 @@ class MnoSoaBaseEntity
     }
     
     public function receiveNotification($notification) {
-      $semRes = sem_get(SEM_KEY, 1, 0666, 1);
       try {
-        if(sem_acquire($semRes)) {
           $processed = true;
           $mno_entity = $this->callMaestrano($this->_receive_http_operation, $this->_receive_rest_entity_name . '/' . $notification->id);
 
@@ -111,12 +107,10 @@ class MnoSoaBaseEntity
           } else {
             $this->receive($mno_entity);
           }
-        }
       } catch(Exception $e) {
         $this->_log->warn(__FUNCTION__ .  " Error when receiving notification: " . $e->getmessage());
       }
       
-      sem_release($semRes);
       return $processed;
     }
     
