@@ -27,6 +27,7 @@ require_once MNO_PHP_DIR . 'soa/MnoSoaBaseEntity.php';
 require_once MNO_PHP_DIR . 'soa/MnoSoaBaseOrganization.php';
 require_once MNO_PHP_DIR . 'soa/MnoSoaBasePerson.php';
 require_once MNO_PHP_DIR . 'soa/MnoSoaBaseItem.php';
+require_once MNO_PHP_DIR . 'soa/MnoSoaBaseInvoice.php';
 
 //-----------------------------------------------
 // Require Maestrano app files
@@ -40,3 +41,4 @@ require_once MNO_APP_DIR . 'soa/MnoSoaPerson.php';
 require_once MNO_APP_DIR . 'soa/MnoSoaPersonNotes.php';
 require_once MNO_APP_DIR . 'soa/MnoSoaPersonActivities.php';
 require_once MNO_APP_DIR . 'soa/MnoSoaItem.php';
+require_once MNO_APP_DIR . 'soa/MnoSoaInvoice.php';

@@ -16,6 +16,9 @@ require_once APP_DIR . '/modules/Users/Users.php';
 require_once APP_DIR . '/modules/Accounts/Accounts.php';
 require_once APP_DIR . '/modules/Contacts/Contacts.php';
 require_once APP_DIR . '/modules/Products/Products.php';
+require_once APP_DIR . '/modules/Products/Products.php';
+require_once APP_DIR . '/modules/Invoice/Invoice.php';
+require_once APP_DIR . '/modules/Emails/mail.php';
 
 //-----------------------------------------------
 // Perform your custom preparation code

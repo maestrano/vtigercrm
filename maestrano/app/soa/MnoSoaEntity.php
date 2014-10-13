@@ -37,6 +37,14 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
                 $mno_item->receive($item);
             }
         }
+        if (!empty($msg->invoices) && class_exists('MnoSoaInvoice')) {
+            $this->_log->debug(__FUNCTION__ . " has invoices");
+            foreach ($msg->invoices as $invoice) {
+                $this->_log->debug(__FUNCTION__ .  " invoice id = " . $invoice->id);
+                $mno_invoice = new MnoSoaInvoice($this->_db, $this->_log);
+                $mno_invoice->receive($invoice);
+            }
+        }
         $this->_log->info(__FUNCTION__ .  " getUpdates successful (timestamp=" . $timestamp . ")");
     }
 }
