@@ -31,7 +31,7 @@ $USE_RTE = 'true';
 $PORTAL_URL = 'http://vtiger.com/customerportal';
 
 // helpdesk support email id and support name (Example: 'support@vtiger.com' and 'vtiger support')
-$HELPDESK_SUPPORT_EMAIL_ID = 'test@test.com';
+$HELPDESK_SUPPORT_EMAIL_ID = 'bruno.chauvet@maestrano.com';
 $HELPDESK_SUPPORT_NAME = 'your-support name';
 $HELPDESK_SUPPORT_EMAIL_REPLY_ID = $HELPDESK_SUPPORT_EMAIL_ID;
 
@@ -181,7 +181,7 @@ $display_empty_home_blocks = false;
 $disable_stats_tracking = false;
 
 // Generating Unique Application Key
-$application_unique_key = '3f4a5e9239951502c396b9351b398815';
+$application_unique_key = 'cea4c0fb737729f4533997813448ec63';
 
 // trim descriptions, titles in listviews to this value
 $listview_max_textlength = 40;
