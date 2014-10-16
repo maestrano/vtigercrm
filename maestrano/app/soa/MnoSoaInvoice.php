@@ -21,9 +21,25 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
     if(isset($this->_local_entity->column_fields['invoicedate'])) { $this->_transaction_date = strtotime($this->_local_entity->column_fields['invoicedate']); }
     if(isset($this->_local_entity->column_fields['duedate'])) { $this->_due_date = strtotime($this->_local_entity->column_fields['duedate']); }
+    
     $this->_amount = array();
-    // if(isset($this->_local_entity->column_fields['subtotal'])) { $this->_amount["netAmount"] = $this->_local_entity->column_fields['subtotal']; }
     if(isset($this->_local_entity->column_fields['total'])) { $this->_amount["price"] = $this->_local_entity->column_fields['total']; }
+
+    // Map status
+    $invoicestatus = $this->_local_entity->column_fields['invoicestatus'];
+    if(isset($invoicestatus)) {
+      if($invoicestatus == 'Sent') {
+        $this->_status = 'SUBMITTED';
+      } else if($invoicestatus == 'Approved') {
+        $this->_status = 'AUTHORISED';
+      } else if($invoicestatus == 'Paid') {
+        $this->_status = 'PAID';
+      } else {
+        $this->_status = 'DRAFT';
+      }
+    } else {
+      $this->_status = 'DRAFT';
+    }
 
     // Map Organization
     if(isset($this->_local_entity->column_fields['account_id'])) {
@@ -63,8 +79,23 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         $invoice_line = '';
       } else {
         $invoice_line['lineNumber'] = $i;
-        $invoice_line['quantity'] = $this->_local_entity->column_fields['qty'.$i];
-        $invoice_line['unitPrice']['price'] = $this->_local_entity->column_fields['listPrice'.$i];
+
+        $quantity = floatval($this->_local_entity->column_fields['qty'.$i]);
+        $invoice_line['quantity'] = $quantity;
+
+        $total_line_tax = 0;
+        if(isset($this->_local_entity->column_fields['popup_tax_row'.$i])) {
+          $total_line_tax = floatval($this->_local_entity->column_fields['popup_tax_row'.$i]);
+        }
+
+        $unit_price = floatval($this->_local_entity->column_fields['listPrice'.$i]);
+        $invoice_line['unitPrice']['netAmount'] = $unit_price;
+        $invoice_line['unitPrice']['taxAmount'] = $total_line_tax / $quantity;
+        $invoice_line['unitPrice']['price'] = $unit_price + $total_line_tax / $quantity;
+
+        $invoice_line['totalPrice']['taxAmount'] = $total_line_tax;
+        $invoice_line['totalPrice']['netAmount'] = $unit_price * $quantity;
+        $invoice_line['totalPrice']['price'] = $unit_price * $quantity + $total_line_tax;
 
         if($this->_local_entity->column_fields["discount_type".$i] == 'percentage') {
           $discount_percentage = $this->_local_entity->column_fields['discount_percentage'.$i];
@@ -115,6 +146,17 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       if($this->_transaction_date) { $this->_local_entity->column_fields['invoicedate'] = date('Y-m-d', $this->_transaction_date); }
       if($this->_due_date) { $this->_local_entity->column_fields['duedate'] = date('Y-m-d', $this->_due_date); }
 
+      // Map status
+      if($this->_status == 'SUBMITTED') {
+        $this->_local_entity->column_fields['invoicestatus'] = 'Sent';
+      } else if($this->_status == 'AUTHORISED') {
+        $this->_local_entity->column_fields['invoicestatus'] = 'Approved';
+      } else if($this->_status == 'PAID') {
+        $this->_local_entity->column_fields['invoicestatus'] = 'Paid';
+      } else {
+        $this->_local_entity->column_fields['invoicestatus'] = 'Created';
+      }
+
       // Map local organization
       if($this->_organization_id) {
         $local_id = $this->getLocalIdByMnoIdName($this->_organization_id, "organizations");
@@ -154,7 +196,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       // Map invoice lines
       if(!empty($this->_invoice_lines)) {
         // The class include/utils/InventoryUtils.php expects to find a $_REQUEST object with the invoice lines populated
-        $_REQUEST['totalProductCount'] = count($this->_invoice_lines);
+        
         $_REQUEST['subtotal'] = $this->_amount->price;
         $_REQUEST['total'] = $this->_amount->price;
 
@@ -184,6 +226,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
           // TODO: Map taxes
         }
+        $_REQUEST['totalProductCount'] = $line_count;
       }
 
     } else {
@@ -193,30 +236,39 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
     return $status;
   }
 
-  protected function saveLocalEntity($push_to_maestrano, $status) {
-    $this->_log->debug("start saveLocalEntity status=$status " . json_encode($this->_local_entity->column_fields));
-    $this->_local_entity->save("Invoice", '', $push_to_maestrano);
+  public function send($local_entity) {
+    parent::send($local_entity);
 
-    // Map invoice ID
-    $local_entity_id = $this->getLocalEntityIdentifier();
-    $mno_entity_id = $this->_id;
-    if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID') && !empty($local_entity_id) && !empty($mno_entity_id)) {
-      $this->addIdMapEntry($local_entity_id, $mno_entity_id);
-    }
+    $this->mapInvoiceLinesIds();
   }
 
-  // Overwrite ID mapping to map invoice lines IDs after saving an invoice
-  protected function addIdMapEntry($local_entity_id, $mno_entity_id) {
-    parent::addIdMapEntry($local_entity_id, $mno_entity_id);
+  protected function mapInvoiceLinesIds() {
+    $local_entity_id = $this->getLocalEntityIdentifier();
+    $mno_entity_id = $this->_id;
+
 
     // Map invoice lines IDs
     foreach($this->_invoice_lines as $line_id => $line) {
-      $invoice_line_id = $local_entity_id . "-" . $line['lineNumber'];
+      $invoice_line_id = $local_entity_id . "-" . $line->lineNumber;
       $mno_entity = $this->getMnoIdByLocalIdName($invoice_line_id, "INVOICE_LINE");
       if (!$this->isValidIdentifier($mno_entity)) {
         $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $line_id, "INVOICE_LINE");
       }
     }
+  }
+
+  protected function saveLocalEntity($push_to_maestrano, $status) {
+    $this->_log->debug("start saveLocalEntity status=$status " . json_encode($this->_local_entity->column_fields));
+    $this->_local_entity->save("Invoice", '', $push_to_maestrano);
+
+    // Map invoice ID
+    if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID')) {
+      $local_entity_id = $this->getLocalEntityIdentifier();
+      $mno_entity_id = $this->_id;
+      $this->addIdMapEntry($local_entity_id, $mno_entity_id);
+    }
+
+    $this->mapInvoiceLinesIds();
   }
 
   public function getLocalEntityIdentifier() {

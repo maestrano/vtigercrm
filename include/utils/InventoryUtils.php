@@ -513,9 +513,6 @@ function saveInventoryProductDetails(&$focus, $module, $update_prod_stock='false
 {
 	global $log, $adb;
 
-$logger = new MnoSoaBaseLogger();
-$logger->debug("SAVE PRODUCTS REQUEST OBJECT: " . json_encode($_REQUEST));
-
 	$id=$focus->id;
 	$log->debug("Entering into function saveInventoryProductDetails($module).");
 	//Added to get the convertid
