@@ -24,9 +24,10 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     protected $_unit;
     protected $_sale_price;
     protected $_purchase_price;
+    protected $_taxes;
 
     protected function pushId() {
-  throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
+      throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
     }
     
     /**
@@ -140,6 +141,7 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
         if ($this->_unit != null) { $msg['item']->unit = $this->_unit; }
         if ($this->_sale_price != null) { $msg['item']->sale->netAmount = $this->_sale_price; }
         if ($this->_purchase_price != null) { $msg['item']->purchase->netAmount = $this->_purchase_price; }
+        if ($this->_taxes != null) { $msg['item']->taxes = $this->_taxes; }
   
         $this->_log->debug(__FUNCTION__ . " after creating message array");
         $result = json_encode($msg['item']);
@@ -170,6 +172,9 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
             }
             if (!empty($mno_entity->purchase)) {
                 $this->set_if_array_key_has_value($this->_purchase_price, 'netAmount', $mno_entity->purchase);
+            }
+            if (!empty($mno_entity->taxes)) {
+                $this->set_if_array_key_has_value($this->_taxes, 'taxes', $mno_entity);
             }
 
             $this->set_if_array_key_has_value($this->_entity, 'entity', $mno_entity);

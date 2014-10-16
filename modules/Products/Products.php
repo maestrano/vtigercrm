@@ -113,6 +113,7 @@ class Products extends CRMEntity {
 	function insertTaxInformation($tablename, $module)
 	{
 		global $adb, $log;
+
 		$log->debug("Entering into insertTaxInformation($tablename, $module) method ...");
 		$tax_details = getAllTaxes();
 
@@ -132,6 +133,7 @@ class Products extends CRMEntity {
 		{
 			$tax_name = $tax_details[$i]['taxname'];
 			$tax_checkname = $tax_details[$i]['taxname']."_check";
+
 			if($_REQUEST[$tax_checkname] == 'on' || $_REQUEST[$tax_checkname] == 1)
 			{
 				$taxid = getTaxId($tax_name);
@@ -1258,7 +1260,7 @@ class Products extends CRMEntity {
 
 	function save($module_name,$fileid='',$push_to_maestrano=true) {
 	  // call super
-	  $result = parent::save($module_name,$fileid);
+	  $result = parent::save($module_name, $fileid);
 
           try {
             if ($push_to_maestrano) {
