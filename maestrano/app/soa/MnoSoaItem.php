@@ -196,9 +196,6 @@ class MnoSoaItem extends MnoSoaBaseItem
 
     protected function pullTaxes() {
       if(isset($this->_taxes)) {
-        // Available taxes
-        $tax_details = getAllTaxes();
-
         foreach ($this->_taxes as $tax_names => $mno_tax) {
           if(!isset($mno_tax->rate)) { continue; }
 
