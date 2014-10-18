@@ -200,7 +200,7 @@ class MnoSoaItem extends MnoSoaBaseItem
           $local_tax = $this->findTaxByLabel($tax_names);
           // Add tax type if missing
           if(!isset($local_tax)) {
-            addTaxType($tax_names, $mno_tax->rate);
+            $this->addTaxType($tax_names, $mno_tax->rate);
             $local_tax = $this->findTaxByLabel($tax_names);
           }
           $_REQUEST[$local_tax['taxname']."_check"] = 1;
@@ -217,6 +217,24 @@ class MnoSoaItem extends MnoSoaBaseItem
         }
       }
       return null;
+    }
+
+    private function addTaxType($taxlabel, $taxvalue) {
+      $check_query = "select taxlabel from vtiger_inventorytaxinfo where taxlabel=?";
+      $check_res = $this->_db->pquery($check_query, array($taxlabel));
+      if($this->_db->num_rows($check_res) > 0) { return null; }
+
+      $taxid = $this->_db->getUniqueID("vtiger_inventorytaxinfo");
+      $taxname = "tax".$taxid;
+      $query = "alter table vtiger_inventoryproductrel add column $taxname decimal(7,3) default NULL";
+      $res = $this->_db->pquery($query, array());
+
+      // if the tax is added as a column then we should add this tax in the list of taxes
+      if($res) {
+        $query1 = "insert into vtiger_inventorytaxinfo values(?,?,?,?,?)";
+        $params1 = array($taxid, $taxname, $taxlabel, $taxvalue, 0);
+        $res1 = $this->_db->pquery($query1, $params1);
+      }
     }
 }
 

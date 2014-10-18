@@ -122,11 +122,11 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       $local_id = $this->getLocalIdByMnoId($this->_id);
       $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
 
-      if($this->_type == 'SUPPLIER') {
-        // TODO: Map as a SalesOrder
-        $this->_log->debug("skipping supplier sale order");
-        return constant('MnoSoaBaseEntity::STATUS_ERROR');
-      }
+      // if($this->_type == 'SUPPLIER') {
+      //   // TODO: Map as a SalesOrder
+      //   $this->_log->debug("skipping supplier sale order");
+      //   return constant('MnoSoaBaseEntity::STATUS_ERROR');
+      // }
       
       if ($this->isValidIdentifier($local_id)) {
         $this->_log->debug(__FUNCTION__ . " is STATUS_EXISTING_ID");
@@ -203,6 +203,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         
         $_REQUEST['subtotal'] = $this->_amount->price;
         $_REQUEST['total'] = $this->_amount->price;
+        $_REQUEST['taxtype'] = 'individual';
 
         $line_count = 0;
         foreach($this->_invoice_lines as $line_id => $line) {
@@ -221,14 +222,16 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
           // Map attributes
           $_REQUEST['qty'.$line_count] = $line->quantity;
-          $_REQUEST['listPrice'.$line_count] = $line->unitPrice->price;
+          $_REQUEST['listPrice'.$line_count] = $line->unitPrice->netAmount;
 
           if(isset($line->reductionPercent)) {
             $_REQUEST['discount_type'.$line_count] = 'percentage';
             $_REQUEST['discount_percentage'.$line_count] = $line->reductionPercent;
           }
 
-          // TODO: Map taxes
+          // Map taxes
+          $this->mapInvoiceLineTaxes($line);
+
         }
         $_REQUEST['totalProductCount'] = $line_count;
       }
@@ -277,6 +280,27 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
   public function getLocalEntityIdentifier() {
     return $this->_local_entity->id;
+  }
+
+  protected function mapInvoiceLineTaxes($line) {
+    if(isset($line->taxes)) {
+      foreach ($line->taxes as $tax_names => $mno_tax) {
+        if(!isset($mno_tax->rate)) { continue; }
+        $local_tax = $this->findTaxByLabel($tax_names);
+        $request_tax_name = $local_tax['taxname']."_percentage".$line->lineNumber;
+        $_REQUEST[$request_tax_name] = $mno_tax->rate;
+      }
+    }
+  }
+
+  private function findTaxByLabel($tax_label) {
+    $tax_details = getAllTaxes();
+    foreach ($tax_details as $tax_detail) {
+      if($tax_detail['taxlabel'] == $tax_label) {
+        return $tax_detail;
+      }
+    }
+    return null;
   }
 }
 
