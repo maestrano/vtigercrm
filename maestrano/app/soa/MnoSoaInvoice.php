@@ -88,6 +88,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           $total_line_tax = floatval($this->_local_entity->column_fields['popup_tax_row'.$i]);
         }
 
+        // Map line prices
         $unit_price = floatval($this->_local_entity->column_fields['listPrice'.$i]);
         $invoice_line['unitPrice']['netAmount'] = $unit_price;
         $invoice_line['unitPrice']['taxAmount'] = $total_line_tax / $quantity;
@@ -101,12 +102,23 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           $discount_percentage = $this->_local_entity->column_fields['discount_percentage'.$i];
         }
 
+        // Map item id
         $product_id = $this->_local_entity->column_fields['hdnProductId'.$i];
         if(isset($product_id)) {
           $mno_product_id = $this->getMnoIdByLocalIdName($product_id, "PRODUCTS");
           $item_id = $mno_product_id->_id;
           $invoice_line['item']->id = $mno_product_id->_id;
         }
+
+        // Map taxes
+        $taxes = array();
+        $product_taxes = getTaxDetailsForProduct($product_id);
+        foreach ($product_taxes as $key => $product_tax) {
+          if($product_tax['percentage'] > 0) {
+            $taxes[$product_tax['taxlabel']] = array('name' => $product_tax['taxlabel'], 'rate' => $product_tax['percentage']);
+          }
+        }
+        $invoice_line['taxes'] = $taxes;
       }
 
       $this->_invoice_lines[$invoice_line_mno_id] = $invoice_line;
@@ -149,6 +161,10 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       $this->_local_entity->column_fields['invoice_no'] = $this->pull_set_or_delete_value($this->_transaction_number);
       if($this->_transaction_date) { $this->_local_entity->column_fields['invoicedate'] = date('Y-m-d', $this->_transaction_date); }
       if($this->_due_date) { $this->_local_entity->column_fields['duedate'] = date('Y-m-d', $this->_due_date); }
+
+      $this->_local_entity->column_fields['currency_id'] = 1;
+      $this->_local_entity->column_fields['conversion_rate'] = 1;
+      
 
       // Map status
       if($this->_status == 'SUBMITTED') {
