@@ -176,7 +176,6 @@ class MnoSoaItem extends MnoSoaBaseItem
 
     protected function saveLocalEntity($push_to_maestrano) {
       $this->_local_entity->save("Products", '', $push_to_maestrano);
-      $this->_local_entity->insertTaxInformation('vtiger_producttaxrel', 'Products');;
     }
     
     public function getLocalEntityIdentifier() {
@@ -198,7 +197,6 @@ class MnoSoaItem extends MnoSoaBaseItem
       if(isset($this->_taxes)) {
         foreach ($this->_taxes as $tax_names => $mno_tax) {
           if(!isset($mno_tax->rate)) { continue; }
-
           $local_tax = $this->findTaxByLabel($tax_names);
           // Add tax type if missing
           if(!isset($local_tax)) {

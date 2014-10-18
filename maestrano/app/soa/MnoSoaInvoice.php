@@ -116,13 +116,17 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
   }
 
   protected function pullInvoice() {
-    $this->_log->debug("start pullInvoice for " . json_encode($this->_id));
-
-    $this->_log->debug(__FUNCTION__ . " start " . $this->_id);
+    $this->_log->debug("start " . __FUNCTION__ . " for " . json_encode($this->_id));
         
     if (!empty($this->_id)) {
       $local_id = $this->getLocalIdByMnoId($this->_id);
       $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
+
+      if($this->_type == 'SUPPLIER') {
+        // TODO: Map as a SalesOrder
+        $this->_log->debug("skipping supplier sale order");
+        return constant('MnoSoaBaseEntity::STATUS_ERROR');
+      }
       
       if ($this->isValidIdentifier($local_id)) {
         $this->_log->debug(__FUNCTION__ . " is STATUS_EXISTING_ID");
