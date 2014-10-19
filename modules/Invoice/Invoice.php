@@ -144,6 +144,28 @@ class Invoice extends CRMEntity {
 		$this->db->pquery($update_query, $update_params);
 	}
 
+	function save($module_name, $fileid='', $push_to_maestrano=true) {
+	  // call super
+	  $result = parent::save($module_name,$fileid);
+
+    try {
+      if ($push_to_maestrano) {
+          // Get Maestrano Service
+          $maestrano = MaestranoService::getInstance();
+
+          if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
+            $mno_invoice=new MnoSoaInvoice(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+            $this->column_fields = array_merge($this->column_fields, $_REQUEST);
+            $mno_invoice->send($this);
+          }
+      }
+    } catch (Exception $ex) {
+        // skip
+    }
+
+	  return $result;
+	}
+
 	/**	function used to get the name of the current object
 	 *	@return string $this->name - name of the current object
 	 */

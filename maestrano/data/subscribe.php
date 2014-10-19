@@ -21,21 +21,33 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
     
     switch ($notification_entity) {
 	    case "ORGANIZATIONS":
-                if (class_exists('MnoSoaOrganization')) {
-                    $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);		
-                    $mno_org->receiveNotification($notification);
-                }
+              if (class_exists('MnoSoaOrganization')) {
+                $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);		
+                $mno_org->receiveNotification($notification);
+              }
 			break;
       case "PERSONS":
               if (class_exists('MnoSoaPerson')) {
-                  $mno_person = new MnoSoaPerson($opts['db_connection'], $log);   
-                  $mno_person->receiveNotification($notification);
+                $mno_person = new MnoSoaPerson($opts['db_connection'], $log);   
+                $mno_person->receiveNotification($notification);
               }
       break;
       case "ITEMS":
               if (class_exists('MnoSoaItem')) {
-                  $mno_item = new MnoSoaItem($opts['db_connection'], $log);   
-                  $mno_item->receiveNotification($notification);
+                $mno_item = new MnoSoaItem($opts['db_connection'], $log);   
+                $mno_item->receiveNotification($notification);
+              }
+      break;
+      case "INVOICES":
+              if (class_exists('MnoSoaInvoice')) {
+                $mno_invoice = new MnoSoaInvoice($opts['db_connection'], $log);   
+                $mno_invoice->receiveNotification($notification);
+              }
+      break;
+      case "COMPANY":
+              if (class_exists('MnoSoaCompany')) {
+                $mno_company = new MnoSoaCompany($opts['db_connection'], $log);
+                $mno_company->receiveNotification($notification);
               }
       break;
     }

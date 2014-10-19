@@ -24,9 +24,10 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     protected $_unit;
     protected $_sale_price;
     protected $_purchase_price;
+    protected $_taxes;
 
     protected function pushId() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
+      throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
     }
     
     /**
@@ -39,7 +40,7 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     *           STATUS_DELETED_ID -> Deleted identifier
     */
     protected function pullId() {
-		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
     }
     
     protected function pushName() {
@@ -107,7 +108,7 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     }
     
     protected function saveLocalEntity($push_to_maestrano, $status) {
-		throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
     }
     
     public function getLocalEntityIdentifier() {
@@ -120,10 +121,10 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     * @return Item: the item json object
     */
     protected function build() {
-    		$this->_log->debug(__FUNCTION__ . " start build function");
-    		$this->pushId();
-    		$this->_log->debug(__FUNCTION__ . " after Id");
-    		$this->pushName();
+        $this->_log->debug(__FUNCTION__ . " start build function");
+        $this->pushId();
+        $this->_log->debug(__FUNCTION__ . " after Id");
+        $this->pushName();
         $this->pushCode();
         $this->pushDescription();
         $this->pushStatus();
@@ -138,15 +139,16 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
         if ($this->_status != null) { $msg['item']->status = $this->_status; }
         if ($this->_type != null) { $msg['item']->type = $this->_type; }
         if ($this->_unit != null) { $msg['item']->unit = $this->_unit; }
-        if ($this->_sale_price != null) { $msg['item']->sale->price = $this->_sale_price; }
-        if ($this->_purchase_price != null) { $msg['item']->purchase->price = $this->_purchase_price; }
-	
-    		$this->_log->debug(__FUNCTION__ . " after creating message array");
-    		$result = json_encode($msg['item']);
-    	
-    		$this->_log->debug(__FUNCTION__ . " result = " . $result);
-    	
-    		return json_encode($msg['item']);
+        if ($this->_sale_price != null) { $msg['item']->sale->netAmount = $this->_sale_price; }
+        if ($this->_purchase_price != null) { $msg['item']->purchase->netAmount = $this->_purchase_price; }
+        if ($this->_taxes != null) { $msg['item']->taxes = $this->_taxes; }
+  
+        $this->_log->debug(__FUNCTION__ . " after creating message array");
+        $result = json_encode($msg['item']);
+      
+        $this->_log->debug(__FUNCTION__ . " result = " . $result);
+      
+        return json_encode($msg['item']);
     }
     
     protected function persist($mno_entity) {
@@ -166,10 +168,13 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
             $this->set_if_array_key_has_value($this->_unit, 'unit', $mno_entity);
             
             if (!empty($mno_entity->sale)) {
-                $this->set_if_array_key_has_value($this->_sale_price, 'price', $mno_entity->sale);
+                $this->set_if_array_key_has_value($this->_sale_price, 'netAmount', $mno_entity->sale);
             }
             if (!empty($mno_entity->purchase)) {
-                $this->set_if_array_key_has_value($this->_purchase_price, 'price', $mno_entity->purchase);
+                $this->set_if_array_key_has_value($this->_purchase_price, 'netAmount', $mno_entity->purchase);
+            }
+            if (!empty($mno_entity->taxes)) {
+                $this->set_if_array_key_has_value($this->_taxes, 'taxes', $mno_entity);
             }
 
             $this->set_if_array_key_has_value($this->_entity, 'entity', $mno_entity);

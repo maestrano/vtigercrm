@@ -19,6 +19,10 @@ class MnoSoaItem extends MnoSoaBaseItem
               $this->_id = $mno_id->_id;
             }
         }
+
+        // TODO: Move into a PUSH method
+        $this->pushTaxes();
+
         $this->_log->debug(__FUNCTION__ . " end");
     }
     
@@ -28,6 +32,9 @@ class MnoSoaItem extends MnoSoaBaseItem
       if (!empty($this->_id)) {
           $local_id = $this->getLocalIdByMnoId($this->_id);
           $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
+
+          // TODO: Move into a PULL method
+          $this->pullTaxes();
           
           if ($this->isValidIdentifier($local_id)) {
             $this->_log->debug(__FUNCTION__ . " is STATUS_EXISTING_ID");
@@ -50,7 +57,6 @@ class MnoSoaItem extends MnoSoaBaseItem
             $this->pullUnit();
             $this->pullSalePrice();
             $this->pullPurchasePrice();
-
           return constant('MnoSoaBaseEntity::STATUS_NEW_ID');
           }
       }
@@ -174,6 +180,61 @@ class MnoSoaItem extends MnoSoaBaseItem
     
     public function getLocalEntityIdentifier() {
       return $this->_local_entity->id;
+    }
+
+    protected function pushTaxes() {
+      $item_tax_details = getTaxDetailsForProduct($this->getLocalEntityIdentifier());
+      if(isset($item_tax_details)) {
+        $taxes = array();
+        foreach ($item_tax_details as $tax_detail) {
+          $taxes[$tax_detail['taxlabel']] = array('name' => $tax_detail['taxlabel'], 'rate' => $tax_detail['percentage']);
+        }
+      }
+      $this->_taxes = $taxes;
+    }
+
+    protected function pullTaxes() {
+      if(isset($this->_taxes)) {
+        foreach ($this->_taxes as $tax_names => $mno_tax) {
+          if(!isset($mno_tax->rate)) { continue; }
+          $local_tax = $this->findTaxByLabel($tax_names);
+          // Add tax type if missing
+          if(!isset($local_tax)) {
+            $this->addTaxType($tax_names, $mno_tax->rate);
+            $local_tax = $this->findTaxByLabel($tax_names);
+          }
+          $_REQUEST[$local_tax['taxname']."_check"] = 1;
+          $_REQUEST[$local_tax['taxname']] = $mno_tax->rate;
+        }
+      }
+    }
+
+    private function findTaxByLabel($tax_label) {
+      $tax_details = getAllTaxes();
+      foreach ($tax_details as $tax_detail) {
+        if($tax_detail['taxlabel'] == $tax_label) {
+          return $tax_detail;
+        }
+      }
+      return null;
+    }
+
+    private function addTaxType($taxlabel, $taxvalue) {
+      $check_query = "select taxlabel from vtiger_inventorytaxinfo where taxlabel=?";
+      $check_res = $this->_db->pquery($check_query, array($taxlabel));
+      if($this->_db->num_rows($check_res) > 0) { return null; }
+
+      $taxid = $this->_db->getUniqueID("vtiger_inventorytaxinfo");
+      $taxname = "tax".$taxid;
+      $query = "alter table vtiger_inventoryproductrel add column $taxname decimal(7,3) default NULL";
+      $res = $this->_db->pquery($query, array());
+
+      // if the tax is added as a column then we should add this tax in the list of taxes
+      if($res) {
+        $query1 = "insert into vtiger_inventorytaxinfo values(?,?,?,?,?)";
+        $params1 = array($taxid, $taxname, $taxlabel, $taxvalue, 0);
+        $res1 = $this->_db->pquery($query1, $params1);
+      }
     }
 }
 

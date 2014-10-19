@@ -18,7 +18,7 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
             foreach ($msg->organizations as $organization) {
                 $this->_log->debug(__FUNCTION__ .  " org id = " . $organization->id);
                 $mno_org = new MnoSoaOrganization($this->_db, $this->_log);
-				        $mno_org->receive($organization);
+                $mno_org->receive($organization);
             }
         }
         if (!empty($msg->persons) && class_exists('MnoSoaPerson')) {
@@ -35,6 +35,22 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
                 $this->_log->debug(__FUNCTION__ .  " item id = " . $item->id);
                 $mno_item = new MnoSoaItem($this->_db, $this->_log);
                 $mno_item->receive($item);
+            }
+        }
+        if (!empty($msg->invoices) && class_exists('MnoSoaInvoice')) {
+            $this->_log->debug(__FUNCTION__ . " has invoices");
+            foreach ($msg->invoices as $invoice) {
+                $this->_log->debug(__FUNCTION__ .  " invoice id = " . $invoice->id);
+                $mno_invoice = new MnoSoaInvoice($this->_db, $this->_log);
+                $mno_invoice->receive($invoice);
+            }
+        }
+        if (!empty($msg->companys) && class_exists('MnoSoaCompany')) {
+            $this->_log->debug(__FUNCTION__ . " has companys");
+            foreach ($msg->companys as $company) {
+                $this->_log->debug(__FUNCTION__ .  " company id = " . $company->id);
+                $mno_company = new MnoSoaCompany($this->_db, $this->_log);
+                $mno_company->receive($company);
             }
         }
         $this->_log->info(__FUNCTION__ .  " getUpdates successful (timestamp=" . $timestamp . ")");

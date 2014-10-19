@@ -512,6 +512,7 @@ function updateInventoryProductRel($entity)
 function saveInventoryProductDetails(&$focus, $module, $update_prod_stock='false', $updateDemand='')
 {
 	global $log, $adb;
+
 	$id=$focus->id;
 	$log->debug("Entering into function saveInventoryProductDetails($module).");
 	//Added to get the convertid

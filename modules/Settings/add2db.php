@@ -146,6 +146,13 @@ require_once('include/utils/utils.php');
 		}
 		$adb->pquery($sql, $params);
 
+		$maestrano = MaestranoService::getInstance();
+		if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+			// Save the parent entity person
+			$mno_company = new MnoSoaCompany(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+			$mno_company->send(array());
+		}
+
 		if($savelogo=="true")
 		{
 			header("Location: index.php?parenttab=Settings&module=Settings&action=OrganizationConfig");
