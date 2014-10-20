@@ -1,2 +1,6 @@
 *.swp
 .DS_Store
+
+config.inc.php
+parent_tabdata.php
+tabdata.php
