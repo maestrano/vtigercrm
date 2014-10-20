@@ -158,7 +158,6 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
       // Map invoice attributes
       $this->_local_entity->column_fields['subject'] = $this->pull_set_or_delete_value($this->_transaction_number);
-      $this->_local_entity->column_fields['invoice_no'] = $this->pull_set_or_delete_value($this->_transaction_number);
       if($this->_transaction_date) { $this->_local_entity->column_fields['invoicedate'] = date('Y-m-d', $this->_transaction_date); }
       if($this->_due_date) { $this->_local_entity->column_fields['duedate'] = date('Y-m-d', $this->_due_date); }
 
