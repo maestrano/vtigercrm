@@ -15,12 +15,15 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
     $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
     $this->_id = ($this->isValidIdentifier($mno_id)) ? $mno_id->_id : null;
 
-    if($this->_local_entity->column_fields['invoice_no'] != 'AUTO GEN ON SAVE') {
-      $this->_transaction_number = $this->push_set_or_delete_value($this->_local_entity->column_fields['invoice_no']);
+    if(isset($this->_local_entity->column_fields['customerno'])) { 
+      $this->_transaction_number = $this->push_set_or_delete_value($this->_local_entity->column_fields['customerno']);
     }
-
-    if(isset($this->_local_entity->column_fields['invoicedate'])) { $this->_transaction_date = strtotime($this->_local_entity->column_fields['invoicedate']); }
-    if(isset($this->_local_entity->column_fields['duedate'])) { $this->_due_date = strtotime($this->_local_entity->column_fields['duedate']); }
+    if(isset($this->_local_entity->column_fields['invoicedate'])) {
+      $this->_transaction_date = strtotime($this->push_set_or_delete_value($this->_local_entity->column_fields['invoicedate']));
+    }
+    if(isset($this->_local_entity->column_fields['duedate'])) {
+      $this->_due_date = strtotime($this->push_set_or_delete_value($this->_local_entity->column_fields['duedate']));
+    }
     
     $this->_amount = array();
     if(isset($this->_local_entity->column_fields['total'])) { $this->_amount["price"] = $this->_local_entity->column_fields['total']; }
@@ -59,20 +62,17 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
     for($i=1; $i<=$tot_no_prod; $i++) {
       $invoice_line = array();
 
-      if(isset($id)) {
-        // vTiger recreates the invoice lines on every save, so local IDs are not mappable
-        // Use Invoice ID + Line number instead
-        $invoice_line_id = $id . "-" . $i;
-        $mno_entity = $this->getMnoIdByLocalIdName($invoice_line_id, "INVOICE_LINE");
-        if($this->isValidIdentifier($mno_entity)) {
-          $invoice_line_mno_id = $mno_entity->_id;
-        } else {
-          // Generate and save ID
-          $invoice_line_mno_id = uniqid();
-          $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $invoice_line_mno_id, "INVOICE_LINE");
-        }
+      // vTiger recreates the invoice lines on every save, so local IDs are not mappable
+      // Use Invoice ID + Line number instead
+      $invoice_line_id = $id . "-" . $i;
+      $this->_log->debug("processing invoice line " . $invoice_line_id);
+      $mno_entity = $this->getMnoIdByLocalIdName($invoice_line_id, "INVOICE_LINE");
+      if($this->isValidIdentifier($mno_entity)) {
+        $invoice_line_mno_id = $mno_entity->_id;
       } else {
+        // Generate and save ID
         $invoice_line_mno_id = uniqid();
+        $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $invoice_line_mno_id, "INVOICE_LINE");
       }
 
       if($this->_local_entity->column_fields["deleted".$i] == 1) {
@@ -83,6 +83,14 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         $quantity = floatval($this->_local_entity->column_fields['qty'.$i]);
         $invoice_line['quantity'] = $quantity;
 
+        // Line discount
+        $discount = 0;
+        if($this->_local_entity->column_fields["discount_type".$i] == 'percentage') {
+          $discount = floatval($this->_local_entity->column_fields['discount_percentage'.$i]);
+          $invoice_line['reductionPercent'] = $discount;
+        }
+
+        // Line total tax
         $total_line_tax = 0;
         if(isset($this->_local_entity->column_fields['popup_tax_row'.$i])) {
           $total_line_tax = floatval($this->_local_entity->column_fields['popup_tax_row'.$i]);
@@ -91,16 +99,11 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         // Map line prices
         $unit_price = floatval($this->_local_entity->column_fields['listPrice'.$i]);
         $invoice_line['unitPrice']['netAmount'] = $unit_price;
-        $invoice_line['unitPrice']['taxAmount'] = $total_line_tax / $quantity;
-        $invoice_line['unitPrice']['price'] = $unit_price + $total_line_tax / $quantity;
 
+        $discount_factor = (1 - ($discount / 100));
         $invoice_line['totalPrice']['taxAmount'] = $total_line_tax;
-        $invoice_line['totalPrice']['netAmount'] = $unit_price * $quantity;
-        $invoice_line['totalPrice']['price'] = $unit_price * $quantity + $total_line_tax;
-
-        if($this->_local_entity->column_fields["discount_type".$i] == 'percentage') {
-          $discount_percentage = $this->_local_entity->column_fields['discount_percentage'.$i];
-        }
+        $invoice_line['totalPrice']['netAmount'] = $unit_price * $quantity * $discount_factor;
+        $invoice_line['totalPrice']['price'] = ($unit_price * $quantity) * $discount_factor + $total_line_tax;
 
         // Map item id
         $product_id = $this->_local_entity->column_fields['hdnProductId'.$i];
@@ -112,12 +115,19 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
         // Map taxes
         $taxes = array();
+        $total_tax_rate = 0;
         $product_taxes = getTaxDetailsForProduct($product_id);
         foreach ($product_taxes as $key => $product_tax) {
           if($product_tax['percentage'] > 0) {
             $taxes[$product_tax['taxlabel']] = array('name' => $product_tax['taxlabel'], 'rate' => $product_tax['percentage']);
+            $total_tax_rate += $product_tax['percentage'];
           }
         }
+        $invoice_line['unitPrice']['taxRate'] = $total_tax_rate;
+        $invoice_line['unitPrice']['taxAmount'] = $unit_price * ($total_tax_rate / 100);
+        $invoice_line['unitPrice']['price'] = $unit_price * (1 + ($total_tax_rate / 100));
+        
+        $invoice_line['totalPrice']['taxRate'] = $total_tax_rate;
         $invoice_line['taxes'] = $taxes;
       }
 
@@ -158,6 +168,8 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
       // Map invoice attributes
       $this->_local_entity->column_fields['subject'] = $this->pull_set_or_delete_value($this->_transaction_number);
+      $this->_local_entity->column_fields['invoice_no'] = $this->pull_set_or_delete_value($this->_transaction_number);
+      $this->_local_entity->column_fields['customerno'] = $this->pull_set_or_delete_value($this->_transaction_number);
       if($this->_transaction_date) { $this->_local_entity->column_fields['invoicedate'] = date('Y-m-d', $this->_transaction_date); }
       if($this->_due_date) { $this->_local_entity->column_fields['duedate'] = date('Y-m-d', $this->_due_date); }
 
@@ -258,16 +270,9 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
     return $status;
   }
 
-  public function send($local_entity) {
-    parent::send($local_entity);
-
-    $this->mapInvoiceLinesIds();
-  }
-
   protected function mapInvoiceLinesIds() {
     $local_entity_id = $this->getLocalEntityIdentifier();
     $mno_entity_id = $this->_id;
-
 
     // Map invoice lines IDs
     foreach($this->_invoice_lines as $line_id => $line) {
