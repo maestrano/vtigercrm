@@ -15,6 +15,9 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
     $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
     $this->_id = ($this->isValidIdentifier($mno_id)) ? $mno_id->_id : null;
 
+    if(isset($this->_local_entity->column_fields['subject'])) { 
+      $this->_title = $this->push_set_or_delete_value($this->_local_entity->column_fields['subject']);
+    }
     if(isset($this->_local_entity->column_fields['customerno'])) { 
       $this->_transaction_number = $this->push_set_or_delete_value($this->_local_entity->column_fields['customerno']);
     }
@@ -114,13 +117,16 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         }
 
         // Map taxes
-        $taxes = array();
         $total_tax_rate = 0;
         $product_taxes = getTaxDetailsForProduct($product_id);
         foreach ($product_taxes as $key => $product_tax) {
           if($product_tax['percentage'] > 0) {
-            $taxes[$product_tax['taxlabel']] = array('name' => $product_tax['taxlabel'], 'rate' => $product_tax['percentage']);
             $total_tax_rate += $product_tax['percentage'];
+
+            $mno_id = $this->getMnoIdByLocalIdName($product_tax['taxid'], 'TAX');
+            if(isset($mno_id)) {
+              $invoice_line['saleTaxCode'] = array('id' => $mno_id->_id);
+            }
           }
         }
         $invoice_line['unitPrice']['taxRate'] = $total_tax_rate;
@@ -128,7 +134,6 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         $invoice_line['unitPrice']['price'] = $unit_price * (1 + ($total_tax_rate / 100));
         
         $invoice_line['totalPrice']['taxRate'] = $total_tax_rate;
-        $invoice_line['taxes'] = $taxes;
       }
 
       $this->_invoice_lines[$invoice_line_mno_id] = $invoice_line;
@@ -139,7 +144,8 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
   protected function pullInvoice() {
     $this->_log->debug("start " . __FUNCTION__ . " for " . json_encode($this->_id));
-        
+    $_REQUEST = array();
+    
     if (!empty($this->_id)) {
       $local_id = $this->getLocalIdByMnoId($this->_id);
       $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
@@ -167,7 +173,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       }
 
       // Map invoice attributes
-      $this->_local_entity->column_fields['subject'] = $this->pull_set_or_delete_value($this->_transaction_number);
+      $this->_local_entity->column_fields['subject'] = $this->pull_set_or_delete_value($this->_title);
       $this->_local_entity->column_fields['invoice_no'] = $this->pull_set_or_delete_value($this->_transaction_number);
       $this->_local_entity->column_fields['customerno'] = $this->pull_set_or_delete_value($this->_transaction_number);
       if($this->_transaction_date) { $this->_local_entity->column_fields['invoicedate'] = date('Y-m-d', $this->_transaction_date); }
@@ -254,6 +260,9 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           if(isset($line->reductionPercent)) {
             $_REQUEST['discount_type'.$line_count] = 'percentage';
             $_REQUEST['discount_percentage'.$line_count] = $line->reductionPercent;
+          } else {
+            $_REQUEST['discount_type'.$line_count] = '';
+            $_REQUEST['discount_percentage'.$line_count] = 0;
           }
 
           // Map taxes
@@ -303,20 +312,28 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
   }
 
   protected function mapInvoiceLineTaxes($line) {
-    if(isset($line->taxes)) {
-      foreach ($line->taxes as $tax_names => $mno_tax) {
-        if(!isset($mno_tax->rate)) { continue; }
-        $local_tax = $this->findTaxByLabel($tax_names);
-        $request_tax_name = $local_tax['taxname']."_percentage".$line->lineNumber;
-        $_REQUEST[$request_tax_name] = $mno_tax->rate;
+    if(isset($line->taxCode)) {
+      $this->_log->debug(__FUNCTION__ . " assign invoice line tax_code: " . $line->taxCode->id);
+      $local_id = $this->getLocalIdByMnoIdName($line->taxCode->id, "tax_codes");
+      if ($this->isValidIdentifier($local_id)) {
+        $this->_log->debug(__FUNCTION__ . " invoice line tax local_id = " . json_encode($local_id));
+
+        $local_tax = $this->findTaxById($local_id->_id);
+        if(isset($local_tax)) {
+          $request_tax_name = $local_tax['taxname']."_percentage".$line->lineNumber;
+          $_REQUEST[$request_tax_name] = $local_tax['percentage'];
+        } else {
+          $request_tax_name = $local_tax['taxname']."_percentage".$line->lineNumber;
+          $_REQUEST[$request_tax_name] = 0;
+        }
       }
     }
   }
 
-  private function findTaxByLabel($tax_label) {
+  private function findTaxById($tax_id) {
     $tax_details = getAllTaxes();
     foreach ($tax_details as $tax_detail) {
-      if($tax_detail['taxlabel'] == $tax_label) {
+      if($tax_detail['taxid'] == $tax_id) {
         return $tax_detail;
       }
     }
