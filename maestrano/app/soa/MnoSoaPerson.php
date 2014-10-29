@@ -305,7 +305,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
         vtlib_setup_modulevars("Accounts", $this->_local_entity);
         $org_contact->id = $local_id;
         
-        $organization = new MnoSoaOrganization($this->_db, $this->_log);    
+        $organization = new MnoSoaOrganization($this->_db, $this->_log);
         $status = $organization->send($org_contact);
 
         if ($status) {

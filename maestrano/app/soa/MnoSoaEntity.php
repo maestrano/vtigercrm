@@ -13,6 +13,23 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
         $msg = $this->callMaestrano("GET", "updates" . '/' . $timestamp);
         if (empty($msg)) { return false; }
         $this->_log->debug(__FUNCTION__ .  " after maestrano call");
+
+        if (!empty($msg->companys) && class_exists('MnoSoaCompany')) {
+            $this->_log->debug(__FUNCTION__ . " has companys");
+            foreach ($msg->companys as $company) {
+                $this->_log->debug(__FUNCTION__ .  " company id = " . $company->id);
+                $mno_company = new MnoSoaCompany($this->_db, $this->_log);
+                $mno_company->receive($company);
+            }
+        }
+        if (!empty($msg->taxCodes) && class_exists('MnoSoaTax')) {
+            $this->_log->debug(__FUNCTION__ . " has taxCodes");
+            foreach ($msg->taxCodes as $taxCode) {
+                $this->_log->debug(__FUNCTION__ .  " taxCode id = " . $taxCode->id);
+                $mno_tax_rate = new MnoSoaTax($this->_db, $this->_log);
+                $mno_tax_rate->receive($taxCode);
+            }
+        }
         if (!empty($msg->organizations) && class_exists('MnoSoaOrganization')) {
             $this->_log->debug(__FUNCTION__ .  " has organizations");
             foreach ($msg->organizations as $organization) {
@@ -43,14 +60,6 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
                 $this->_log->debug(__FUNCTION__ .  " invoice id = " . $invoice->id);
                 $mno_invoice = new MnoSoaInvoice($this->_db, $this->_log);
                 $mno_invoice->receive($invoice);
-            }
-        }
-        if (!empty($msg->companys) && class_exists('MnoSoaCompany')) {
-            $this->_log->debug(__FUNCTION__ . " has companys");
-            foreach ($msg->companys as $company) {
-                $this->_log->debug(__FUNCTION__ .  " company id = " . $company->id);
-                $mno_company = new MnoSoaCompany($this->_db, $this->_log);
-                $mno_company->receive($company);
             }
         }
         $this->_log->info(__FUNCTION__ .  " getUpdates successful (timestamp=" . $timestamp . ")");

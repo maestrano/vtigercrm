@@ -137,6 +137,12 @@ function updateTaxPercentages($new_percentages, $sh='')
 		}
 	}
 
+	$maestrano = MaestranoService::getInstance();
+	if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+    $mno_tax = new MnoSoaTax(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+    $mno_tax->sendAllTaxes();
+	}
+
 	$log->debug("Exiting from the function updateTaxPercentages");
 }
 
@@ -177,6 +183,12 @@ function updateTaxLabels($new_labels, $sh='')
 	if($duplicateTaxLabels > 0) {
 		return "<font color='red'>".getTranslatedString('LBL_ERR_SOME_TAX_LABELS_ALREADY_EXISTS', $currentModule)."</font>";
 	}
+
+  $maestrano = MaestranoService::getInstance();
+  if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+    $mno_tax = new MnoSoaTax(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+    $mno_tax->sendAllTaxes();
+  }
 
 	$log->debug("Exiting from the function updateTaxPercentages");
 }
@@ -228,6 +240,12 @@ function addTaxType($taxlabel, $taxvalue, $sh='')
 		$params1 = array($taxid, $taxname, $taxlabel, $taxvalue, 0);
 		$res1 = $adb->pquery($query1, $params1);
 	}
+
+  $maestrano = MaestranoService::getInstance();
+  if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+    $mno_tax = new MnoSoaTax(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+    $mno_tax->sendAllTaxes();
+  }
 
 	$log->debug("Exit from function addTaxType($taxlabel, $taxvalue)");
 	if($res1)
