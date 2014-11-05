@@ -82,6 +82,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         $invoice_line = '';
       } else {
         $invoice_line['lineNumber'] = $i;
+        $invoice_line['description'] = $$this->_local_entity->column_fields['comment'.$i];
 
         $quantity = floatval($this->_local_entity->column_fields['qty'.$i]);
         $invoice_line['quantity'] = $quantity;
@@ -173,8 +174,12 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       }
 
       // Map invoice attributes
-      $this->_local_entity->column_fields['subject'] = $this->pull_set_or_delete_value($this->_title);
-      $this->_local_entity->column_fields['invoice_no'] = $this->pull_set_or_delete_value($this->_transaction_number);
+      if(isset($this->_title)) {
+        $this->_local_entity->column_fields['subject'] = $this->pull_set_or_delete_value($this->_title);
+      } else {
+        $this->_local_entity->column_fields['subject'] = $this->pull_set_or_delete_value($this->_transaction_number);
+      }
+      
       $this->_local_entity->column_fields['customerno'] = $this->pull_set_or_delete_value($this->_transaction_number);
       if($this->_transaction_date) { $this->_local_entity->column_fields['invoicedate'] = date('Y-m-d', $this->_transaction_date); }
       if($this->_due_date) { $this->_local_entity->column_fields['duedate'] = date('Y-m-d', $this->_due_date); }
@@ -254,6 +259,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           }
 
           // Map attributes
+          $_REQUEST['comment'.$line_count] = $line->description;
           $_REQUEST['qty'.$line_count] = $line->quantity;
           $_REQUEST['listPrice'.$line_count] = $line->unitPrice->netAmount;
 
@@ -312,6 +318,14 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
   }
 
   protected function mapInvoiceLineTaxes($line) {
+    // Set all taxes to 0 by default
+    $tax_details = getAllTaxes();
+    foreach ($tax_details as $tax_detail) {
+      $request_tax_name = $tax_detail['taxname']."_percentage".$line->lineNumber;
+      $_REQUEST[$request_tax_name] = 0;
+    }
+
+    // Apply tax for this invoice line
     if(isset($line->taxCode)) {
       $this->_log->debug(__FUNCTION__ . " assign invoice line tax_code: " . $line->taxCode->id);
       $local_id = $this->getLocalIdByMnoIdName($line->taxCode->id, "tax_codes");
@@ -322,9 +336,6 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         if(isset($local_tax)) {
           $request_tax_name = $local_tax['taxname']."_percentage".$line->lineNumber;
           $_REQUEST[$request_tax_name] = $local_tax['percentage'];
-        } else {
-          $request_tax_name = $local_tax['taxname']."_percentage".$line->lineNumber;
-          $_REQUEST[$request_tax_name] = 0;
         }
       }
     }

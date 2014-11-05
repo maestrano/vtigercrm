@@ -27,16 +27,7 @@ class MnoSoaTax extends MnoSoaBaseTax {
 
   protected function pushTax() {
     $this->_log->debug("start pushTax " . json_encode($this->_local_entity));
-
-    $id = $this->getLocalEntityIdentifier();
-    if (empty($id)) { return; }
-
-    $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
-    $this->_id = ($this->isValidIdentifier($mno_id)) ? $mno_id->_id : null;
-
-    // Push tax attributes
-    // TODO
-
+    // Saved calling sendAllTaxes()
     $this->_log->debug("after pushTax");
   }
 
@@ -94,9 +85,8 @@ class MnoSoaTax extends MnoSoaBaseTax {
       // Update tax rate
       $tax_id = $local_id->_id;
       if(isset($tax_id)) {
-        $update_query = "UPDATE vtiger_inventorytaxinfo SET percentage=? AND taxlabel=? WHERE taxid=?";
-        // THIS LINE RESETS ALL TAX RATE TO 1 - NEED TO INVESTIGATE WHY
-        // $this->_db->pquery($update_query, array($tax_rate, $tax_name, $tax_id));
+        $update_query = "UPDATE vtiger_inventorytaxinfo SET percentage=?, taxlabel=? WHERE taxid=?";
+        $this->_db->pquery($update_query, array($tax_rate, $tax_name, $tax_id));
       }
     }
   }
