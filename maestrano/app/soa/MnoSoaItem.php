@@ -197,6 +197,7 @@ class MnoSoaItem extends MnoSoaBaseItem
 
     protected function pullTaxes() {
       if(isset($this->_sale_tax_code)) {
+        // Item has a default tax associated, use only this one
         $this->_log->debug(__FUNCTION__ . " assign item tax_code: " . $this->_sale_tax_code->id);
         $local_id = $this->getLocalIdByMnoIdName($this->_sale_tax_code->id, "tax_codes");
         if ($this->isValidIdentifier($local_id)) {
@@ -208,6 +209,15 @@ class MnoSoaItem extends MnoSoaBaseItem
             $_REQUEST[$local_tax['taxname']."_check"] = 1;
             $_REQUEST[$local_tax['taxname']] = $local_tax['percentage'];
           }
+        }
+      } else {
+        // No sale tax specified, enable all available taxes
+        $this->_log->debug(__FUNCTION__ . " enable all available taxes for item");
+        $tax_details = getAllTaxes();
+        foreach ($tax_details as $tax_detail) {
+          $this->_log->debug(__FUNCTION__ . " set item local tax " . $tax_detail['taxname']);
+          $_REQUEST[$tax_detail['taxname']."_check"] = 1;
+          $_REQUEST[$tax_detail['taxname']] = $tax_detail['percentage'];
         }
       }
     }

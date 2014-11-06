@@ -66,23 +66,25 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       $invoice_line = array();
 
       // vTiger recreates the invoice lines on every save, so local IDs are not mappable
-      // Use Invoice ID + Line number instead
-      $invoice_line_id = $id . "-" . $i;
+      // Use InvoiceID#LineNumber instead
+      $invoice_line_id = $id . "#" . $i;
       $this->_log->debug("processing invoice line " . $invoice_line_id);
-      $mno_entity = $this->getMnoIdByLocalIdName($invoice_line_id, "INVOICE_LINE");
-      if($this->isValidIdentifier($mno_entity)) {
-        $invoice_line_mno_id = $mno_entity->_id;
+      $mno_invoice_line_id = $this->getMnoIdByLocalIdName($invoice_line_id, "INVOICE_LINE");
+      if($this->isValidIdentifier($mno_invoice_line_id)) {
+        $invoice_line_id_parts = explode("#", $mno_invoice_line_id->_id);
+        $invoice_line_mno_id = $invoice_line_id_parts[1];
       } else {
         // Generate and save ID
         $invoice_line_mno_id = uniqid();
-        $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $invoice_line_mno_id, "INVOICE_LINE");
+        $invoice_line_mno_id_local = $id . "#" . uniqid();
+        $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $invoice_line_mno_id_local, "INVOICE_LINE");
       }
 
       if($this->_local_entity->column_fields["deleted".$i] == 1) {
         $invoice_line = '';
       } else {
         $invoice_line['lineNumber'] = $i;
-        $invoice_line['description'] = $$this->_local_entity->column_fields['comment'.$i];
+        $invoice_line['description'] = $this->_local_entity->column_fields['comment'.$i];
 
         $quantity = floatval($this->_local_entity->column_fields['qty'.$i]);
         $invoice_line['quantity'] = $quantity;
@@ -247,7 +249,8 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
         foreach($this->_invoice_lines as $line_id => $line) {
           $line_count++;
 
-          $local_line_id = $this->getLocalIdByMnoId($line_id);
+          $mno_invoice_line_id = $this->_id . "#" . $line_id;
+          $local_line_id = $this->getLocalIdByMnoId($mno_invoice_line_id);
           if($this->isDeletedIdentifier($local_line_id)) {
             continue;
           }
@@ -291,10 +294,11 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
     // Map invoice lines IDs
     foreach($this->_invoice_lines as $line_id => $line) {
-      $invoice_line_id = $local_entity_id . "-" . $line->lineNumber;
+      $invoice_line_id = $local_entity_id . "#" . $line->lineNumber;
+      $mno_invoice_line_id = $mno_entity_id . "#" . $line_id;
       $mno_entity = $this->getMnoIdByLocalIdName($invoice_line_id, "INVOICE_LINE");
       if (!$this->isValidIdentifier($mno_entity)) {
-        $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $line_id, "INVOICE_LINE");
+        $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $mno_invoice_line_id, "INVOICE_LINE");
       }
     }
   }
