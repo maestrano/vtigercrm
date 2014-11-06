@@ -26,7 +26,7 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
                 $mno_company->receiveNotification($notification);
               }
       break;
-      case "TAX_CODES":
+      case "TAXCODES":
               if (class_exists('MnoSoaTax')) {
                 $mno_tax = new MnoSoaTax($opts['db_connection'], $log);
                 $mno_tax->receiveNotification($notification);
