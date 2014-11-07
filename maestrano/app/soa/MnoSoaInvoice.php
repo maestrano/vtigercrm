@@ -61,6 +61,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
     // Map invoice lines
     $this->_invoice_lines = array();
+    $current_line_number = 0;
     $tot_no_prod = $this->_local_entity->column_fields['totalProductCount'];
     for($i=1; $i<=$tot_no_prod; $i++) {
       $invoice_line = array();
@@ -76,14 +77,28 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       } else {
         // Generate and save ID
         $invoice_line_mno_id = uniqid();
-        $invoice_line_mno_id_local = $id . "#" . uniqid();
+        $invoice_line_mno_id_local = $this->_id . "#" . uniqid();
         $this->_mno_soa_db_interface->addIdMapEntry($invoice_line_id, "INVOICE_LINE", $invoice_line_mno_id_local, "INVOICE_LINE");
       }
 
       if($this->_local_entity->column_fields["deleted".$i] == 1) {
+        $this->_log->debug("invoice line " . $invoice_line_id . " marked for deletion");
+        // Invoice line has been deleted
         $invoice_line = '';
+        // Delete local mapping
+        $this->_mno_soa_db_interface->hardDeleteIdMapEntry($invoice_line_id, "INVOICE_LINE");
+
       } else {
-        $invoice_line['lineNumber'] = $i;
+        $current_line_number = $current_line_number + 1;
+
+        // If a previous line has been deleted, we need to shift the line ids
+        if($i != $current_line_number) {
+          $new_local_id = $id . "#" . $current_line_number;
+          $this->_log->debug("shifting invoice line " . $invoice_line_id . " to position " . $new_local_id);
+          $this->_mno_soa_db_interface->updateIdMapEntry($invoice_line_id, $new_local_id, "INVOICE_LINE");
+        }
+
+        $invoice_line['lineNumber'] = $current_line_number;
         $invoice_line['description'] = $this->_local_entity->column_fields['comment'.$i];
 
         $quantity = floatval($this->_local_entity->column_fields['qty'.$i]);
@@ -128,14 +143,14 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
             $mno_id = $this->getMnoIdByLocalIdName($product_tax['taxid'], 'TAX');
             if(isset($mno_id)) {
-              $invoice_line['saleTaxCode'] = array('id' => $mno_id->_id);
+              $invoice_line['taxCode'] = array('id' => $mno_id->_id);
             }
           }
         }
+
         $invoice_line['unitPrice']['taxRate'] = $total_tax_rate;
         $invoice_line['unitPrice']['taxAmount'] = $unit_price * ($total_tax_rate / 100);
         $invoice_line['unitPrice']['price'] = $unit_price * (1 + ($total_tax_rate / 100));
-        
         $invoice_line['totalPrice']['taxRate'] = $total_tax_rate;
       }
 
