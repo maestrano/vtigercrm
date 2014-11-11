@@ -292,7 +292,7 @@ class CRMEntity {
 		if ($this->mode == 'edit') {
 			$description_val = from_html($this->column_fields['description'], ($insertion_mode == 'edit') ? true : false);
 
-			if (isset($current_user->id)) {
+			if (isset($current_user->id) && $current_user->id != 0) {
 			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
 			} else {
 			  $is_admin = true;
@@ -397,7 +397,7 @@ class CRMEntity {
 			$update = array();
 			$update_params = array();
 
-			if (isset($current_user->id)) {
+			if (isset($current_user->id) && $current_user->id != 0) {
 			  require('user_privileges/user_privileges_' . $current_user->id . '.php');
 			} else {
 			  $is_admin = true;
