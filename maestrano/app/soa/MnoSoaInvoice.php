@@ -15,6 +15,13 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
     $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
     $this->_id = ($this->isValidIdentifier($mno_id)) ? $mno_id->_id : null;
 
+    // Invoice or Sales Order
+    if(isset($this->_local_entity->column_fields['salesorder_no'])) {
+      $this->_type = 'SUPPLIER';
+    } else if(isset($this->_local_entity->column_fields['invoice_no'])) {
+      $this->_type = 'CUSTOMER';
+    }
+
     if(isset($this->_local_entity->column_fields['subject'])) { 
       $this->_title = $this->push_set_or_delete_value($this->_local_entity->column_fields['subject']);
     }
@@ -168,26 +175,45 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       $local_id = $this->getLocalIdByMnoId($this->_id);
       $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
 
-      // if($this->_type == 'SUPPLIER') {
-      //   // TODO: Map as a SalesOrder
-      //   $this->_log->debug("skipping supplier sale order");
-      //   return constant('MnoSoaBaseEntity::STATUS_ERROR');
-      // }
-      
-      if ($this->isValidIdentifier($local_id)) {
-        $this->_log->debug(__FUNCTION__ . " is STATUS_EXISTING_ID");
-        $this->_local_entity = CRMEntity::getInstance("Invoice");
-        $this->_local_entity->retrieve_entity_info($local_id->_id,"Invoice");
-        vtlib_setup_modulevars("Invoice", $this->_local_entity);
-        $this->_local_entity->id = $local_id->_id;
-        $this->_local_entity->mode = 'edit';
-        $status = constant('MnoSoaBaseEntity::STATUS_EXISTING_ID');
-      } else if ($this->isDeletedIdentifier($local_id)) {
-        $this->_log->debug(__FUNCTION__ . " is STATUS_DELETED_ID");
-        $status = constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
+      if($this->_type == 'SUPPLIER') {
+        $this->_log->debug("processing supplier sale order");
+        if ($this->isValidIdentifier($local_id)) {
+          $this->_log->debug(__FUNCTION__ . " is STATUS_EXISTING_ID");
+          $this->_local_entity = CRMEntity::getInstance("SalesOrder");
+          $this->_local_entity->retrieve_entity_info($local_id->_id, "SalesOrder");
+          vtlib_setup_modulevars("SalesOrder", $this->_local_entity);
+          $this->_local_entity->id = $local_id->_id;
+          $this->_local_entity->mode = 'edit';
+          $status = constant('MnoSoaBaseEntity::STATUS_EXISTING_ID');
+        } else if ($this->isDeletedIdentifier($local_id)) {
+          $this->_log->debug(__FUNCTION__ . " is STATUS_DELETED_ID");
+          $status = constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
+        } else {
+          $this->_local_entity = new SalesOrder();
+          $this->_local_entity->column_fields['salesorder_no'] = 'AUTO GEN ON SAVE';
+          $status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
+        }
+      } else if($this->_type == 'CUSTOMER') {
+        $this->_log->debug("processing customer invoice");
+        if ($this->isValidIdentifier($local_id)) {
+          $this->_log->debug(__FUNCTION__ . " is STATUS_EXISTING_ID");
+          $this->_local_entity = CRMEntity::getInstance("Invoice");
+          $this->_local_entity->retrieve_entity_info($local_id->_id, "Invoice");
+          vtlib_setup_modulevars("Invoice", $this->_local_entity);
+          $this->_local_entity->id = $local_id->_id;
+          $this->_local_entity->mode = 'edit';
+          $status = constant('MnoSoaBaseEntity::STATUS_EXISTING_ID');
+        } else if ($this->isDeletedIdentifier($local_id)) {
+          $this->_log->debug(__FUNCTION__ . " is STATUS_DELETED_ID");
+          $status = constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
+        } else {
+          $this->_local_entity = new Invoice();
+          $this->_local_entity->column_fields['invoice_no'] = 'AUTO GEN ON SAVE';
+          $status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
+        }
       } else {
-        $this->_local_entity = new Invoice();
-        $status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
+        // Unknown invoice type
+        return constant('MnoSoaBaseEntity::STATUS_ERROR');
       }
 
       // Map invoice attributes
@@ -320,7 +346,11 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
 
   protected function saveLocalEntity($push_to_maestrano, $status) {
     $this->_log->debug("start saveLocalEntity status=$status " . json_encode($this->_local_entity->column_fields));
-    $this->_local_entity->save("Invoice", '', $push_to_maestrano);
+    if($this->_type == 'SUPPLIER') {
+      $this->_local_entity->save("SalesOrder", '', $push_to_maestrano);
+    } else {
+      $this->_local_entity->save("Invoice", '', $push_to_maestrano);
+    }
 
     // Map invoice ID
     if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID')) {
