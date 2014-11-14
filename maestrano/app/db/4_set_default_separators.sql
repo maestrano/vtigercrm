@@ -1,0 +1,2 @@
+UPDATE `vtiger_users` SET `currency_decimal_separator` = '.' WHERE `vtiger_users`.`currency_decimal_separator` = '';
+UPDATE `vtiger_users` SET `currency_grouping_separator` = ',' WHERE `vtiger_users`.`currency_grouping_separator` = '';

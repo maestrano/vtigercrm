@@ -247,8 +247,8 @@ class MnoSsoUser extends MnoSsoBaseUser
      $fields["time_zone"] = "UTC";
      $fields["currency_id"] = "1";
      $fields["currency_grouping_pattern"] = "123,456,789";
-     $fields["currency_decimal_separator"] = "";
-     $fields["currency_grouping_separator"] = "";
+     $fields["currency_decimal_separator"] = ".";
+     $fields["currency_grouping_separator"] = ",";
      $fields["currency_symbol_placement"] = "$1.0";
      $fields["imagename"] = "";
      $fields["internal_mailer"] = "on";
