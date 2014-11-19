@@ -96,6 +96,10 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
         $this->set_if_array_key_has_value($this->_organization_id, 'id', $mno_entity->organization);
       }
 
+      if (!empty($mno_entity->person)) {
+        $this->set_if_array_key_has_value($this->_person_id, 'id', $mno_entity->person);
+      }
+
       if (!empty($mno_entity->invoiceLines)) {
         $this->set_if_array_key_has_value($this->_invoice_lines, 'invoiceLines', $mno_entity);
       }
