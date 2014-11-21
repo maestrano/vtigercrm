@@ -140,8 +140,18 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
         if ($this->_status != null) { $msg['item']->status = $this->_status; }
         if ($this->_type != null) { $msg['item']->type = $this->_type; }
         if ($this->_unit != null) { $msg['item']->unit = $this->_unit; }
-        if ($this->_sale_price != null) { $msg['item']->sale->netAmount = $this->_sale_price; }
-        if ($this->_purchase_price != null) { $msg['item']->purchase->netAmount = $this->_purchase_price; }
+        if ($this->_sale_price != null) {
+          $msg['item']->sale->netAmount = $this->_sale_price;
+          $msg['item']->sale->price = 0.0;
+          $msg['item']->sale->taxAmount = 0.0;
+          $msg['item']->sale->taxRate = 0.0;
+        }
+        if ($this->_purchase_price != null) {
+          $msg['item']->purchase->netAmount = $this->_purchase_price;
+          $msg['item']->purchase->price = 0.0;
+          $msg['item']->purchase->taxAmount = 0.0;
+          $msg['item']->purchase->taxRate = 0.0;
+        }
         if ($this->_taxes != null) { $msg['item']->taxes = $this->_taxes; }
         if ($this->_sale_tax_code != null) { $msg['item']->saleTaxCode->id = $this->_sale_tax_code; }
   
