@@ -52,8 +52,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
   
   protected function pushName() {
     $this->_log->debug(__FUNCTION__ . " start");
-        //$hp = $this->mapSalutationToHonorificPrefix($this->_local_entity->column_fields['salutationtype']);
-    $this->_name->honorificPrefix = $this->push_set_or_delete_value($hp);
+    $this->_name->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['salutationtype']);
     $this->_name->givenNames = $this->push_set_or_delete_value($this->_local_entity->column_fields['firstname']);
     $this->_name->familyName = $this->push_set_or_delete_value($this->_local_entity->column_fields['lastname']);
     $this->_log->debug(__FUNCTION__ . " end");
@@ -61,8 +60,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
   
   protected function pullName() {
     $this->_log->debug(__FUNCTION__ . " start");
-        //$hp = $this->mapHonorificPrefixToSalutation($this->_name->honorificPrefix);
-        //$this->_local_entity->column_fields['salutationtype'] = $this->pull_set_or_delete_value($hp);
+    $this->_local_entity->column_fields['salutationtype'] = $this->pull_set_or_delete_value($this->_name->title);
     $this->_local_entity->column_fields['firstname'] = $this->pull_set_or_delete_value($this->_name->givenNames);
     $this->_local_entity->column_fields['lastname'] = $this->pull_set_or_delete_value($this->_name->familyName);
     $this->_log->debug(__FUNCTION__ . " end");
