@@ -42,6 +42,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
         return constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
       } else {
         $this->_local_entity = new Contacts();
+        $this->_local_entity->column_fields['assigned_user_id'] = "1";
         $this->pullName();
         return constant('MnoSoaBaseEntity::STATUS_NEW_ID');
       }
