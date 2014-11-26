@@ -811,8 +811,8 @@ class CRMEntity {
 		$this->saveentity($module_name, $fileid);
 
 		//Event triggering code
-		//$em->triggerEvent("vtiger.entity.aftersave", $entityData);
-		//$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
+		$em->triggerEvent("vtiger.entity.aftersave", $entityData);
+		$em->triggerEvent("vtiger.entity.aftersave.final", $entityData);
 		//Event triggering code ends
 	}
 
