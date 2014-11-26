@@ -32,3 +32,9 @@ $opts = array();
 
 // Set database connection
 $opts['db_connection'] = PearDatabase::getInstance();
+
+// Set default user for entities creation
+global $current_user;
+if(!isset($current_user->id)) {
+	$current_user->id = "1";
+}
