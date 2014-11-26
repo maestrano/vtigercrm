@@ -50,6 +50,7 @@ class MnoSoaItem extends MnoSoaBaseItem
             return constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
           } else {
             $this->_local_entity = new Products();
+            $this->_local_entity->column_fields['assigned_user_id'] = "1";
             $this->pullName();
             $this->pullCode();
             $this->pullDescription();
