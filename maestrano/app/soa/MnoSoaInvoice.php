@@ -190,6 +190,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           $status = constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
         } else {
           $this->_local_entity = new SalesOrder();
+          $this->_local_entity->column_fields['assigned_user_id'] = "1";
           $this->_local_entity->column_fields['salesorder_no'] = 'AUTO GEN ON SAVE';
           $status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
         }
@@ -208,6 +209,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           $status = constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
         } else {
           $this->_local_entity = new Invoice();
+          $this->_local_entity->column_fields['assigned_user_id'] = "1";
           $this->_local_entity->column_fields['invoice_no'] = 'AUTO GEN ON SAVE';
           $status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
         }
