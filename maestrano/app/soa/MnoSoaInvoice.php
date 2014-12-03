@@ -254,7 +254,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           // Fetch remote Organization if missing
           $notification->entity = "organizations";
           $notification->id = $this->_organization_id;
-          $organization = new MnoSoaOrganization($this->_db);   
+          $organization = new MnoSoaOrganization($this->_db, $this->_log);   
           $status = $organization->receiveNotification($notification);
           if ($status) {
             $this->_local_entity->column_fields['account_id'] = $organization->_local_entity->id;
