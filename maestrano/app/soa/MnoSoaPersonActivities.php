@@ -54,16 +54,9 @@ class MnoSoaPersonActivities extends MnoSoaBaseEntity
           continue;
         }
 
-        // Get local user id from username
-        reset($mno_activity->assignedTo);
-        $user_mno_id = key($mno_activity->assignedTo);
-        $query = "SELECT id from vtiger_users where mno_uid=?";
-        $result = $adb->pquery($query, array($user_mno_id));
-        $user_id = $adb->query_result($result, 0, 'id');
-
         // Set the activity attributes
         $activity->column_fields['subject'] = $mno_activity->name;
-        $activity->column_fields['assigned_user_id'] = $user_id;
+        $activity->column_fields['assigned_user_id'] = "1";
         $activity->column_fields['date_start'] = gmdate("Y-m-d", $mno_activity->startDate);
         $activity->column_fields['time_start'] = gmdate("H:i:s", $mno_activity->startDate);
         $activity->column_fields['time_end'] = gmdate("H:i:s", $mno_activity->startDate);
