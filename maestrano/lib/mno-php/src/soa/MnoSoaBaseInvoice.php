@@ -18,6 +18,7 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
   protected $_enable_delete_notifications=true;
   
   protected $_id;
+  protected $_title;
   protected $_transaction_number;
   protected $_transaction_date;
   protected $_amount;
@@ -50,6 +51,7 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
   protected function build() {
     $this->_log->debug("start");
     $this->pushInvoice();
+    if ($this->_title != null) { $msg['invoice']->title = $this->_title; }
     if ($this->_transaction_number != null) { $msg['invoice']->transactionNumber = $this->_transaction_number; }
     if ($this->_transaction_date != null) { $msg['invoice']->transactionDate = $this->_transaction_date; }
     if ($this->_amount != null) { $msg['invoice']->amount = $this->_amount; }
@@ -79,6 +81,7 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
     
     if (!empty($mno_entity->id)) {
       $this->_id = $mno_entity->id;
+      $this->set_if_array_key_has_value($this->_title, 'title', $mno_entity);
       $this->set_if_array_key_has_value($this->_transaction_number, 'transactionNumber', $mno_entity);
       $this->set_if_array_key_has_value($this->_transaction_date, 'transactionDate', $mno_entity);
       $this->set_if_array_key_has_value($this->_amount, 'amount', $mno_entity);
@@ -91,6 +94,10 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
 
       if (!empty($mno_entity->organization)) {
         $this->set_if_array_key_has_value($this->_organization_id, 'id', $mno_entity->organization);
+      }
+
+      if (!empty($mno_entity->person)) {
+        $this->set_if_array_key_has_value($this->_person_id, 'id', $mno_entity->person);
       }
 
       if (!empty($mno_entity->invoiceLines)) {

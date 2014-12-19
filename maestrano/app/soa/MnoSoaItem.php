@@ -28,6 +28,7 @@ class MnoSoaItem extends MnoSoaBaseItem
     
     protected function pullId() {
       $this->_log->debug(__FUNCTION__ . " start " . $this->_id);
+      $_REQUEST = array();
         
       if (!empty($this->_id)) {
           $local_id = $this->getLocalIdByMnoId($this->_id);
@@ -49,6 +50,7 @@ class MnoSoaItem extends MnoSoaBaseItem
             return constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
           } else {
             $this->_local_entity = new Products();
+            $this->_local_entity->column_fields['assigned_user_id'] = "1";
             $this->pullName();
             $this->pullCode();
             $this->pullDescription();
@@ -185,56 +187,50 @@ class MnoSoaItem extends MnoSoaBaseItem
     protected function pushTaxes() {
       $item_tax_details = getTaxDetailsForProduct($this->getLocalEntityIdentifier());
       if(isset($item_tax_details)) {
-        $taxes = array();
         foreach ($item_tax_details as $tax_detail) {
-          $taxes[$tax_detail['taxlabel']] = array('name' => $tax_detail['taxlabel'], 'rate' => $tax_detail['percentage']);
+          $mno_id = $this->getMnoIdByLocalIdName($tax_detail['taxid'], 'TAX');
+          if(isset($mno_id)) {
+            $this->_sale_tax_code = $mno_id->_id;
+          }
         }
       }
-      $this->_taxes = $taxes;
     }
 
     protected function pullTaxes() {
-      if(isset($this->_taxes)) {
-        foreach ($this->_taxes as $tax_names => $mno_tax) {
-          if(!isset($mno_tax->rate)) { continue; }
-          $local_tax = $this->findTaxByLabel($tax_names);
-          // Add tax type if missing
-          if(!isset($local_tax)) {
-            $this->addTaxType($tax_names, $mno_tax->rate);
-            $local_tax = $this->findTaxByLabel($tax_names);
+      if(isset($this->_sale_tax_code)) {
+        // Item has a default tax associated, use only this one
+        $this->_log->debug(__FUNCTION__ . " assign item tax_code: " . $this->_sale_tax_code->id);
+        $local_id = $this->getLocalIdByMnoIdName($this->_sale_tax_code->id, "tax_codes");
+        if ($this->isValidIdentifier($local_id)) {
+          $this->_log->debug(__FUNCTION__ . " item tax local_id = " . json_encode($local_id));
+
+          $local_tax = $this->findTaxById($local_id->_id);
+          if(isset($local_tax)) {
+            $this->_log->debug(__FUNCTION__ . " set item local tax " . $local_tax['taxname']);
+            $_REQUEST[$local_tax['taxname']."_check"] = 1;
+            $_REQUEST[$local_tax['taxname']] = $local_tax['percentage'];
           }
-          $_REQUEST[$local_tax['taxname']."_check"] = 1;
-          $_REQUEST[$local_tax['taxname']] = $mno_tax->rate;
+        }
+      } else {
+        // No sale tax specified, enable all available taxes
+        $this->_log->debug(__FUNCTION__ . " enable all available taxes for item");
+        $tax_details = getAllTaxes();
+        foreach ($tax_details as $tax_detail) {
+          $this->_log->debug(__FUNCTION__ . " set item local tax " . $tax_detail['taxname']);
+          $_REQUEST[$tax_detail['taxname']."_check"] = 1;
+          $_REQUEST[$tax_detail['taxname']] = $tax_detail['percentage'];
         }
       }
     }
 
-    private function findTaxByLabel($tax_label) {
+    private function findTaxById($tax_id) {
       $tax_details = getAllTaxes();
       foreach ($tax_details as $tax_detail) {
-        if($tax_detail['taxlabel'] == $tax_label) {
+        if($tax_detail['taxid'] == $tax_id) {
           return $tax_detail;
         }
       }
       return null;
-    }
-
-    private function addTaxType($taxlabel, $taxvalue) {
-      $check_query = "select taxlabel from vtiger_inventorytaxinfo where taxlabel=?";
-      $check_res = $this->_db->pquery($check_query, array($taxlabel));
-      if($this->_db->num_rows($check_res) > 0) { return null; }
-
-      $taxid = $this->_db->getUniqueID("vtiger_inventorytaxinfo");
-      $taxname = "tax".$taxid;
-      $query = "alter table vtiger_inventoryproductrel add column $taxname decimal(7,3) default NULL";
-      $res = $this->_db->pquery($query, array());
-
-      // if the tax is added as a column then we should add this tax in the list of taxes
-      if($res) {
-        $query1 = "insert into vtiger_inventorytaxinfo values(?,?,?,?,?)";
-        $params1 = array($taxid, $taxname, $taxlabel, $taxvalue, 0);
-        $res1 = $this->_db->pquery($query1, $params1);
-      }
     }
 }
 

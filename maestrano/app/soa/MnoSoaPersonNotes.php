@@ -50,7 +50,7 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
         } else if ($this->isDeletedIdentifier($local_id)) {
           continue;
         } else {
-          $mod_comment->column_fields['assigned_user_id'] = 0;
+          $mod_comment->column_fields['assigned_user_id'] = "1";
           $mod_comment->column_fields['related_to'] = $person_id;
         }
 

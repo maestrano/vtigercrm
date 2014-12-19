@@ -24,6 +24,7 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     protected $_unit;
     protected $_sale_price;
     protected $_purchase_price;
+    protected $_sale_tax_code;
     protected $_taxes;
 
     protected function pushId() {
@@ -139,9 +140,20 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
         if ($this->_status != null) { $msg['item']->status = $this->_status; }
         if ($this->_type != null) { $msg['item']->type = $this->_type; }
         if ($this->_unit != null) { $msg['item']->unit = $this->_unit; }
-        if ($this->_sale_price != null) { $msg['item']->sale->netAmount = $this->_sale_price; }
-        if ($this->_purchase_price != null) { $msg['item']->purchase->netAmount = $this->_purchase_price; }
+        if ($this->_sale_price != null) {
+          $msg['item']->sale->netAmount = $this->_sale_price;
+          $msg['item']->sale->price = 0.0;
+          $msg['item']->sale->taxAmount = 0.0;
+          $msg['item']->sale->taxRate = 0.0;
+        }
+        if ($this->_purchase_price != null) {
+          $msg['item']->purchase->netAmount = $this->_purchase_price;
+          $msg['item']->purchase->price = 0.0;
+          $msg['item']->purchase->taxAmount = 0.0;
+          $msg['item']->purchase->taxRate = 0.0;
+        }
         if ($this->_taxes != null) { $msg['item']->taxes = $this->_taxes; }
+        if ($this->_sale_tax_code != null) { $msg['item']->saleTaxCode->id = $this->_sale_tax_code; }
   
         $this->_log->debug(__FUNCTION__ . " after creating message array");
         $result = json_encode($msg['item']);
@@ -175,6 +187,9 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
             }
             if (!empty($mno_entity->taxes)) {
                 $this->set_if_array_key_has_value($this->_taxes, 'taxes', $mno_entity);
+            }
+            if (!empty($mno_entity->saleTaxCode)) {
+                $this->set_if_array_key_has_value($this->_sale_tax_code, 'saleTaxCode', $mno_entity);
             }
 
             $this->set_if_array_key_has_value($this->_entity, 'entity', $mno_entity);

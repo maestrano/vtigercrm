@@ -42,6 +42,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
         return constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
       } else {
         $this->_local_entity = new Contacts();
+        $this->_local_entity->column_fields['assigned_user_id'] = "1";
         $this->pullName();
         return constant('MnoSoaBaseEntity::STATUS_NEW_ID');
       }
@@ -52,8 +53,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
   
   protected function pushName() {
     $this->_log->debug(__FUNCTION__ . " start");
-        //$hp = $this->mapSalutationToHonorificPrefix($this->_local_entity->column_fields['salutationtype']);
-    $this->_name->honorificPrefix = $this->push_set_or_delete_value($hp);
+    $this->_name->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['salutationtype']);
     $this->_name->givenNames = $this->push_set_or_delete_value($this->_local_entity->column_fields['firstname']);
     $this->_name->familyName = $this->push_set_or_delete_value($this->_local_entity->column_fields['lastname']);
     $this->_log->debug(__FUNCTION__ . " end");
@@ -61,8 +61,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
   
   protected function pullName() {
     $this->_log->debug(__FUNCTION__ . " start");
-        //$hp = $this->mapHonorificPrefixToSalutation($this->_name->honorificPrefix);
-        //$this->_local_entity->column_fields['salutationtype'] = $this->pull_set_or_delete_value($hp);
+    $this->_local_entity->column_fields['salutationtype'] = $this->pull_set_or_delete_value($this->_name->title);
     $this->_local_entity->column_fields['firstname'] = $this->pull_set_or_delete_value($this->_name->givenNames);
     $this->_local_entity->column_fields['lastname'] = $this->pull_set_or_delete_value($this->_name->familyName);
     $this->_log->debug(__FUNCTION__ . " end");
@@ -305,7 +304,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
         vtlib_setup_modulevars("Accounts", $this->_local_entity);
         $org_contact->id = $local_id;
         
-        $organization = new MnoSoaOrganization($this->_db, $this->_log);    
+        $organization = new MnoSoaOrganization($this->_db, $this->_log);
         $status = $organization->send($org_contact);
 
         if ($status) {
