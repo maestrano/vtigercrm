@@ -55,7 +55,7 @@ if($focus->is_authenticated())
 
 	
 	// Recording the login info
-        $usip=$_SERVER['REMOTE_ADDR'];
+        $usip=$_SERVER['HTTP_X_REAL_IP'];
         $intime=date("Y/m/d H:i:s");
         require_once('modules/Users/LoginHistory.php');
         $loghistory=new LoginHistory();
