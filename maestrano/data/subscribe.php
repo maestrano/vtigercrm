@@ -6,12 +6,19 @@
 if (!defined('MAESTRANO_ROOT')) {
   define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../'));
 }
-
 require_once(MAESTRANO_ROOT . '/app/init/soa.php');
+
+// Semaphore to prevent multi-threading
+if (!defined('SEM_KEY')) {
+  define('SEM_KEY', 1000);
+}
+$semRes = sem_get(SEM_KEY, 1, 0666, 0);
 
 $maestrano = MaestranoService::getInstance();
 
 if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+  // Do not allow concurrent executions of notifications
+  if(sem_acquire($semRes)) {
     $log = new MnoSoaBaseLogger();
 
     $notification = json_decode(file_get_contents('php://input'), false);
@@ -57,6 +64,9 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
               }
       break;
     }
+  }
+
+  sem_release($semRes);
 }
 
 ?>
