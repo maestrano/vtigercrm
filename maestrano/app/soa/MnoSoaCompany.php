@@ -55,16 +55,16 @@ class MnoSoaCompany extends MnoSoaBaseCompany
     $organization_country = $this->_country;
     $organization_phone = $this->_phone;
     $organization_website = $this->_website;
-    $organization_logo = $this->saveLogo();
 
-    $sql="update vtiger_organizationdetails set organizationname = ?, address = ?, city = ?, state = ?,  code = ?, country = ?,  phone = ?, website = ?, logoname = ?";
-    $params = array($organization_name, $organization_address, $organization_city, $organization_state, $organization_code, $organization_country, $organization_phone, $organization_website, $organization_logo);
+    $sql="update vtiger_organizationdetails set organizationname = ?, address = ?, city = ?, state = ?,  code = ?, country = ?,  phone = ?, website = ?";
+    $params = array($organization_name, $organization_address, $organization_city, $organization_state, $organization_code, $organization_country, $organization_phone, $organization_website);
     $this->_db->pquery($sql, $params);
 
     // Save logo
     $this->saveLogo();
 
-    // TODO: Map currency
+    // Map currency
+    $this->saveCurrency();
 
     $this->_log->debug(__FUNCTION__ . " end ");
   }
@@ -72,16 +72,44 @@ class MnoSoaCompany extends MnoSoaBaseCompany
   protected function saveLogo() {
     global $root_directory;
 
-    $path = $root_directory . "test/logo/";
-
     if(isset($this->_local_entity->logo->logo)) {
       // Save logo file locally
+      $path = $root_directory . "test/logo/";
       $filename = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 10) . '.jpg';
       $tmpLogoFilePath = $path . $filename;
       file_put_contents($tmpLogoFilePath, file_get_contents($this->_local_entity->logo->logo));
 
-      return $filename;
+      $sql="update vtiger_organizationdetails set logoname = ?";
+      $params = array($filename);
+      $this->_db->pquery($sql, $params);
     }
+  }
+
+  protected function saveCurrency() {
+    $result = $this->_db->pquery("select id from vtiger_currency_info where currency_code=?", array($this->_local_entity->currency));
+    if($result->_numOfRows > 0) {
+      $this->_log->debug("currency " . json_encode($this->_local_entity->currency) . " already exists");
+    } else {
+      // Fetch currency details
+      $result_currency = $this->_db->pquery("SELECT * from vtiger_currencies WHERE currency_code=?", array($this->_local_entity->currency));
+      if($result_currency->_numOfRows > 0) {
+        $currencyid = $this->_db->query_result($result_currency,0,'currencyid');
+        $currency_name = $this->_db->query_result($result_currency,0,'currency_name');
+        $currency_code = $this->_db->query_result($result_currency,0,'currency_code');
+        $currency_symbol = $this->_db->query_result($result_currency,0,'currency_symbol');
+
+        // Insert new company currency
+        $sql = "insert into vtiger_currency_info (id, currency_name, currency_code, currency_symbol, conversion_rate, currency_status, defaultid, deleted) values(?,?,?,?,?,?,?,?)";
+        $params = array($this->_db->getUniqueID("vtiger_currency_info"), $currency_name, $currency_code, $currency_symbol, 1, 'Active','0','0');
+        $this->_db->pquery($sql, $params);
+      } else {
+        $this->_log->debug("currency with code " . json_encode($this->_local_entity->currency) . " not found in vTiger");
+      }
+    }
+  }
+
+  public function getLocalEntityIdentifier() {
+    return 0;
   }
 
 }

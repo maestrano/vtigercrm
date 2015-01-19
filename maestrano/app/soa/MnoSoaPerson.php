@@ -193,15 +193,16 @@ class MnoSoaPerson extends MnoSoaBasePerson
             $comment_local_id = $resultrow['crmid'];
             $comment_description = $resultrow['commentcontent'];
             
-            // TODO: Causing exception, see https://discussions.vtiger.com/index.php?p=/discussion/44222/bug-when-creating-comments/p1
             $comment_mno_id = $this->getMnoIdByLocalIdName($comment_local_id, "mod_comments");
             if (!$this->isValidIdentifier($comment_mno_id)) {
               // Generate and save ID
-              $comment_mno_id = uniqid();
-              $this->_mno_soa_db_interface->addIdMapEntry($comment_local_id, "mod_comments", $comment_mno_id, "notes");
+              $comment_id = uniqid();
+              $this->_mno_soa_db_interface->addIdMapEntry($comment_local_id, "mod_comments", $comment_id, "notes");
+            } else {
+              $comment_id = $comment_mno_id->_id;
             }
 
-            $this->_notes[$comment_mno_id] = array("description" => $resultrow['commentcontent']);
+            $this->_notes[$comment_id] = array("description" => $resultrow['commentcontent']);
           }
         }
       }

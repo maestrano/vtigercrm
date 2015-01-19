@@ -77,7 +77,7 @@ class MnoSsoUser extends MnoSsoBaseUser
         $this->session['authenticated_user_language'] = $lang;
         
         // Record login
-        $usip=$_SERVER['HTTP_X_REAL_IP'];
+        $usip = $_SERVER['HTTP_X_REAL_IP'] ? $_SERVER['HTTP_X_REAL_IP'] : "192.168.1.1";
         $intime=date("Y/m/d H:i:s");
         $loghistory=new LoginHistory();
         $Signin = $loghistory->user_login($username,$usip,$intime);
