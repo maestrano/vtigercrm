@@ -372,46 +372,6 @@ class ModCommentsCore extends CRMEntity {
 		}
 	}
 
-    // Maestrano hook when a Comment is saved in vTiger
-	function save($module_name, $fileid='', $push_to_maestrano=true) {
-    global $adb;
-
-    $result = parent::save($module_name, $fileid);
-
-    try {
-      if ($push_to_maestrano) {
-        $maestrano = MaestranoService::getInstance();
-        if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-          // Find the entity type the comment is related to
-          $related_crm_entity_id = $this->column_fields['related_to'];
-
-          $sql = "select setype from vtiger_crmentity where crmid=?";
-          $res = $adb->pquery($sql, array($related_crm_entity_id));
-
-          for($i=0;$i < $adb->num_rows($res);$i++) {
-            $setype = $adb->query_result($res, $i, 'setype');
-            
-            // Comments are related to a Person
-            if($setype == "Contacts")
-            {
-              $contact = CRMEntity::getInstance("Contacts");
-              $contact->retrieve_entity_info($related_crm_entity_id, "Contacts");
-              $contact->id = $contact->column_fields['record_id'];
-
-              // Save the parent entity person
-              $mno_person = new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());
-              $mno_person->send($contact);
-            }
-          }
-        }
-      }
-    } catch (Exception $ex) {
-        error_log(" Exception when pushing person notes " . $ex->getMessage() . " - trace " . $ex->getTraceAsString());
-    }
-    
-	  return $result;
-	}
-
 	/**
 	 * Handle saving related module information.
 	 * NOTE: This function has been added to CRMEntity (base class).

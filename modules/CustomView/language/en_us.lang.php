@@ -127,7 +127,7 @@ following values "Call","Meeting" or "Task".',
 'State'=>'State', 
  
 //Strings added for Accounts module fields 
-'Account Name'=>'Organization Name',
+'Account Name'=>'Membership Name',
 'Ticker Symbol'=>'Ticker Symbol', 
 'Other Phone'=>'Other Phone', 
 'Member Of'=>'Member Of', 
@@ -175,7 +175,7 @@ following values "Call","Meeting" or "Task".',
  
 //Strings added for Potential module fields 
  
-'Potential Name'=>'Opportunity Name',
+'Potential Name'=>'Sponsorship Name',
 'Amount'=>'Amount', 
 'Expected Close Date'=>'Expected Close Date', 
 'Next Step'=>'Next Step', 
