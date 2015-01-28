@@ -9,12 +9,10 @@ if (!defined('MAESTRANO_ROOT')) {
 require_once(MAESTRANO_ROOT . '/app/init/soa.php');
 
 $maestrano = MaestranoService::getInstance();
+$log = new MnoSoaBaseLogger();
 
 if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-  // Do not allow concurrent executions of notifications
   try {
-    $log = new MnoSoaBaseLogger();
-
     $notification = json_decode(file_get_contents('php://input'), false);
     $notification_entity = strtoupper(trim($notification->entity));
     
