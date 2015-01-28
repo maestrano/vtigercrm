@@ -12,7 +12,7 @@ require_once(MAESTRANO_ROOT . '/app/init/soa.php');
 if (!defined('SEM_KEY')) {
   define('SEM_KEY', 1000);
 }
-$semRes = sem_get(SEM_KEY, 1, 0666, 0);
+$semRes = sem_get(SEM_KEY, 1, 0666, 1);
 
 $maestrano = MaestranoService::getInstance();
 
