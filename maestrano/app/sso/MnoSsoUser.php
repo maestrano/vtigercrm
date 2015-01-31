@@ -58,21 +58,29 @@ class MnoSsoUser extends MnoSsoBaseUser
   {
     
     if ($this->local_id) {
-        // Get user language
+        // Get user language and username
+        $username = '';
         $lang = 'en_us';
-        $query = "SELECT language from vtiger_users where id=?";
+        
+        $query = "SELECT language,user_name from vtiger_users where id=?";
         $result = $this->connection->pquery($query, array($this->local_id));
         if ($result) {
-          $tmp_lang = $this->connection->query_result($result,0,'id');
-          if ($tmp_lang && $tmp_lang != '') {
-            $lang = $tmp_lang;
-          }
+          $tmp_lang = $this->connection->query_result($result,0,'language');
+          if ($tmp_lang && $tmp_lang != '') { $lang = $tmp_lang; }
+          
+          $username = $this->connection->query_result($result,0,'user_name');
         }
         
         // Set session
         $this->session['authenticated_user_id'] = $this->local_id;
         $this->session['app_unique_key'] = $this->app_unique_key;
         $this->session['authenticated_user_language'] = $lang;
+        
+        // Record login
+        $usip = $_SERVER['HTTP_X_REAL_IP'] ? $_SERVER['HTTP_X_REAL_IP'] : "192.168.1.1";
+        $intime=date("Y/m/d H:i:s");
+        $loghistory=new LoginHistory();
+        $Signin = $loghistory->user_login($username,$usip,$intime);
         
         return true;
     } else {
@@ -247,8 +255,8 @@ class MnoSsoUser extends MnoSsoBaseUser
      $fields["time_zone"] = "UTC";
      $fields["currency_id"] = "1";
      $fields["currency_grouping_pattern"] = "123,456,789";
-     $fields["currency_decimal_separator"] = "";
-     $fields["currency_grouping_separator"] = "";
+     $fields["currency_decimal_separator"] = ".";
+     $fields["currency_grouping_separator"] = ",";
      $fields["currency_symbol_placement"] = "$1.0";
      $fields["imagename"] = "";
      $fields["internal_mailer"] = "on";

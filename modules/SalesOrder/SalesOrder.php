@@ -117,9 +117,27 @@ class SalesOrder extends CRMEntity {
 		$this->column_fields = getColumnFields('SalesOrder');
 	}
 
+	function save($module_name, $fileid='', $push_to_maestrano=true) {
+	  $result = parent::save($module_name, $fileid);
+
+    try {
+      if ($push_to_maestrano) {
+          // Get Maestrano Service
+          $maestrano = MaestranoService::getInstance();
+
+          if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+            $mno_invoice=new MnoSoaInvoice(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+            $this->column_fields = array_merge($this->column_fields, $_REQUEST);
+            $mno_invoice->send($this);
+          }
+      }
+    } catch (Exception $ex) {
+        // skip
+    }
+	}
+
 	function save_module($module)
 	{
-
 		//Checking if quote_id is present and updating the quote status
 		if($this->column_fields["quote_id"] != '')
 		{

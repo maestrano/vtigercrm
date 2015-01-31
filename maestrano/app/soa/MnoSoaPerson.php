@@ -42,6 +42,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
         return constant('MnoSoaBaseEntity::STATUS_DELETED_ID');
       } else {
         $this->_local_entity = new Contacts();
+        $this->_local_entity->column_fields['assigned_user_id'] = "1";
         $this->pullName();
         return constant('MnoSoaBaseEntity::STATUS_NEW_ID');
       }
@@ -52,8 +53,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
   
   protected function pushName() {
     $this->_log->debug(__FUNCTION__ . " start");
-        //$hp = $this->mapSalutationToHonorificPrefix($this->_local_entity->column_fields['salutationtype']);
-    $this->_name->honorificPrefix = $this->push_set_or_delete_value($hp);
+    $this->_name->title = $this->push_set_or_delete_value($this->_local_entity->column_fields['salutationtype']);
     $this->_name->givenNames = $this->push_set_or_delete_value($this->_local_entity->column_fields['firstname']);
     $this->_name->familyName = $this->push_set_or_delete_value($this->_local_entity->column_fields['lastname']);
     $this->_log->debug(__FUNCTION__ . " end");
@@ -61,8 +61,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
   
   protected function pullName() {
     $this->_log->debug(__FUNCTION__ . " start");
-        //$hp = $this->mapHonorificPrefixToSalutation($this->_name->honorificPrefix);
-        //$this->_local_entity->column_fields['salutationtype'] = $this->pull_set_or_delete_value($hp);
+    $this->_local_entity->column_fields['salutationtype'] = $this->pull_set_or_delete_value($this->_name->title);
     $this->_local_entity->column_fields['firstname'] = $this->pull_set_or_delete_value($this->_name->givenNames);
     $this->_local_entity->column_fields['lastname'] = $this->pull_set_or_delete_value($this->_name->familyName);
     $this->_log->debug(__FUNCTION__ . " end");
@@ -194,15 +193,16 @@ class MnoSoaPerson extends MnoSoaBasePerson
             $comment_local_id = $resultrow['crmid'];
             $comment_description = $resultrow['commentcontent'];
             
-            // TODO: Causing exception, see https://discussions.vtiger.com/index.php?p=/discussion/44222/bug-when-creating-comments/p1
             $comment_mno_id = $this->getMnoIdByLocalIdName($comment_local_id, "mod_comments");
             if (!$this->isValidIdentifier($comment_mno_id)) {
               // Generate and save ID
-              $comment_mno_id = uniqid();
-              $this->_mno_soa_db_interface->addIdMapEntry($comment_local_id, "mod_comments", $comment_mno_id, "notes");
+              $comment_id = uniqid();
+              $this->_mno_soa_db_interface->addIdMapEntry($comment_local_id, "mod_comments", $comment_id, "notes");
+            } else {
+              $comment_id = $comment_mno_id->_id;
             }
 
-            $this->_notes[$comment_mno_id] = array("description" => $resultrow['commentcontent']);
+            $this->_notes[$comment_id] = array("description" => $resultrow['commentcontent']);
           }
         }
       }

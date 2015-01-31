@@ -63,5 +63,7 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
             }
         }
         $this->_log->info(__FUNCTION__ .  " getUpdates successful (timestamp=" . $timestamp . ")");
+
+        return true;
     }
 }

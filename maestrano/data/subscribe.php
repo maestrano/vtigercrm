@@ -6,14 +6,13 @@
 if (!defined('MAESTRANO_ROOT')) {
   define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../'));
 }
-
 require_once(MAESTRANO_ROOT . '/app/init/soa.php');
 
 $maestrano = MaestranoService::getInstance();
+$log = new MnoSoaBaseLogger();
 
 if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-    $log = new MnoSoaBaseLogger();
-
+  try {
     $notification = json_decode(file_get_contents('php://input'), false);
     $notification_entity = strtoupper(trim($notification->entity));
     
@@ -57,6 +56,9 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
               }
       break;
     }
+  } catch (Exception $e) {
+    $log->debug("Caught exception in subscribe " . json_encode($e->getMessage()));
+  }
 }
 
 ?>

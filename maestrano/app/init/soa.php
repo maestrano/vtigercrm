@@ -18,6 +18,7 @@ require_once APP_DIR . '/modules/Contacts/Contacts.php';
 require_once APP_DIR . '/modules/Products/Products.php';
 require_once APP_DIR . '/modules/Products/Products.php';
 require_once APP_DIR . '/modules/Invoice/Invoice.php';
+require_once APP_DIR . '/modules/SalesOrder/SalesOrder.php';
 require_once APP_DIR . '/modules/Emails/mail.php';
 
 //-----------------------------------------------
@@ -31,3 +32,9 @@ $opts = array();
 
 // Set database connection
 $opts['db_connection'] = PearDatabase::getInstance();
+
+// Set default user for entities creation
+global $current_user;
+if(!isset($current_user->id)) {
+	$current_user->id = "1";
+}

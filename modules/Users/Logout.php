@@ -35,7 +35,7 @@ if(is_admin($current_user) == true && PerformancePrefs::getBoolean('LOGOUT_BACKU
 	$backup->backup();
 }
 // Recording Logout Info
-	$usip=$_SERVER['REMOTE_ADDR'];
+	$usip=$_SERVER['HTTP_X_REAL_IP'];
         $outtime=date("Y/m/d H:i:s");
         $loghistory=new LoginHistory();
         $loghistory->user_logout($current_user->user_name,$usip,$outtime);

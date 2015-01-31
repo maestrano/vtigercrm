@@ -13,6 +13,7 @@ require_once MAESTRANO_ROOT . '/app/init/base.php';
 define('APP_DIR', realpath(MAESTRANO_ROOT . '/../'));
 chdir(APP_DIR);
 require_once APP_DIR . '/modules/Users/Users.php';
+require_once APP_DIR . '/modules/Users/LoginHistory.php';
 
 //-----------------------------------------------
 // Perform your custom preparation code

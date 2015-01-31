@@ -1020,6 +1020,11 @@ function getBaseConversionRateForProduct($productid, $mode='edit', $module='Prod
 	$res = $adb->pquery($sql, $params);
 	$conv_rate = $adb->query_result($res, 0, 'conversion_rate');
 
+	if($conv_rate == 0) {
+		$log->debug("Conversion rate for currency " . json_encode($params) . " not found, using 1");
+		$conv_rate = 1;
+	}
+
 	return 1 / $conv_rate;
 }
 
