@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<schema>
+	<tables>
+		<table>
+			<name>vtiger_ticketss</name>
+			<sql><![CDATA[CREATE TABLE `vtiger_ticketss` (`ticketssid` int(11) default NULL, `ticketssno` varchar(100) default NULL, `tksticketname` varchar(255) default NULL ,`ticketss_tkstickettype` varchar(100) default NULL ,`tksdescription` varchar(250) default NULL ,`tksamountavailable` varchar(25) default NULL ,`tksticketprice` decimal(25,2) default NULL ,`tkschannels` varchar(100) default NULL ,`tksstartdate` date default NULL ,`tksenddate` date default NULL ,`tksticketowner` varchar(100) default NULL ,`tksevent` varchar(100) default NULL  ) ENGINE=InnoDB DEFAULT CHARSET=utf8]]></sql>
+		</table>
+		<table>
+			<name>vtiger_ticketsscf</name>
+			<sql><![CDATA[CREATE TABLE `vtiger_ticketsscf` (`ticketssid` int(11) NOT NULL, PRIMARY KEY (`ticketssid`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8]]></sql>
+		</table>
+	</tables>
+</schema>
