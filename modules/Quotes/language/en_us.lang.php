@@ -28,7 +28,7 @@ $mod_strings = Array(
 'LBL_NEW_FORM_TITLE'=>'New Quote',
 'LBL_MEMBER_ORG_FORM_TITLE'=>'Member Organizations',
 
-'LBL_LIST_ACCOUNT_NAME'=>'Organization Name',
+'LBL_LIST_ACCOUNT_NAME'=>'Membership Name',
 'LBL_RELATED_PRODUCTS'=>'Product Details',
 'LBL_LIST_CITY'=>'City',
 'LBL_LIST_WEBSITE'=>'Website',
@@ -112,7 +112,7 @@ $mod_strings = Array(
 'LBL_TOOL_FORM_TITLE'=>'Organization Tools',
 //Added for 4GA
 'Subject'=>'Subject',
-'Potential Name'=>'Opportunity Name',
+'Potential Name'=>'Sponsorship Name',
 'Quote Stage'=>'Quote Stage',
 'Valid Till'=>'Valid Till',
 'Team'=>'Team',
@@ -142,7 +142,7 @@ $mod_strings = Array(
 'Created Time'=>'Created Time',
 'Modified Time'=>'Modified Time',
 'Description'=>'Description',
-'Account Name'=>'Organization Name',
+'Account Name'=>'Membership Name',
 'Terms & Conditions'=>'Terms & Conditions',
 //Quote Info
 'LBL_QUOTE_INFORMATION'=>'Quote Information',
@@ -151,8 +151,8 @@ $mod_strings = Array(
 
 //Added during 4.2 release
 'LBL_SUBJECT'=>'Subject:',
-'LBL_POTENTIAL_NAME'=>'Opportunity Name:',
-'LBL_ACCOUNT_NAME'=>'Organization Name:',
+'LBL_POTENTIAL_NAME'=>'Sponsorship Name:',
+'LBL_ACCOUNT_NAME'=>'Membership Name:',
 'LBL_QUOTE_STAGE'=>'Quote Stage:',
 'LBL_MY_TOP_QUOTE'=>'My Top Open Quotes',
 //'Quote ID'=>'Quote Id',

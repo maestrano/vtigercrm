@@ -32,7 +32,7 @@ $mod_strings = Array(
 'LBL_NEW_FORM_SO_TITLE'=>'New Sales Order',
 'LBL_MEMBER_ORG_FORM_TITLE'=>'Member Organizations',
 
-'LBL_LIST_ACCOUNT_NAME'=>'Organization Name',
+'LBL_LIST_ACCOUNT_NAME'=>'Membership Name',
 'LBL_LIST_CITY'=>'City',
 'LBL_LIST_WEBSITE'=>'Website',
 'LBL_LIST_STATE'=>'State',
@@ -48,7 +48,7 @@ $mod_strings = Array(
 //END DON'T CONVERT
 
 'LBL_ACCOUNT'=>'Organization:',
-'LBL_ACCOUNT_NAME'=>'Organization Name:',
+'LBL_ACCOUNT_NAME'=>'Membership Name:',
 'LBL_PHONE'=>'Phone:',
 'LBL_WEBSITE'=>'Website:',
 'LBL_FAX'=>'Fax:',
@@ -151,11 +151,11 @@ $mod_strings = Array(
 'Created Time'=>'Created Time',
 'Modified Time'=>'Modified Time',
 'Description'=>'Description',
-'Potential Name'=>'Opportunity Name',
+'Potential Name'=>'Sponsorship Name',
 'Customer No'=>'Customer No',
 'Sales Order'=>'Sales Order',
 'Pending'=>'Pending',
-'Account Name'=>'Organization Name',
+'Account Name'=>'Membership Name',
 'Terms & Conditions'=>'Terms & Conditions',
 //Quote Info
 'LBL_INVOICE_INFORMATION'=>'Invoice Information',

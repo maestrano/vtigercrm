@@ -21,23 +21,23 @@
  ********************************************************************************/
 
 $mod_strings = Array(
-'LBL_MODULE_NAME'=>'Opportunities',
+'LBL_MODULE_NAME'=>'Sponsorships',
 'LBL_MODULE_TITLE'=>'Potentials: Home',
-'LBL_SEARCH_FORM_TITLE'=>'Opportunity Search',
-'LBL_LIST_FORM_TITLE'=>'Opportunity List',
-'LBL_OPPORTUNITY_NAME'=>'Opportunity Name:',
-'LBL_OPPORTUNITY'=>'Opportunity:',
-'LBL_NAME'=>'Opportunity Name',
+'LBL_SEARCH_FORM_TITLE'=>'Sponsorship Search',
+'LBL_LIST_FORM_TITLE'=>'Sponsorship List',
+'LBL_OPPORTUNITY_NAME'=>'Sponsorship Name:',
+'LBL_OPPORTUNITY'=>'Sponsorship:',
+'LBL_NAME'=>'Sponsorship Name',
 'LBL_INVITEE'=>'Contacts',
-'LBL_LIST_OPPORTUNITY_NAME'=>'Opportunity',
-'LBL_LIST_ACCOUNT_NAME'=>'Organization Name',
+'LBL_LIST_OPPORTUNITY_NAME'=>'Sponsorship',
+'LBL_LIST_ACCOUNT_NAME'=>'Membership Name',
 'LBL_PRODUCT_NAME'=>'Product Name',
 'LBL_LIST_AMOUNT'=>'Amount',
 'LBL_LIST_DATE_CLOSED'=>'Expected Close',
 'LBL_LIST_SALES_STAGE'=>'Sales Stage',
 
-'LBL_OPPORTUNITY_NAME'=>'Opportunity Name:',
-'LBL_ACCOUNT_NAME'=>'Organization Name:',
+'LBL_OPPORTUNITY_NAME'=>'Sponsorship Name:',
+'LBL_ACCOUNT_NAME'=>'Membership Name:',
 'LBL_AMOUNT'=>'Amount:',
 'LBL_DATE_CLOSED'=>'Expected Close Date:',
 'LBL_TYPE'=>'Type:',
@@ -46,27 +46,27 @@ $mod_strings = Array(
 'LBL_SALES_STAGE'=>'Sales Stage:',
 'LBL_PROBABILITY'=>'Probability (%):',
 'LBL_DESCRIPTION'=>'Description:',
-'LBL_OPPORTUNITY_INFORMATION'=>'Opportunity Information:',
+'LBL_OPPORTUNITY_INFORMATION'=>'Sponsorship Information:',
 'LBL_DESCRIPTION_INFORMATION'=>'Description Information:',
 'LBL_CUSTOM_INFORMATION'=>'Custom Information',
 
-'LBL_NEW_FORM_TITLE'=>'New Opportunity',
+'LBL_NEW_FORM_TITLE'=>'New Sponsorship',
 
 'ERR_DELETE_RECORD'=>"A record number must be specified to delete the opportunity.",
-'LBL_TOP_OPPORTUNITIES'=>"My Top Open Opportunities",
+'LBL_TOP_OPPORTUNITIES'=>"My Top Open Sponsorships",
 
 'NTC_REMOVE_OPP_CONFIRMATION'=>'Are you sure you want to remove this contact from this opportunity?',
 
 'NTC_NONE_SCHEDULED'=>'None scheduled.',
 
-'LBL_SELECT_OPPOPTUNITY'=>'Select Opportunity',
+'LBL_SELECT_OPPOPTUNITY'=>'Select Sponsorship',
 'LBL_GENERAL_INFORMATION'=>'General Information',
 
 
 
 //for v4 release added
-'LBL_NEW_POTENTIAL'=>'New Opportunity',
-'LBL_POTENTIAL_TITLE'=>'Opportunities',
+'LBL_NEW_POTENTIAL'=>'New Sponsorship',
+'LBL_POTENTIAL_TITLE'=>'Sponsorships',
 
 'LBL_NEW_TASK'=>'New Task',
 'LBL_TASK_TITLE'=>'Tasks',
@@ -93,14 +93,14 @@ $mod_strings = Array(
 'LBL_PROSPECTING'=>'Prospecting',
 
 // Added for 4GA
-'LBL_TOOL_FORM_TITLE'=>'Opportunity Tools',
+'LBL_TOOL_FORM_TITLE'=>'Sponsorship Tools',
 //Added for 4GA
-'Potential Name'=>'Opportunity Name',
+'Potential Name'=>'Sponsorship Name',
 'Amount'=>'Amount',
-'Account Name'=>'Organization Name',
+'Account Name'=>'Membership Name',
 'Currency'=>'Currency',
 'Expected Close Date'=>'Expected Close Date',
-'Opportunity Type'=>'Opportunity Type',
+'Sponsorship Type'=>'Sponsorship Type',
 'Type'=>'Type',
 'Next Step'=>'Next Step',
 'Lead Source'=>'Lead Source',
@@ -112,7 +112,7 @@ $mod_strings = Array(
 'Created Time'=>'Created Time',
 'Modified Time'=>'Modified Time',
 //Added for 4.2 Release -- CustomView
-'Potential'=>'Opportunity',
+'Potential'=>'Sponsorship',
 'Expected Close'=>'Expected Close',
 
 //Added for Existing Picklist Strings
@@ -148,11 +148,11 @@ $mod_strings = Array(
 // Added after 5.0.4 GA
 
 // Module Sequence Numbering
-'Potential No' => 'Opportunity No',
+'Potential No' => 'Sponsorship No',
 // END
 
 'Related To' => 'Related To',
-'Potentials ID' => 'Opportunities ID',
+'Potentials ID' => 'Sponsorships ID',
 );
 
 ?>

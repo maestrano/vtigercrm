@@ -90,8 +90,8 @@ $mod_strings = Array(
 'LBL_GENERAL_INFORMATION'=>'General Information',
 
 //for v4 release added
-'LBL_NEW_POTENTIAL'=>'New Opportunity',
-'LBL_POTENTIAL_TITLE'=>'Opportunities',
+'LBL_NEW_POTENTIAL'=>'New Sponsorship',
+'LBL_POTENTIAL_TITLE'=>'Sponsorships',
 
 'LBL_NEW_TASK'=>'New Task',
 'LBL_TASK_TITLE'=>'Tasks',
