@@ -26,6 +26,7 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
   protected $_due_date;
   protected $_status;
   protected $_type;
+  protected $_public_note;
   protected $_balance;
   protected $_deposit;
   protected $_organization_id;
@@ -59,6 +60,7 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
     if ($this->_due_date != null) { $msg['invoice']->dueDate = $this->_due_date; }
     if ($this->_status != null) { $msg['invoice']->status = $this->_status; }
     if ($this->_type != null) { $msg['invoice']->type = $this->_type; }
+    if ($this->_public_note != null) { $msg['invoice']->publicNote = $this->_public_note; }
     if ($this->_balance != null) { $msg['invoice']->balance = $this->_balance; }
     if ($this->_deposit != null) { $msg['invoice']->deposit = $this->_deposit; }
     if ($this->_organization_id != null) { $msg['invoice']->organization->id = $this->_organization_id; }
@@ -89,6 +91,7 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
       $this->set_if_array_key_has_value($this->_due_date, 'dueDate', $mno_entity);
       $this->set_if_array_key_has_value($this->_status, 'status', $mno_entity);
       $this->set_if_array_key_has_value($this->_type, 'type', $mno_entity);
+      $this->set_if_array_key_has_value($this->_public_note, 'publiNote', $mno_entity);
       $this->set_if_array_key_has_value($this->_balance, 'balance', $mno_entity);
       $this->set_if_array_key_has_value($this->_deposit, 'deposit', $mno_entity);
 
