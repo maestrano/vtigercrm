@@ -61,6 +61,7 @@ function createRelateToField($tabname, $relatesTo, $fieldlabel, $columnname, $ta
   $fieldid = $adb->query_result($result,0,"fieldid");
   if(isset($fieldid) && $fieldid > 0) {
     $log->debug("field $fieldlabel under tab $tabname already exists");
+    Vtiger_Utils::ExecuteQuery("UPDATE vtiger_field SET uitype=10, typeofdata='V~O' WHERE fieldid=$fieldid");
   } else {
     $log->debug("creating field $fieldlabel under tab $tabname");
     $blockid = getBlockId($tabid,'LBL_CUSTOM_INFORMATION');
