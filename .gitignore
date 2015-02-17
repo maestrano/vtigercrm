@@ -8,3 +8,6 @@ tabdata.php
 user_privileges
 test
 Smarty/templates_c
+Smarty/templates
+
+*.lang.php
