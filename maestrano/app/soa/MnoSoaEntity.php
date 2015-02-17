@@ -62,6 +62,14 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
                 $mno_invoice->receive($invoice);
             }
         }
+        if (!empty($msg->events) && class_exists('MnoSoaEvent')) {
+            $this->_log->debug(__FUNCTION__ . " has events");
+            foreach ($msg->events as $event) {
+                $this->_log->debug(__FUNCTION__ .  " event id = " . $event->id);
+                $mno_event = new MnoSoaEvent($this->_db, $this->_log);
+                $mno_event->receive($event);
+            }
+        }
         $this->_log->info(__FUNCTION__ .  " getUpdates successful (timestamp=" . $timestamp . ")");
 
         return true;

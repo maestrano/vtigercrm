@@ -55,6 +55,12 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
                 $mno_invoice->receiveNotification($notification);
               }
       break;
+      case "EVENTS":
+              if (class_exists('MnoSoaEvent')) {
+                $mno_event = new MnoSoaEvent($opts['db_connection'], $log);   
+                $mno_event->receiveNotification($notification);
+              }
+      break;
     }
   } catch (Exception $e) {
     $log->debug("Caught exception in subscribe " . json_encode($e->getMessage()));
