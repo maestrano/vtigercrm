@@ -15,6 +15,7 @@ class MnoSoaBaseEvent extends MnoSoaBaseEntity {
   protected $_delete_http_operation = "DELETE";    
   
   protected $_id;
+  protected $_code;
   protected $_name;
   protected $_description;
   protected $_url;
@@ -23,7 +24,7 @@ class MnoSoaBaseEvent extends MnoSoaBaseEntity {
   protected $_start_date;
   protected $_end_date;
   protected $_ticket_classes;
-  
+
   protected function pushEvent() {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoEvent class!');
   }
@@ -39,10 +40,15 @@ class MnoSoaBaseEvent extends MnoSoaBaseEntity {
   public function getLocalEntityIdentifier() {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoEvent class!');
   }
+
+  protected function pullTickets() {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoEvent class!');
+  }
   
   protected function build() {
     $this->_log->debug("start");
     $this->pushEvent();
+    if ($this->_code != null) { $msg['event']->code = $this->_code; }
     if ($this->_name != null) { $msg['event']->name = $this->_name; }
     if ($this->_description != null) { $msg['event']->description = $this->_description; }
     if ($this->_url != null) { $msg['event']->url = $this->_url; }
@@ -68,6 +74,7 @@ class MnoSoaBaseEvent extends MnoSoaBaseEntity {
     
     if (!empty($mno_entity->id)) {
       $this->_id = $mno_entity->id;
+      $this->set_if_array_key_has_value($this->_code, 'code', $mno_entity);
       $this->set_if_array_key_has_value($this->_name, 'name', $mno_entity);
       $this->set_if_array_key_has_value($this->_description, 'description', $mno_entity);
       $this->set_if_array_key_has_value($this->_url, 'url', $mno_entity);
@@ -87,6 +94,16 @@ class MnoSoaBaseEvent extends MnoSoaBaseEntity {
       
       if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID') || $status == constant('MnoSoaBaseEntity::STATUS_EXISTING_ID')) {
         $this->saveLocalEntity(false, $status);
+
+        // Map event ID
+        if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID')) {
+          $local_entity_id = $this->getLocalEntityIdentifier();
+          $mno_entity_id = $this->_id;
+          $this->addIdMapEntry($local_entity_id, $mno_entity_id);
+        }
+
+        // Pull tickets
+        $this->pullTickets();
       }
     }
     $this->_log->debug("end");

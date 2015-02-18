@@ -19,6 +19,14 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
       $this->_name = $this->push_set_or_delete_value($this->_local_entity->column_fields['tkseventname']);
     }
 
+    if(isset($this->_local_entity->column_fields['tksticketsavailable'])) { 
+      $this->_capacity = $this->push_set_or_delete_value($this->_local_entity->column_fields['tksticketsavailable']);
+    }
+
+    if(isset($this->_local_entity->column_fields['tksdateofevent'])) {
+      $this->_start_date = strtotime($this->push_set_or_delete_value($this->_local_entity->column_fields['tksdateofevent']));
+    }
+
     $this->_log->debug("after pushEvent");
   }
 
@@ -48,21 +56,22 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
       $status = constant('MnoSoaBaseEntity::STATUS_ERROR');
     }
 
-    $this->_local_entity->column_fields['tkseventname'] = $this->pull_set_or_delete_value($this->_name);
+    if($this->_name) { $this->_local_entity->column_fields['tkseventname'] = $this->pull_set_or_delete_value($this->_name); }
+    if($this->_start_date) { $this->_local_entity->column_fields['tksdateofevent'] = date('Y-m-d', $this->_start_date); }
+    if($this->_capacity) { $this->_local_entity->column_fields['tksticketsavailable'] = $this->pull_set_or_delete_value($this->_capacity); }
 
     return $status;
   }
 
   protected function saveLocalEntity($push_to_maestrano, $status) {
     $this->_log->debug("start saveLocalEntity status=$status " . json_encode($this->_local_entity->column_fields));
-    
     $this->_local_entity->save("Event", '', $push_to_maestrano);
+  }
 
-    // Map event ID
-    if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID')) {
-      $local_entity_id = $this->getLocalEntityIdentifier();
-      $mno_entity_id = $this->_id;
-      $this->addIdMapEntry($local_entity_id, $mno_entity_id);
+  protected function pullTickets() {
+    foreach ($this->_ticket_classes as $ticket_class) {
+      $mno_ticket = new MnoSoaTicket($this->getLocalEntityIdentifier(), $this->_db, $this->_log);
+      $mno_ticket->persist($ticket_class);
     }
   }
 
