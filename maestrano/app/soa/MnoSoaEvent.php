@@ -76,11 +76,25 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
   }
 
   protected function pushTickets() {
+    $this->_ticket_classes = array();
+
     $ticket = new Tickets();
     $query = $ticket->getListQuery('Tickets', ' AND vtiger_tickets.tksevent = ' . $this->getLocalEntityIdentifier());
     $result = $this->_db->pquery($query);
+    
+    foreach ($result as $event_ticket) {     
+      $ticket_id = $event_ticket['crmid'];
 
-    // TODO
+      $ticket = CRMEntity::getInstance("Tickets");
+      $ticket->retrieve_entity_info($ticket_id, "Tickets");
+      $ticket->id = $ticket_id;
+      
+      $mno_ticket = new MnoSoaTicket($this->getLocalEntityIdentifier(), $this->_db, $this->_log);
+      $mno_ticket->_local_entity = $ticket;
+      $ticket_hash = $mno_ticket->build();
+
+      array_push($this->_ticket_classes, json_decode($ticket_hash));
+    }
   }
 
   public function getLocalEntityIdentifier() {

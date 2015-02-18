@@ -41,13 +41,20 @@ class MnoSoaBaseEvent extends MnoSoaBaseEntity {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoEvent class!');
   }
 
+  protected function pushTickets() {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoEvent class!');
+  }
+
   protected function pullTickets() {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoEvent class!');
   }
   
   protected function build() {
     $this->_log->debug("start");
+    
     $this->pushEvent();
+    $this->pushTickets();
+
     if ($this->_code != null) { $msg['event']->code = $this->_code; }
     if ($this->_name != null) { $msg['event']->name = $this->_name; }
     if ($this->_description != null) { $msg['event']->description = $this->_description; }
