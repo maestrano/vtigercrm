@@ -75,8 +75,16 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
     }
   }
 
+  protected function pushTickets() {
+    $ticket = new Tickets();
+    $query = $ticket->getListQuery('Tickets', ' AND vtiger_tickets.tksevent = ' . $this->getLocalEntityIdentifier());
+    $result = $this->_db->pquery($query);
+
+    // TODO
+  }
+
   public function getLocalEntityIdentifier() {
-    return $this->_local_entity->id;
+    return $this->_local_entity->column_fields['record_id'];
   }
 }
 
