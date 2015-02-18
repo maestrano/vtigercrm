@@ -11,3 +11,6 @@ Smarty/templates_c
 Smarty/templates
 
 *.lang.php
+
+modules/Event
+modules/Tickets
