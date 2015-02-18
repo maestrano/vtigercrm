@@ -1,7 +1,11 @@
 <?php
+  
+  if (!defined('ROOT_PATH')) {
+    define("ROOT_PATH", realpath(dirname(__FILE__) . '/../../../../'));
+  }
+  chdir(ROOT_PATH);
 
   // Install Event and Tickets modules
-  chdir(ROOT_PATH);
   require_once('include/utils/utils.php');
   $package = new Vtiger_Package();
   $package->import(MAESTRANO_ROOT . '/modules/Event.zip', true);
