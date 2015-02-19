@@ -8,8 +8,8 @@ This command creates a diff patch from 2 commits ignoring Maestrano configuratio
 $ git diff commit1 commi2 | filterdiff -p 1 -x "maestrano/app/config/*" -x "parent_tabdata.php" -x "tabdata.php" -x "config.inc.php" > vtiger.diff
 ```
 
-#### Export the Event and Tickets modules
-Modules will be exported into vtigercrm/test/vtlib
+#### Package the custom modules
+Modules will be exported and moved under maestrano/modules
 ```
-$ php maestrano/modules/export_modules.php
+$ sh maestrano/package.sh
 ```
