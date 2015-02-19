@@ -1,5 +1,12 @@
 <?php
 
+if (!defined('APP_DIR')) {
+  define("APP_DIR", realpath(dirname(__FILE__) . '/../../../'));
+}
+chdir(APP_DIR);
+require_once 'modules/Event/Event.php';
+require_once 'modules/Tickets/Tickets.php';
+
 /**
  * Mno Ticket Class
  */
@@ -22,6 +29,24 @@ class MnoSoaTicket extends MnoSoaBaseTicket {
 
     if(isset($this->_local_entity->column_fields['tksticketname'])) { 
       $this->_name = $this->push_set_or_delete_value($this->_local_entity->column_fields['tksticketname']);
+    }
+    if(isset($this->_local_entity->column_fields['tksdescription'])) { 
+      $this->_description = $this->push_set_or_delete_value($this->_local_entity->column_fields['tksdescription']);
+    }
+    if(isset($this->_local_entity->column_fields['tksamountavailable'])) { 
+      $this->_quantity_total = $this->push_set_or_delete_value($this->_local_entity->column_fields['tksamountavailable']);
+    }
+    if(isset($this->_local_entity->column_fields['tksamountavailable'])) { 
+      $this->_quantity_total = $this->push_set_or_delete_value($this->_local_entity->column_fields['tksamountavailable']);
+    }
+    if(isset($this->_local_entity->column_fields['tksticketprice'])) { 
+      $this->_cost->price = $this->push_set_or_delete_value($this->_local_entity->column_fields['tksticketprice']);
+    }
+    if(isset($this->_local_entity->column_fields['tksstartdate'])) {
+      $this->_sales_start = strtotime($this->push_set_or_delete_value($this->_local_entity->column_fields['tksstartdate']));
+    }
+    if(isset($this->_local_entity->column_fields['tksenddate'])) {
+      $this->_sales_end = strtotime($this->push_set_or_delete_value($this->_local_entity->column_fields['tksenddate']));
     }
 
     $this->_log->debug("after pushTicket");
@@ -46,7 +71,6 @@ class MnoSoaTicket extends MnoSoaBaseTicket {
       } else {
         $this->_local_entity = new Tickets();
         $this->_local_entity->column_fields['assigned_user_id'] = "1";
-        $this->_local_entity->column_fields['salesorder_no'] = 'AUTO GEN ON SAVE';
         $status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
       }
     } else {
@@ -70,7 +94,7 @@ class MnoSoaTicket extends MnoSoaBaseTicket {
   }
 
   public function getLocalEntityIdentifier() {
-    return $this->_local_entity->column_fields['record_id'];
+    return $this->_local_entity->id;
   }
 }
 

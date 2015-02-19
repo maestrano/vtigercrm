@@ -1,5 +1,12 @@
 <?php
 
+if (!defined('APP_DIR')) {
+  define("APP_DIR", realpath(dirname(__FILE__) . '/../../../'));
+}
+chdir(APP_DIR);
+require_once 'modules/Event/Event.php';
+require_once 'modules/Tickets/Tickets.php';
+
 /**
  * Mno Event Class
  */
@@ -49,7 +56,6 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
       } else {
         $this->_local_entity = new Event();
         $this->_local_entity->column_fields['assigned_user_id'] = "1";
-        $this->_local_entity->column_fields['salesorder_no'] = 'AUTO GEN ON SAVE';
         $status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
       }
     } else {
@@ -66,6 +72,13 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
   protected function saveLocalEntity($push_to_maestrano, $status) {
     $this->_log->debug("start saveLocalEntity status=$status " . json_encode($this->_local_entity->column_fields));
     $this->_local_entity->save("Event", '', $push_to_maestrano);
+
+    // Force Event code if specified
+    if($this->_code) {
+      $sql = "UPDATE " . $this->_local_entity->table_name . " SET eventno = ? WHERE eventid = ?";
+      $params = array($this->_code, $this->_local_entity->id);
+      $this->_db->pquery($sql, $params);
+    }
   }
 
   protected function pullTickets() {
@@ -98,7 +111,7 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
   }
 
   public function getLocalEntityIdentifier() {
-    return $this->_local_entity->column_fields['record_id'];
+    return $this->_local_entity->id;
   }
 }
 

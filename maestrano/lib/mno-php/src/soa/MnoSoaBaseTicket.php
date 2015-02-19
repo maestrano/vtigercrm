@@ -49,6 +49,15 @@ class MnoSoaBaseTicket extends MnoSoaBaseEntity {
     $this->pushTicket();
 
     if ($this->_name != null) { $msg['ticket']->name = $this->_name; }
+    if ($this->_name != null) { $msg['ticket']->description = $this->_description; }
+    if ($this->_name != null) { $msg['ticket']->minimumQuantity = $this->_minimum_quantity; }
+    if ($this->_name != null) { $msg['ticket']->maximumQuantity = $this->_maximum_quantity; }
+    if ($this->_name != null) { $msg['ticket']->quantityTotal = $this->_quantity_total; }
+    if ($this->_name != null) { $msg['ticket']->quantitySold = $this->_quantity_sold; }
+    if ($this->_name != null) { $msg['ticket']->salesStart = $this->_sales_start; }
+    if ($this->_name != null) { $msg['ticket']->salesEnd = $this->_sales_end; }
+    if ($this->_name != null) { $msg['ticket']->cost = $this->_cost; }
+    if ($this->_name != null) { $msg['ticket']->fee = $this->_fee; }
 
     $result = json_encode($msg['ticket']);
     $this->_log->debug("result = $result");
