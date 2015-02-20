@@ -27,6 +27,12 @@
   createRelateList('Tickets', 'Contacts', 'Contacts');
   
   function createRelateToField($tabname, $relatesTo, $fieldlabel, $columnname, $tablename) {
+    // Unlink related module is already set
+    $moduleObject = Vtiger_Module::getInstance($tabname);
+    $targetModuleInstance = Vtiger_Module::getInstance($relatesTo);
+    $fieldObject = Vtiger_Field::getInstance($fieldlabel, $moduleObject);
+    if($fieldObject) { $fieldObject->unsetRelatedModules($targetModuleInstance); }
+
     $adb = PearDatabase::getInstance();
     $log = new MnoSoaBaseLogger();
     $tabid = getTabid($tabname);
@@ -59,9 +65,9 @@
 
   function createRelateList($tabname, $targetModule, $relationLabel) {
     $moduleInstance = Vtiger_Module::getInstance($tabname);
-    $contactsModule = Vtiger_Module::getInstance($targetModule);
+    $targetModuleInstance = Vtiger_Module::getInstance($targetModule);
     $relationLabel = $relationLabel;
-    $moduleInstance->unsetRelatedList($contactsModule);
-    $moduleInstance->setRelatedList($contactsModule, $relationLabel, Array('SELECT'));
+    $moduleInstance->unsetRelatedList($targetModuleInstance);
+    $moduleInstance->setRelatedList($targetModuleInstance, $relationLabel, Array('SELECT'));
   }
 ?>

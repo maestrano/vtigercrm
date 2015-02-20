@@ -70,6 +70,15 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
                 $mno_event->receive($event);
             }
         }
+        if (!empty($msg->eventOrders) && class_exists('MnoSoaEventOrder')) {
+            $this->_log->debug(__FUNCTION__ . " has eventOrders");
+            foreach ($msg->eventOrders as $eventOrder) {
+                $this->_log->debug(__FUNCTION__ .  " eventOrder id = " . $eventOrder->id);
+                $mno_event_order = new MnoSoaEventOrder($this->_db, $this->_log);
+                $mno_event_order->receive($eventOrder);
+            }
+        }
+
         $this->_log->info(__FUNCTION__ .  " getUpdates successful (timestamp=" . $timestamp . ")");
 
         return true;
