@@ -23,7 +23,7 @@ class Tickets extends CRMEntity {
 	/**
 	 * Mandatory table for supporting custom fields.
 	 */
-	var $customFieldTable = Array('vtiger_tickets', 'ticketsid');
+	// var $customFieldTable = Array('vtiger_tickets', 'ticketsid');
 
 	/**
 	 * Mandatory for Saving, Include tables related to this module.
@@ -127,6 +127,33 @@ class Tickets extends CRMEntity {
 	function save_module($module) {
 	}
 
+  function save($module_name, $fileid='', $push_to_maestrano=true) {
+    $result = parent::save($module_name,$fileid);
+
+    // Fetch parent Event
+    $event_id = $this->column_fields['tksevent'];
+    $event = CRMEntity::getInstance("Event");
+    $event->retrieve_entity_info($event_id, "Event");
+    $event->id = $event_id;
+    // Link the Event to the Ticket
+    $event->save_related_module('Event', $event_id, 'Tickets', $this->id);
+
+    // Push the parent Event to Connec!
+    try {
+      if($push_to_maestrano) {
+        $maestrano = MaestranoService::getInstance();
+        if($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+          // Push Event
+          $mno_event = new MnoSoaEvent(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+          $mno_event->send($event);
+        }
+      }
+    } catch (Exception $ex) {
+    }
+
+    return $result;
+  }
+
 	/**
 	 * Return query to use based on given modulename, fieldname
 	 * Useful to handle specific case handling for Popup
@@ -155,11 +182,6 @@ class Tickets extends CRMEntity {
 		$joinedTables[] = 'vtiger_crmentity';
 		
 		// Consider custom table join as well.
-		// if(!empty($this->customFieldTable)) {
-		// 	$query .= " INNER JOIN ".$this->customFieldTable[0]." ON ".$this->customFieldTable[0].'.'.$this->customFieldTable[1] .
-		// 		      " = $this->table_name.$this->table_index";
-		// 	$joinedTables[] = $this->customFieldTable[0]; 
-		// }
 		$query .= " LEFT JOIN vtiger_users ON vtiger_users.id = vtiger_crmentity.smownerid";
 		$query .= " LEFT JOIN vtiger_groups ON vtiger_groups.groupid = vtiger_crmentity.smownerid";
 
@@ -188,6 +210,7 @@ class Tickets extends CRMEntity {
 		global $current_user;
 		$query .= $this->getNonAdminAccessControlQuery($module,$current_user);
 		$query .= "	WHERE vtiger_crmentity.deleted = 0 ".$usewhere;
+error_log("TICKET LIST QUERY: " . $query);
 		return $query;
 	}
 

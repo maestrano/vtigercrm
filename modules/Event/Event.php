@@ -23,7 +23,7 @@ class Event extends CRMEntity {
 	/**
 	 * Mandatory table for supporting custom fields.
 	 */
-	var $customFieldTable = Array('vtiger_event', 'eventid');
+	// var $customFieldTable = Array('vtiger_event', 'eventid');
 
 	/**
 	 * Mandatory for Saving, Include tables related to this module.
@@ -127,6 +127,24 @@ class Event extends CRMEntity {
 	function save_module($module) {
 	}
 
+  function save($module_name, $fileid='', $push_to_maestrano=true) {
+    $result = parent::save($module_name,$fileid);
+
+    try {
+      if($push_to_maestrano) {
+        // Get Maestrano Service
+        $maestrano = MaestranoService::getInstance();
+        if($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+          $mno_event = new MnoSoaEvent(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+          $mno_event->send($this);
+        }
+      }
+    } catch (Exception $ex) {
+    }
+
+    return $result;
+  }
+
 	/**
 	 * Return query to use based on given modulename, fieldname
 	 * Useful to handle specific case handling for Popup
@@ -188,6 +206,7 @@ class Event extends CRMEntity {
 		global $current_user;
 		$query .= $this->getNonAdminAccessControlQuery($module,$current_user);
 		$query .= "	WHERE vtiger_crmentity.deleted = 0 ".$usewhere;
+error_log("EVENT LIST QUERY: " . $query);
 		return $query;
 	}
 

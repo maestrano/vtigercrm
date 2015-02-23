@@ -3,11 +3,59 @@
 	<tables>
 		<table>
 			<name>vtiger_event</name>
-			<sql><![CDATA[CREATE TABLE `vtiger_event` (`eventid` int(11) default NULL, `eventno` varchar(100) default NULL, `tkseventname` varchar(255) default NULL ,`tksticketsavailable` varchar(10) default NULL ,`tksdateofevent` date default NULL ,`tkseventtype` varchar(100) default NULL ,`tksvenue` varchar(255) default NULL ,`tksvenueaddress` varchar(255) default NULL ,`tkstarget` decimal(25,2) default NULL ,`tksactual` decimal(25,2) default NULL ,`tksspeakeri` varchar(100) default NULL ,`tksspeakerii` varchar(100) default NULL ,`tksspeakeriii` varchar(100) default NULL ,`tksspeakeriv` varchar(100) default NULL ,`tksspeakerv` varchar(100) default NULL ,`tksspeakervi` varchar(100) default NULL ,`tksspeakervii` varchar(100) default NULL ,`tksspeakerviii` varchar(100) default NULL ,`tksspeakerix` varchar(100) default NULL ,`tksspeakerx` varchar(100) default NULL ,`tksspeakerxi` varchar(100) default NULL ,`tksspeakerxii` varchar(100) default NULL ,`tksspeakerxiii` varchar(100) default NULL ,`tksspeakerxiv` varchar(100) default NULL ,`tksrolei` varchar(255) default NULL ,`tkspersoni` varchar(100) default NULL ,`tksroleii` varchar(255) default NULL ,`tkspersonii` varchar(100) default NULL ,`tksroleiii` varchar(255) default NULL ,`tkspersoniii` varchar(100) default NULL ,`tksroleiv` varchar(255) default NULL ,`tkspersoniv` varchar(100) default NULL ,`tksrolev` varchar(255) default NULL ,`tkspersonv` varchar(100) default NULL ,`tksrolevi` varchar(255) default NULL ,`tkspersonvi` varchar(100) default NULL ,`tksrolevii` varchar(255) default NULL ,`tkspersonvii` varchar(100) default NULL ,`tksroleviii` varchar(255) default NULL ,`tkspersonviii` varchar(100) default NULL ,`tksroleix` varchar(255) default NULL ,`tkspersonix` varchar(100) default NULL ,`tksrolex` varchar(255) default NULL ,`tkspersonx` varchar(100) default NULL  ) ENGINE=InnoDB DEFAULT CHARSET=utf8]]></sql>
+			<sql><![CDATA[CREATE TABLE `vtiger_event` (
+  `eventid` int(11) DEFAULT NULL,
+  `eventno` varchar(100) DEFAULT NULL,
+  `tkseventname` varchar(255) DEFAULT NULL,
+  `tksticketsavailable` varchar(10) DEFAULT NULL,
+  `tksdateofevent` date DEFAULT NULL,
+  `tkseventtype` varchar(100) DEFAULT NULL,
+  `tksvenue` varchar(255) DEFAULT NULL,
+  `tksvenueaddress` varchar(255) DEFAULT NULL,
+  `tkstarget` decimal(25,2) DEFAULT NULL,
+  `tksactual` decimal(25,2) DEFAULT NULL,
+  `tksspeakeri` varchar(100) DEFAULT NULL,
+  `tksspeakerii` varchar(100) DEFAULT NULL,
+  `tksspeakeriii` varchar(100) DEFAULT NULL,
+  `tksspeakeriv` varchar(100) DEFAULT NULL,
+  `tksspeakerv` varchar(100) DEFAULT NULL,
+  `tksspeakervi` varchar(100) DEFAULT NULL,
+  `tksspeakervii` varchar(100) DEFAULT NULL,
+  `tksspeakerviii` varchar(100) DEFAULT NULL,
+  `tksspeakerix` varchar(100) DEFAULT NULL,
+  `tksspeakerx` varchar(100) DEFAULT NULL,
+  `tksspeakerxi` varchar(100) DEFAULT NULL,
+  `tksspeakerxii` varchar(100) DEFAULT NULL,
+  `tksspeakerxiii` varchar(100) DEFAULT NULL,
+  `tksspeakerxiv` varchar(100) DEFAULT NULL,
+  `tksrolei` varchar(255) DEFAULT NULL,
+  `tkspersoni` varchar(100) DEFAULT NULL,
+  `tksroleii` varchar(255) DEFAULT NULL,
+  `tkspersonii` varchar(100) DEFAULT NULL,
+  `tksroleiii` varchar(255) DEFAULT NULL,
+  `tkspersoniii` varchar(100) DEFAULT NULL,
+  `tksroleiv` varchar(255) DEFAULT NULL,
+  `tkspersoniv` varchar(100) DEFAULT NULL,
+  `tksrolev` varchar(255) DEFAULT NULL,
+  `tkspersonv` varchar(100) DEFAULT NULL,
+  `tksrolevi` varchar(255) DEFAULT NULL,
+  `tkspersonvi` varchar(100) DEFAULT NULL,
+  `tksrolevii` varchar(255) DEFAULT NULL,
+  `tkspersonvii` varchar(100) DEFAULT NULL,
+  `tksroleviii` varchar(255) DEFAULT NULL,
+  `tkspersonviii` varchar(100) DEFAULT NULL,
+  `tksroleix` varchar(255) DEFAULT NULL,
+  `tkspersonix` varchar(100) DEFAULT NULL,
+  `tksrolex` varchar(255) DEFAULT NULL,
+  `tkspersonx` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8]]></sql>
 		</table>
 		<table>
 			<name>vtiger_eventcf</name>
-			<sql><![CDATA[CREATE TABLE `vtiger_eventcf` (`eventid` int(11) NOT NULL, PRIMARY KEY (`eventid`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8]]></sql>
+			<sql><![CDATA[CREATE TABLE `vtiger_eventcf` (
+  `eventid` int(11) NOT NULL,
+  PRIMARY KEY (`eventid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8]]></sql>
 		</table>
 	</tables>
 </schema>
