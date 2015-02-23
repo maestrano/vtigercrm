@@ -1887,7 +1887,7 @@ class CRMEntity {
         }
 			}
 		}
-error_log("QUERY: " . $query);
+
 		return $query;
 	}
 
@@ -1944,7 +1944,7 @@ error_log("QUERY: " . $query);
         }
 			}
 		}
-error_log("SEC QUERY: " . $query);
+
 		return $query;
 	}
 
