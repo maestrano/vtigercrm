@@ -5,6 +5,8 @@
   }
   chdir(ROOT_PATH);
 
+  error_log("Installation of the Events and Tickets modules");
+
   // Install Event and Tickets modules
   require_once('include/utils/utils.php');
   $package = new Vtiger_Package();

@@ -4,11 +4,13 @@ if (!defined('APP_DIR')) {
   define("APP_DIR", realpath(dirname(__FILE__) . '/../../../'));
 }
 chdir(APP_DIR);
-require_once 'modules/Event/Event.php';
-require_once 'modules/Tickets/Tickets.php';
+if(file_exists ('modules/Event/Event.php')) {
+  require_once 'modules/Event/Event.php';
+  require_once 'modules/Tickets/Tickets.php';
+}
 
 /**
- * Mno Event Class
+ * Mno EventOrder Class
  */
 class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
   protected $_local_entity_name = "EVENT_ORDER";
@@ -44,6 +46,7 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
     }
 
     // Map the Event
+    $this->_log->debug("map EventOrder related Event " . $this->_event_id);
     if($this->_event_id) {
       $event_id = $this->getLocalIdByMnoIdName($this->_event_id, "EVENTS");
     } else {
@@ -62,13 +65,14 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
     // Map the attendees
     foreach ($this->_attendees as $attendee) {
       if($attendee->person) {
+        $this->_log->debug("map EventOrder related Attendee " . $attendee->person->id);
         $person_id = $this->getLocalIdByMnoIdName($attendee->person->id, "PERSONS");
 
         if(is_null($person_id)) {
           $this->_log->debug("Person Id missing, fetching entity_id=" . $attendee->person->id);
           $notification->entity = "persons";
           $notification->id = $attendee->person->id;
-          $person = new MnoSoaPerson($this->_db, $this->_log);    
+          $person = new MnoSoaPerson($this->_db, $this->_log);
           $status = $person->receiveNotification($notification);
           if ($status) {
             $person_id = $this->getLocalIdByMnoIdName($attendee->person->id, "PERSONS");
@@ -84,7 +88,6 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
           // Fetch the Contact Organization
           $vtiger_account = CRMEntity::getInstance("Accounts");
           $vtiger_account->retrieve_entity_info($account_id, "Accounts");
-
           // Register the Contact to the Event
           $vtiger_account->save_related_module('Event', $event_id->_id, 'Contact', $person_id->_id);
         }
