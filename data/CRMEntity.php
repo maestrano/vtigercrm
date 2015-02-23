@@ -1874,20 +1874,20 @@ class CRMEntity {
 				$tab_name = $adb->query_result($fields_query, $i, 'tablename');
 				$ui10_modules_query = $adb->pquery("SELECT relmodule FROM vtiger_fieldmodulerel WHERE fieldid=?", array($field_id));
 
-				if ($adb->num_rows($ui10_modules_query) > 0) {
-					$query.= " left join vtiger_crmentity as vtiger_crmentityRel$module$field_id on vtiger_crmentityRel$module$field_id.crmid = $tab_name.$field_name and vtiger_crmentityRel$module$field_id.deleted=0";
-					for ($j = 0; $j < $adb->num_rows($ui10_modules_query); $j++) {
-						$rel_mod = $adb->query_result($ui10_modules_query, $j, 'relmodule');
-						$rel_obj = CRMEntity::getInstance($rel_mod);
-						vtlib_setup_modulevars($rel_mod, $rel_obj);
-
-						$rel_tab_name = $rel_obj->table_name;
-						$rel_tab_index = $rel_obj->table_index;
-						$query.= " left join $rel_tab_name as " . $rel_tab_name . "Rel$module$field_id on " . $rel_tab_name . "Rel$module$field_id.$rel_tab_index = vtiger_crmentityRel$module$field_id.crmid";
-					}
-				}
+				if($adb->num_rows($ui10_modules_query)>0){
+          $query.= " left join vtiger_crmentity as vtiger_crmentityRel$module$i on vtiger_crmentityRel$module$i.crmid = $tab_name.$field_name and vtiger_crmentityRel$module$i.deleted=0";
+          for($j=0;$j<$adb->num_rows($ui10_modules_query);$j++){
+            $rel_mod = $adb->query_result($ui10_modules_query,$j,'relmodule');
+            $rel_obj = CRMEntity::getInstance($rel_mod);
+            vtlib_setup_modulevars($rel_mod, $rel_obj);         
+            $rel_tab_name = $rel_obj->table_name;
+            $rel_tab_index = $rel_obj->table_index;
+            $query.= " left join $rel_tab_name as ".$rel_tab_name."Rel$module on ".$rel_tab_name."Rel$module.$rel_tab_index = vtiger_crmentityRel$module$i.crmid";
+          }
+        }
 			}
 		}
+error_log("QUERY: " . $query);
 		return $query;
 	}
 
@@ -1931,21 +1931,20 @@ class CRMEntity {
 				$tab_name = $adb->query_result($fields_query, $i, 'tablename');
 				$ui10_modules_query = $adb->pquery("SELECT relmodule FROM vtiger_fieldmodulerel WHERE fieldid=?", array($field_id));
 
-				if ($adb->num_rows($ui10_modules_query) > 0) {
-					$query.= " left join vtiger_crmentity as vtiger_crmentityRel$secmodule$i on vtiger_crmentityRel$secmodule$i.crmid = $tab_name.$field_name and vtiger_crmentityRel$secmodule$i.deleted=0";
-					for ($j = 0; $j < $adb->num_rows($ui10_modules_query); $j++) {
-						$rel_mod = $adb->query_result($ui10_modules_query, $j, 'relmodule');
-						$rel_obj = CRMEntity::getInstance($rel_mod);
-						vtlib_setup_modulevars($rel_mod, $rel_obj);
-
-						$rel_tab_name = $rel_obj->table_name;
-						$rel_tab_index = $rel_obj->table_index;
-						$query.= " left join $rel_tab_name as " . $rel_tab_name . "Rel$secmodule on " . $rel_tab_name . "Rel$secmodule.$rel_tab_index = vtiger_crmentityRel$secmodule$i.crmid";
-					}
-				}
+				if($adb->num_rows($ui10_modules_query)>0){
+          $query.= " left join vtiger_crmentity as vtiger_crmentityRel$secmodule$i on vtiger_crmentityRel$secmodule$i.crmid = $tab_name.$field_name and vtiger_crmentityRel$secmodule$i.deleted=0";
+          for($j=0;$j<$adb->num_rows($ui10_modules_query);$j++){
+            $rel_mod = $adb->query_result($ui10_modules_query,$j,'relmodule');
+            $rel_obj = CRMEntity::getInstance($rel_mod);
+            vtlib_setup_modulevars($rel_mod, $rel_obj);
+            $rel_tab_name = $rel_obj->table_name;
+            $rel_tab_index = $rel_obj->table_index;
+            $query.= " left join $rel_tab_name as ".$rel_tab_name."Rel$secmodule$i$j on ".$rel_tab_name."Rel$secmodule$i$j.$rel_tab_index = vtiger_crmentityRel$secmodule$i.crmid";
+          }
+        }
 			}
 		}
-
+error_log("SEC QUERY: " . $query);
 		return $query;
 	}
 
