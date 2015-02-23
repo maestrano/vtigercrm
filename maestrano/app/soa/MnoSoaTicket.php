@@ -4,8 +4,10 @@ if (!defined('APP_DIR')) {
   define("APP_DIR", realpath(dirname(__FILE__) . '/../../../'));
 }
 chdir(APP_DIR);
-require_once 'modules/Event/Event.php';
-require_once 'modules/Tickets/Tickets.php';
+if(file_exists ('modules/Event/Event.php')) {
+  require_once 'modules/Event/Event.php';
+  require_once 'modules/Tickets/Tickets.php';
+}
 
 /**
  * Mno Ticket Class
