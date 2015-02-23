@@ -22,8 +22,6 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
     $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
     $this->_id = ($this->isValidIdentifier($mno_id)) ? $mno_id->_id : null;
 
-
-
     $this->_log->debug("after pushEventOrder");
   }
 
@@ -48,19 +46,34 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
     // Map the Event
     if($this->_event_id) {
       $event_id = $this->getLocalIdByMnoIdName($this->_event_id, "EVENTS");
-$this->_log->debug("FETCH EVENT ID: " . json_encode($event_id));
     } else {
-      $this->_log->debug("Event Id missing");
-      return constant('MnoSoaBaseEntity::STATUS_ERROR');
+      $this->_log->debug("Event Id missing, fetching entity_id=" . $this->_event_id);
+      
+      $notification->entity = "events";
+      $notification->id = $this->_event_id;
+      $event = new MnoSoaEvent($this->_db, $this->_log);    
+      $status = $event->receiveNotification($notification);
+      if ($status) {
+        $event_id = $this->getLocalIdByMnoIdName($this->_event_id, "EVENTS");
+        if($event_id == null) { return constant('MnoSoaBaseEntity::STATUS_ERROR'); }
+      }
     }
-$this->_log->debug("PROCESSIGN ATTENDEES: " . json_encode($this->_attendees));
+
     // Map the attendees
     foreach ($this->_attendees as $attendee) {
-$this->_log->debug("PROCESSIGN ATTENDEE: " . json_encode($attendee));
       if($attendee->person) {
-$this->_log->debug("FETCH PERSON ID: " . json_encode($attendee->person->id));
         $person_id = $this->getLocalIdByMnoIdName($attendee->person->id, "PERSONS");
-$this->_log->debug("FOUND PERSON : " . json_encode($person_id));
+
+        if(is_null($person_id)) {
+          $this->_log->debug("Person Id missing, fetching entity_id=" . $attendee->person->id);
+          $notification->entity = "persons";
+          $notification->id = $attendee->person->id;
+          $person = new MnoSoaPerson($this->_db, $this->_log);    
+          $status = $person->receiveNotification($notification);
+          if ($status) {
+            $person_id = $this->getLocalIdByMnoIdName($attendee->person->id, "PERSONS");
+          }
+        }
 
         if($person_id) {
           // Fetch the Contact
@@ -68,15 +81,13 @@ $this->_log->debug("FOUND PERSON : " . json_encode($person_id));
           $vtiger_contact->retrieve_entity_info($person_id->_id, "Contacts");
           $vtiger_contact->id = $person_id->_id;
           $account_id = $vtiger_contact->column_fields['account_id'];
-  $this->_log->debug("VTIGER CONTACT : " . json_encode($vtiger_contact));
-          // Fetch the Account
+          // Fetch the Contact Organization
           $vtiger_account = CRMEntity::getInstance("Accounts");
           $vtiger_account->retrieve_entity_info($account_id, "Accounts");
-  $this->_log->debug("VTIGER ACCOUNT : " . json_encode($vtiger_account));
+
+          // Register the Contact to the Event
           $vtiger_account->save_related_module('Event', $event_id->_id, 'Contact', $person_id->_id);
         }
-      } else {
-        $this->_log->debug("Skipping attendee block " . $attendee->id . " due to person missing");
       }
     }
 
