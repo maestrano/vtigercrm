@@ -34,6 +34,9 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
     if(isset($this->_local_entity->column_fields['duedate'])) {
       $this->_due_date = strtotime($this->push_set_or_delete_value($this->_local_entity->column_fields['duedate']));
     }
+    if(isset($this->_local_entity->column_fields['description'])) { 
+      $this->_public_note = $this->push_set_or_delete_value($this->_local_entity->column_fields['description']);
+    }
     
     $this->_amount = array();
     if(isset($this->_local_entity->column_fields['total'])) { $this->_amount["price"] = $this->_local_entity->column_fields['total']; }
@@ -176,6 +179,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
 
       if($this->_type == 'SUPPLIER') {
+        // Should be under PurchaseOrder instead of SaleOrder
         $this->_log->debug("processing supplier sale order");
         if ($this->isValidIdentifier($local_id)) {
           $this->_log->debug(__FUNCTION__ . " is STATUS_EXISTING_ID");
@@ -228,10 +232,10 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
       $this->_local_entity->column_fields['customerno'] = $this->pull_set_or_delete_value($this->_transaction_number);
       if($this->_transaction_date) { $this->_local_entity->column_fields['invoicedate'] = date('Y-m-d', $this->_transaction_date); }
       if($this->_due_date) { $this->_local_entity->column_fields['duedate'] = date('Y-m-d', $this->_due_date); }
+      $this->_local_entity->column_fields['description'] = $this->pull_set_or_delete_value($this->_public_note);
 
       $this->_local_entity->column_fields['currency_id'] = 1;
       $this->_local_entity->column_fields['conversion_rate'] = 1;
-      
 
       // Map status
       if($this->_status == 'SUBMITTED') {

@@ -12,12 +12,22 @@ $maestrano = MaestranoService::getInstance();
 $log = new MnoSoaBaseLogger();
 
 if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+  $notification = json_decode(file_get_contents('php://input'), false);
+  $notification_entity = strtoupper(trim($notification->entity));
+  $notification_id = $notification->id;
+
+  $log->debug("Notification = ". json_encode($notification));
+
   try {
-    $notification = json_decode(file_get_contents('php://input'), false);
-    $notification_entity = strtoupper(trim($notification->entity));
+    // File lock to process notification sequentially
+    $file = MAESTRANO_ROOT . '/var/_lock';
+    $fp = fopen($file, "r+");
+    flock($fp, LOCK_EX);
+  } catch (Exception $e) {
+    $log->debug("Cannot acquire lock on file " . json_encode($e->getMessage()));
+  }
     
-    $log->debug("Notification = ". json_encode($notification));
-    
+  try {
     switch ($notification_entity) {
 	    case "COMPANY":
               if (class_exists('MnoSoaCompany')) {
@@ -55,10 +65,25 @@ if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
                 $mno_invoice->receiveNotification($notification);
               }
       break;
+      case "EVENTS":
+              if (class_exists('MnoSoaEvent')) {
+                $mno_event = new MnoSoaEvent($opts['db_connection'], $log);   
+                $mno_event->receiveNotification($notification);
+              }
+      break;
+      case "EVENTORDERS":
+              if (class_exists('MnoSoaEventOrder')) {
+                $mno_event_order = new MnoSoaEventOrder($opts['db_connection'], $log);   
+                $mno_event_order->receiveNotification($notification);
+              }
+      break;
     }
   } catch (Exception $e) {
     $log->debug("Caught exception in subscribe " . json_encode($e->getMessage()));
   }
+
+  // Release lock
+  flock($fp, LOCK_UN);
 }
 
 ?>

@@ -19,6 +19,8 @@ require_once APP_DIR . '/modules/Products/Products.php';
 require_once APP_DIR . '/modules/Products/Products.php';
 require_once APP_DIR . '/modules/Invoice/Invoice.php';
 require_once APP_DIR . '/modules/SalesOrder/SalesOrder.php';
+require_once APP_DIR . '/modules/Event/Event.php';
+require_once APP_DIR . '/modules/Tickets/Tickets.php';
 require_once APP_DIR . '/modules/Emails/mail.php';
 
 //-----------------------------------------------
