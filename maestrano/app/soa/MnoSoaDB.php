@@ -23,7 +23,7 @@ class MnoSoaDB extends MnoSoaBaseDB {
     	// Fetch record
       $query = "INSERT INTO mno_id_map (mno_entity_guid, mno_entity_name, app_entity_id, app_entity_name, db_timestamp) VALUES (?,?,?,?,UTC_TIMESTAMP)";	
       $result = $this->_db->pquery($query, array($mno_id, strtoupper($mno_entity_name), $local_id, strtoupper($local_entity_name)));
-      $this->_log->debug("addIdMapEntry query = ".$query);
+      $this->_log->debug("addIdMapEntry query = ".$query . " - params " . json_encode(array($mno_id, strtoupper($mno_entity_name), $local_id, strtoupper($local_entity_name))));
 
       if ($this->_db->num_rows($result) > 0) {
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " return true");

@@ -60,6 +60,12 @@ class MnoSoaBaseEntity
       throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Entity class!');
     }
 
+    /**
+    * Overwrite me if further processing needed after persist
+    */
+    public function afterSend($response) {
+    }
+
     public function send($local_entity) {
       $this->_log->debug(__FUNCTION__ . " start");
 
@@ -89,6 +95,8 @@ class MnoSoaBaseEntity
       if ($mno_had_no_id && $local_entity_now_has_id && $mno_response_has_id) {
         $this->addIdMapEntry($local_entity_id,$mno_response_id);
       }
+
+      $this->afterSend($response);
 
       $this->_log->debug(__FUNCTION__ . " end");
       return true;
