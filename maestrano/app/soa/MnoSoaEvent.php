@@ -13,6 +13,7 @@ if(file_exists ('modules/Event/Event.php')) {
  */
 class MnoSoaEvent extends MnoSoaBaseEvent {
   protected $_local_entity_name = "EVENT";
+  protected $_local_tickets = array();
 
   protected function pushEvent() {
     $this->_log->debug("start pushEvent " . json_encode($this->_local_entity->column_fields));
@@ -91,6 +92,7 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
 
   protected function pushTickets() {
     $this->_ticket_classes = array();
+    $this->_local_tickets = array();
 
     $ticket = new Tickets();
     $query = $ticket->getListQuery('Tickets', ' AND vtiger_tickets.tksevent = ' . $this->getLocalEntityIdentifier());
@@ -108,6 +110,23 @@ class MnoSoaEvent extends MnoSoaBaseEvent {
       $ticket_hash = $mno_ticket->build();
 
       array_push($this->_ticket_classes, json_decode($ticket_hash));
+      array_push($this->_local_tickets, $ticket);
+    }
+  }
+
+  // Map Ticket ids after pushing to Connec!
+  public function afterSend($response) {
+    foreach ($response->ticketClasses as $index => $ticketClass) {
+      $ticket_mno_id = $ticketClass->id;
+      $ticket_local_id = $this->_local_tickets[$index]->id;
+
+      if(is_null($ticket_mno_id)) { continue; }
+      if(is_null($ticket_local_id)) { continue; }
+      
+      $ticket_id_map = $this->_mno_soa_db_interface->getMnoIdByLocalIdName($ticket_local_id, 'TICKET');
+      if(is_null($ticket_id_map)) {
+        $this->_mno_soa_db_interface->addIdMapEntry($ticket_local_id, 'TICKET', $ticket_mno_id, 'TICKETS');
+      }
     }
   }
 

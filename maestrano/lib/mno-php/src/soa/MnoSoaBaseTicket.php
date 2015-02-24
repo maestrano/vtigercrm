@@ -48,16 +48,17 @@ class MnoSoaBaseTicket extends MnoSoaBaseEntity {
 
     $this->pushTicket();
 
+    if ($this->_id != null) { $msg['ticket']->id = $this->_id; }
     if ($this->_name != null) { $msg['ticket']->name = $this->_name; }
-    if ($this->_name != null) { $msg['ticket']->description = $this->_description; }
-    if ($this->_name != null) { $msg['ticket']->minimumQuantity = $this->_minimum_quantity; }
-    if ($this->_name != null) { $msg['ticket']->maximumQuantity = $this->_maximum_quantity; }
-    if ($this->_name != null) { $msg['ticket']->quantityTotal = $this->_quantity_total; }
-    if ($this->_name != null) { $msg['ticket']->quantitySold = $this->_quantity_sold; }
-    if ($this->_name != null) { $msg['ticket']->salesStart = $this->_sales_start; }
-    if ($this->_name != null) { $msg['ticket']->salesEnd = $this->_sales_end; }
-    if ($this->_name != null) { $msg['ticket']->cost = $this->_cost; }
-    if ($this->_name != null) { $msg['ticket']->fee = $this->_fee; }
+    if ($this->_description != null) { $msg['ticket']->description = $this->_description; }
+    if ($this->_minimum_quantity != null) { $msg['ticket']->minimumQuantity = $this->_minimum_quantity; }
+    if ($this->_maximum_quantity != null) { $msg['ticket']->maximumQuantity = $this->_maximum_quantity; }
+    if ($this->_quantity_total != null) { $msg['ticket']->quantityTotal = $this->_quantity_total; }
+    if ($this->_quantity_sold != null) { $msg['ticket']->quantitySold = $this->_quantity_sold; }
+    if ($this->_sales_start != null) { $msg['ticket']->salesStart = $this->_sales_start; }
+    if ($this->_sales_end != null) { $msg['ticket']->salesEnd = $this->_sales_end; }
+    if ($this->_cost != null) { $msg['ticket']->cost = $this->_cost; }
+    if ($this->_fee != null) { $msg['ticket']->fee = $this->_fee; }
 
     $result = json_encode($msg['ticket']);
     $this->_log->debug("result = $result");
@@ -66,7 +67,7 @@ class MnoSoaBaseTicket extends MnoSoaBaseEntity {
   }
   
   protected function persist($mno_entity) {
-    $this->_log->debug("start");
+    $this->_log->debug("persist Ticket " .json_encode($mno_entity));
     
     if (!empty($mno_entity->ticket)) {
       $mno_entity = $mno_entity->ticket;
@@ -74,7 +75,6 @@ class MnoSoaBaseTicket extends MnoSoaBaseEntity {
     
     if (!empty($mno_entity->id)) {
       $this->_id = $mno_entity->id;
-
       $this->set_if_array_key_has_value($this->_name, 'name', $mno_entity);
       $this->set_if_array_key_has_value($this->_description, 'description', $mno_entity);
       $this->set_if_array_key_has_value($this->_minimum_quantity, 'minimumQuantity', $mno_entity);
@@ -90,10 +90,9 @@ class MnoSoaBaseTicket extends MnoSoaBaseEntity {
 
       $status = $this->pullTicket();
       $this->_log->debug("after pullTicket");
-      
       if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID') || $status == constant('MnoSoaBaseEntity::STATUS_EXISTING_ID')) {
         $this->saveLocalEntity(false, $status);
-
+        
         // Map ticket ID
         if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID')) {
           $local_entity_id = $this->getLocalEntityIdentifier();
