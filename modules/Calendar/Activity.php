@@ -1002,12 +1002,14 @@ function insertIntoRecurringTable(& $recurObj)
         $maestrano = MaestranoService::getInstance();
         if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
           $contact = CRMEntity::getInstance("Contacts");
-          $contact->retrieve_entity_info($this->column_fields['contact_id'], "Contacts");
-          $contact->id = $this->column_fields['contact_id'];
+          if($this->column_fields['contact_id']) {
+          	$contact->retrieve_entity_info($this->column_fields['contact_id'], "Contacts");
+	          $contact->id = $this->column_fields['contact_id'];
 
-          // Save the parent entity person
-          $mno_person = new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());
-          $mno_person->send($contact);
+	          // Save the parent entity person
+	          $mno_person = new MnoSoaPerson(PearDatabase::getInstance(), new MnoSoaBaseLogger());
+	          $mno_person->send($contact);
+          }
         }
       }
     } catch (Exception $ex) {
