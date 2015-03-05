@@ -6,7 +6,7 @@
 class MnoSoaPersonNotes extends MnoSoaBaseEntity
 {
   protected $_mno_entity_name = "notes";
-  protected $_local_entity_name = "mod_comments";
+  protected $_local_entity_name = "documents";
 
   protected $_mno_person;
 
@@ -33,38 +33,11 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
       if (!empty($key)) {
         $this->_log->debug(__FUNCTION__ . " persist person note id = " . $key . " => " . json_encode($note));
 
-        $is_update = false;
-        $local_id = $this->getLocalIdByMnoId($key);
-        if ($this->isValidIdentifier($local_id)) {
-          $is_update = true;
-        }
-        $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
-        
-        // Save note as a Comment
-        $this->_log->debug(__FUNCTION__ . " persisting comments");
-        $mod_comment = CRMEntity::getInstance("ModComments");
-        if ($is_update) {
-          $mod_comment->retrieve_entity_info($local_id->_id, "ModComments");
-          $mod_comment->id = $local_id->_id;
-          $mod_comment->mode = 'edit';
-        } else if ($this->isDeletedIdentifier($local_id)) {
-          continue;
-        } else {
-          $mod_comment->column_fields['assigned_user_id'] = "1";
-          $mod_comment->column_fields['related_to'] = $person_id;
-        }
-
-        $mod_comment->column_fields['commentcontent'] = $note->description;
-        $mod_comment->save("ModComments", '', false);
-
-        if(!$is_update) {
-          $this->addIdMapEntry($mod_comment->id, $key);
-        }
-
         // Try to map note to a Contact custom field
         $this->_log->debug(__FUNCTION__ . " persisting custom fields");
         if(!is_null($note->tag) && $note->tag!='') {
           $this->_log->debug(__FUNCTION__ . " analysing tag $note->tag");
+          
           // Match the note tag against a custom field
           $query = "SELECT fieldname from vtiger_field where tablename='vtiger_contactscf' and fieldlabel=?";
           $result = $this->_db->pquery($query, array($note->tag));
@@ -81,6 +54,33 @@ class MnoSoaPersonNotes extends MnoSoaBaseEntity
               $query = "INSERT INTO vtiger_contactscf (contactid, $fieldname) VALUES (?,?)";  
               $result = $this->_db->pquery($query, array($person_id, $note->value));
             }
+          } else {
+            // Save the note as a document
+            $is_update = false;
+            $local_id = $this->getLocalIdByMnoId($key);
+            if ($this->isValidIdentifier($local_id)) { $is_update = true; }
+            $this->_log->debug(__FUNCTION__ . " this->getLocalIdByMnoId(this->_id) = " . json_encode($local_id));
+            
+            // Save note as a Document
+            $this->_log->debug(__FUNCTION__ . " persisting comments");
+            $document = CRMEntity::getInstance("Documents");
+            if ($is_update) {
+              $document->retrieve_entity_info($local_id->_id, "Documents");
+              $document->id = $local_id->_id;
+              $document->mode = 'edit';
+            } else if ($this->isDeletedIdentifier($local_id)) {
+              continue;
+            } else {
+              $document->column_fields['assigned_user_id'] = "1";
+              $document->parentid = $person_id;
+            }
+
+            $document->column_fields['notecontent'] = $note->description;
+            $document->column_fields['title'] = $note->tag;
+            $document->column_fields['notes_title'] = $note->tag;
+            $document->save("Documents", '');
+
+            if(!$is_update) { $this->addIdMapEntry($document->id, $key); }
           }
         }
       }
