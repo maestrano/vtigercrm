@@ -125,6 +125,7 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
               $ticket->column_fields['tksticketprice'] = null;
               $ticket->column_fields['tksstartdate'] = $vtiger_event->column_fields['tksdateofevent'];
               $ticket->column_fields['tksenddate'] = null;
+              $ticket->column_fields['tkschannels'] = 'Online';
               $ticket->save('Tickets');
             }
 
