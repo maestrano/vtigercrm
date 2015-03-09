@@ -17,6 +17,7 @@ class MnoSoaBaseOrganization extends MnoSoaBaseEntity
     
     protected $_id;
     protected $_name;
+    protected $_description;
     protected $_industry;
     protected $_annual_revenue;
     protected $_capital;
@@ -46,11 +47,19 @@ class MnoSoaBaseOrganization extends MnoSoaBaseEntity
     }
     
     protected function pushName() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
     }
     
     protected function pullName() {
-	throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
+    }
+
+    protected function pushDescription() {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
+    }
+    
+    protected function pullDescription() {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoOrganization class!');
     }
     
     protected function pushIndustry() {
@@ -143,7 +152,9 @@ class MnoSoaBaseOrganization extends MnoSoaBaseEntity
 	$this->pushId();
 	$this->_log->debug(__FUNCTION__ . " after Id");
 	$this->pushName();
-	$this->_log->debug(__FUNCTION__ . " after Name");
+    $this->_log->debug(__FUNCTION__ . " after Name");
+    $this->pushDescription();
+    $this->_log->debug(__FUNCTION__ . " after Description");
 	$this->pushIndustry();
 	$this->_log->debug(__FUNCTION__ . " after Industry");
 	$this->pushAnnualRevenue();
@@ -164,6 +175,7 @@ class MnoSoaBaseOrganization extends MnoSoaBaseEntity
 	$this->_log->debug(__FUNCTION__ . " after Entity");
 	
         if ($this->_name != null) { $msg['organization']->name = $this->_name; }
+        if ($this->_description != null) { $msg['organization']->description = $this->_description; }
         if ($this->_industry != null) { $msg['organization']->industry = $this->_industry; }
         if ($this->_annual_revenue != null) { $msg['organization']->annualRevenue = $this->_annual_revenue; }
         if ($this->_capital != null) { $msg['organization']->capital = $this->_capital; }
@@ -194,6 +206,7 @@ class MnoSoaBaseOrganization extends MnoSoaBaseEntity
             $this->_log->debug(__FUNCTION__ . " after id");
             $this->set_if_array_key_has_value($this->_name, 'name', $mno_entity);
             $this->_log->debug(__FUNCTION__ . " after name");
+            $this->set_if_array_key_has_value($this->_description, 'description', $mno_entity);
             $this->set_if_array_key_has_value($this->_industry, 'industry', $mno_entity);
             $this->set_if_array_key_has_value($this->_annual_revenue, 'annualRevenue', $mno_entity);
             $this->set_if_array_key_has_value($this->_capital, 'capital', $mno_entity);
@@ -219,6 +232,7 @@ class MnoSoaBaseOrganization extends MnoSoaBaseEntity
 
             if ($is_new_id || $is_existing_id) {
                 $this->pullName();
+                $this->pullDescription();
                 $this->pullIndustry();
                 $this->pullAnnualRevenue();
                 $this->pullCapital();
