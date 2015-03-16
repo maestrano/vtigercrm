@@ -276,7 +276,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice {
           // Fetch remote person if missing
           $notification->entity = "persons";
           $notification->id = $this->_person_id;
-          $person = new MnoSoaPerson($this->_db);   
+          $person = new MnoSoaPerson($this->_db, $this->_log);   
           $status = $person->receiveNotification($notification);
           if ($status) {
             $this->_local_entity->column_fields['contact_id'] = $person->_local_entity->id;
