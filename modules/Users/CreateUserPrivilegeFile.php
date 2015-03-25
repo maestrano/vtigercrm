@@ -1298,8 +1298,10 @@ function constructArray($var)
 	{
        		$code = 'array(';
        		foreach ($var as $key => $value)
-		{
-           		$code .= "'".$key."'=>".$value.',';
+		      {
+            if (!is_null($value)) {
+              $code .= "'".$key."'=>".$value.',';
+            }
        		}
        		$code .= ')';
        		return $code;
