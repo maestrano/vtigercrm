@@ -2899,7 +2899,7 @@ function getOwnerName($id) {
 	$log->info("in getOwnerName " . $id);
 
 	$ownerList = getOwnerNameList(array($id));
-	return $ownerList[$id['Users']];
+	return $ownerList[$id];
 }
 
 /** Function to get owner name either user or group */
