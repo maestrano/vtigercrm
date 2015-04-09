@@ -99,7 +99,8 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
         $vtiger_account = CRMEntity::getInstance("Accounts");
         $vtiger_account->retrieve_entity_info($account_id, "Accounts");
         // Register the Contact to the Event
-        $vtiger_account->save_related_module('Event', $event_id->_id, 'Contact', $person_id->_id);
+        $vtiger_contact->save_related_module('Event', $event_id->_id, 'Contact', $person_id->_id);
+        $vtiger_event->save_related_module('Contact', $person_id->_id, 'Event', $event_id->_id);
 
         // Map Organization Membership Type onto Ticket
         $organization_membership_label = $this->findFieldByLabel('Accounts', 'Membership Type');
@@ -131,6 +132,7 @@ class MnoSoaEventOrder extends MnoSoaBaseEventOrder {
 
             // Link the Contacts to the Ticket
             $vtiger_event->save_related_module('Tickets', $ticket->id, 'Contact', $vtiger_contact->id);
+            $vtiger_contact->save_related_module('Contact', $vtiger_contact->id, 'Tickets', $ticket->id);
           }
         }
       }

@@ -16,3 +16,5 @@ modules/Event
 modules/Tickets
 
 maestrano/var
+maestrano/app/config/1_app.php
+maestrano/var/_init_scripts

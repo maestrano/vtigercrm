@@ -27,6 +27,10 @@
   createRelateList('Event', 'Contacts', 'Contacts');
   createRelateList('Event', 'Tickets', 'Tickets');
   createRelateList('Tickets', 'Contacts', 'Contacts');
+  createRelateList('Contacts', 'Event', 'Event');
+  createRelateList('Contacts', 'Tickets', 'Tickets');
+  createRelateList('Leads', 'Event', 'Event');
+  createRelateList('Leads', 'Tickets', 'Tickets');
   
   function createRelateToField($tabname, $relatesTo, $fieldlabel, $columnname, $tablename) {
     // Unlink related module is already set
